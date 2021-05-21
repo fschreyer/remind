@@ -135,6 +135,7 @@ q_balSe(t,regi,enty2)$( entySE(enty2) AND (NOT (sameas(enty2,"seel"))) )..
     )$( sameas(enty2,"segabio") AND t.val gt 2005 )
   + sum(prodSeOth2te(enty2,te), vm_prodSeOth(t,regi,enty2,te) ) 
   + vm_Mport(t,regi,enty2) 
+  + v_AddSESource(t,regi,enty2)$(cm_test_addSESource gt 0 AND entySeAdd(enty2))
   =e=
     sum(se2fe(enty2,enty3,te), vm_demSe(t,regi,enty2,enty3,te))
   + sum(se2se(enty2,enty3,te), vm_demSe(t,regi,enty2,enty3,te))
@@ -202,7 +203,8 @@ q_transSe2se(t,regi,se2se(enty,enty2,te))..
 *** FE Balance
 ***---------------------------------------------------------------------------
 qm_balFe(t,regi,entySe,entyFe,te)$se2fe(entySe,entyFe,te)..
-  vm_prodFe(t,regi,entySe,entyFe,te)
+  vm_prodFe(t,regi,entySe,entyFe,te) 
+  + v_AddFESource(t,regi,entySe,entyFe)$(cm_test_addFESource gt 0 AND entyFeAdd(entySe,entyFe))
   =e=
   sum((sector,emiMkt)$(entyFe2Sector(entyFe,sector) AND sector2emiMkt(sector,emiMkt)), vm_demFeSector(t,regi,entySe,entyFe,sector,emiMkt))
 ; 
@@ -540,6 +542,8 @@ q_emiTeMkt(t,regi,emiTe(enty),emiMkt)..
   + sum(teCCU2rlf(te2,rlf),
 		vm_co2CCUshort(t,regi,"cco2","ccuco2short",te2,rlf)$( sameas(enty,"co2") ) 
 	)$(sameas(emiMkt,"ETS"))
+*** subtract emissions from additional captured co2 source, as this carbon should be neutral (for co2 price testing)
+  - v_AddCCO2(t,regi)$(cm_test_addCCO2 gt 0)
 ;
 
 ***--------------------------------------------------
@@ -715,6 +719,7 @@ q_balcapture(t,regi,ccs2te(ccsCO2(enty),enty2,te)) ..
   + sum(emiInd37,
       vm_emiIndCCS(t,regi,emiInd37)
     )
+  + v_AddCCO2(t,regi)$(cm_test_addCCO2 gt 0)
 ;
 ***--------------------------------------------------------------------------- 
 *' Definition of splitting of captured CO2 to CCS, CCU and a valve (the valve 
@@ -938,5 +943,35 @@ q_limitCapFeH2BI(t,regi,sector)$(SAMEAS(sector,"build") OR SAMEAS(sector,"indst"
       sum(teFe2rlfH2BI(te,rlf), 
         vm_capFac(t,regi,te) * vm_cap(t,regi,te,rlf)))
 ;
+
+
+*** test for co2price
+q_AddSESourceCost(t,regi,enty)$(entySeAdd(enty))..
+*** additional SE synfuel liquids for cm_test_addSESource trUSD/TWa (~ 114 USD/MWh)
+v_AddSESourceCost(t,regi,enty)
+=e=
+v_AddSESource(t,regi,enty) * cm_test_addSESource
+;
+
+
+*** test for co2price
+q_AddFESourceCost(t,regi,enty,enty2)$(entyFeAdd(enty,enty2))..
+*** additional FE synfuel liquids for cm_test_addFESource trUSD/TWa (~ 114 USD/MWh)
+v_AddFESourceCost(t,regi,enty,enty2)
+=e=
+v_AddFESource(t,regi,enty,enty2) * cm_test_addFESource
+;
+
+
+
+*** test for co2price
+q_AddCCO2(t,regi)..
+*** additional SE synfuel liquids for cm_test_addCCO2 trUSD/GtC (~273 USD/tCO2) 
+v_AddCCO2Cost(t,regi)
+=e=
+v_AddCCO2(t,regi) * cm_test_addCCO2
+;
+
+
 
 *** EOF ./core/equations.gms

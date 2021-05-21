@@ -52,6 +52,10 @@ qm_budget(ttot,regi)$( ttot.val ge cm_startyear ) ..
 *** agricultural MACs are part of pm_totLUcosts (see module 26_agCosts)
   + sum(enty$(emiMacSector(enty) AND (NOT emiMacMagpie(enty))), pm_macCost(ttot,regi,enty))  
   + vm_costEnergySys(ttot,regi)
+  + sum(entySeAdd, v_AddSESourceCost(ttot,regi,entySeAdd))
+  + sum(entyFeAdd(enty,enty2), v_AddFESourceCost(ttot,regi,enty,enty2))
+  + sum(entyppfenAdd, vm_AddppfenSourceCost(ttot,regi,entyppfenAdd))
+  + v_AddCCO2Cost(ttot,regi)
 ;
 
 
@@ -170,6 +174,17 @@ q01_limtRatioPpfen(t,regi,in,in2)$( pm_ppfen_ratios(t,regi,in,in2) ) ..
     pm_ppfen_ratios(t,regi,in,in2)
   * (vm_cesIO(t,regi,in2) + pm_cesdata(t,regi,in,"offset_quantity"))
 ;
+
+
+*** test for co2price
+q_AddppfenSourceCost(t,regi,in)$(entyppfenAdd(in))..
+*** additional ppfen synfuel liquids for cm_test_addppfenSource trUSD/TWa (~ 114 USD/MWh)
+vm_AddppfenSourceCost(t,regi,in)
+=e=
+vm_AddppfenSource(t,regi,in) * cm_test_addppfenSource
+;
+
+
 
 
 ***---------------------------------------------------------------------------                                

@@ -26,6 +26,16 @@ in(all_in)                            "All inputs and outputs of the CES functio
   kap                                 "Capital input"
   en                                  "Energy input"
 /
+
+
+entyppfenAdd(all_in)            "ppfen to import at fix price for co2 price testing"
+/
+   fegai
+   fegab
+   fehoi
+   fehob
+/
+
 ppf(all_in)                           "All primary production factors"
 ipf(all_in)                           "All intermediate production factors"
 ppfKap(all_in)                        "Primary production factors capital"   / kap /
@@ -39,6 +49,9 @@ in_enerSerAdj(all_in)                 "Energy services factors which should be c
 in_complements(all_in)                "Factors which are perfect complements"  //
 complements_ref(all_in,all_in)        "Correspondence between complementary factors. Necessary to have a reference factor for the constraints equations"
 ;
+
+
+
 
 
 

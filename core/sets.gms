@@ -2712,6 +2712,22 @@ ue2ppfen(all_enty,all_in)      "matching UE in ESM to ppfEn in MACRO"
 es2ppfen(all_esty,all_in)      "matching ES in ESM to ppfEn in MACRO"
 //
 
+
+entySeAdd(all_enty)            "SE carriers to import at fix price for co2 price testing"
+/
+   seliqsyn
+/
+
+entyFeAdd(all_enty,all_enty)  "FE carriers to import at fix price for co2 price testing"
+/
+   seliqsyn.fedie
+   seliqsyn.fepet
+   seliqsyn.fehos
+   segasyn.fegas
+/
+
+
+
 ;
 
 ***-----------------------------------------------------------------------------

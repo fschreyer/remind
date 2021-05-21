@@ -329,6 +329,12 @@ c_H2tdCapCost_stat          "factor to scale H2 transmission and distribution ca
 cm_HeatLim_b                "switch to set maximum share of district heating in FE buildings"
 cm_ElLim_b                  "switch to set maximum share of electricity in FE buildings"
 cm_startIter_EDGET          "starting iteration of EDGE-T"
+cm_test_lowCostDAC         "switch for DAC test"
+cm_test_fos_phaseout       "switch for fossil phase-out test"
+cm_test_addSESource        "switch and price for additional SE liquids import supply"
+cm_test_addFESource        "switch and price for additional FE liquids import supply"
+cm_test_addppfenSource     "switch and price for additional ppfen liquids import supply"
+cm_test_addCCO2            "switch and price for additional captured CO2 supply"
 ;
 
 *** --------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -525,6 +531,14 @@ cm_TaxConvCheck = 0; !! def 1, which means tax convergence check is on
 cm_flex_tax = 0; !! def 0
 cm_PriceDurSlope_elh2 = 20; !! def 10
 cm_FlexTaxFeedback = 0; !! def 0, off
+
+
+cm_test_lowCostDAC = 0;     
+cm_test_fos_phaseout  = 0;    
+cm_test_addSESource = 0;   
+cm_test_addFESource = 1.5;
+cm_test_addppfenSource = 0;
+cm_test_addCCO2 = 0;     
 
 $setGlobal cm_altFeEmiFac  off        !! def = off	
 

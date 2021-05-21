@@ -340,6 +340,18 @@ v_shBioTrans(ttot,all_regi)    "Share of biofuels in transport liquids from 2025
 v_shfe(ttot,all_regi,all_enty,emi_sectors)           "share of final energy in sector total final energy [0..1]"
 v_shGasLiq_fe(ttot,all_regi,emi_sectors)             "share of gases and liquids in sector final energy [0..1]"
 
+v_AddSESourceCost(ttot,all_regi,all_enty)             "cost of additional SE for co2 price testing"
+v_AddSESource(ttot,all_regi,all_enty)                 "additional SE for co2 price testing"
+
+v_AddFESourceCost(ttot,all_regi,all_enty,all_enty)   "cost of additional FE for co2 price testing"
+v_AddFESource(ttot,all_regi,all_enty,all_enty)       "additional FE for co2 price testing"
+
+vm_AddppfenSourceCost(ttot,all_regi,all_in)             "cost of additional ppfen for co2 price testing"
+vm_AddppfenSource(ttot,all_regi,all_in)                 "additional ppfen for co2 price testing"
+
+v_AddCCO2Cost(ttot,all_regi)                          "cost of additional captured CO2 for co2 price testing [tr USD/GtC]"
+v_AddCCO2(ttot,all_regi)                              "additional captured CO2 for co2 price testing [GtC]"
+
 *** ES layer variables
 vm_demFeForEs(ttot,all_regi,all_enty,all_esty,all_teEs)     "Final energy which will be used in the ES layer."
 v_prodEs(ttot,all_regi,all_enty,all_esty,all_teEs)          "Energy services (unit determined by conversion factor pm_fe2es)."
@@ -446,6 +458,12 @@ $IFTHEN.sehe_upper not "%cm_INNOPATHS_sehe_upper%" == "off"
 q_heat_limit(ttot,all_regi)  "equation to limit maximum level of secondary energy district heating and heat pumps use"
 $ENDIF.sehe_upper
 
+q_AddSESourceCost(ttot,all_regi,all_enty)            "additional SE source cost equation for testing of CO2 price reaction"
+q_AddFESourceCost(ttot,all_regi,all_enty,all_enty)  "additional FE source cost equation for testing of CO2 price reaction"
+q_AddppfenSourceCost(ttot,all_regi,all_in)          "additional SE source cost equation for testing of CO2 price reaction"
+
+
+q_AddCCO2(ttot,all_regi)                  "additional captured co2 source cost equation for testing of CO2 price reaction"
 
 ***----------------------------------------------------------------------------------------
 ***----------------------------------------------trade module------------------------------

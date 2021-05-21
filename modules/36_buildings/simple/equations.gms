@@ -14,7 +14,8 @@ q36_demFeBuild(ttot,regi,entyFe,emiMkt)$((ttot.val ge cm_startyear) AND (entyFe2
   =e=
   ( sum(in$(fe2ppfEn(entyFe,in) AND ppfen_buildings_dyn36(in)),
     vm_cesIO(ttot,regi,in)
-    + pm_cesdata(ttot,regi,in,"offset_quantity") 
+    + pm_cesdata(ttot,regi,in,"offset_quantity")
+    - vm_AddppfenSource(ttot,regi,in)$(cm_test_addppfenSource gt 0 AND entyppfenAdd(in)) 
    )
   )$(sameas(emiMkt,"ES"))
 ;
