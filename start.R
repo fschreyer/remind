@@ -60,7 +60,7 @@ get_line <- function(){
 # returnboolean: FALSE: returns selected entries of thelist
 # multiple: TRUE: allows to select multiple entries. FALSE: no
 # allowempty: TRUE: allows you not to select anything (returns NA). FALSE: must select something
-# type: string to be shown to user to understand what he chooses
+# type: string to be shown to user to understand what they choose
 
 chooseFromList <- function(thelist, type = "runs", returnboolean = FALSE, multiple = TRUE,
                            allowempty = FALSE, group = FALSE) {
@@ -131,6 +131,7 @@ chooseFromList <- function(thelist, type = "runs", returnboolean = FALSE, multip
     if (multiple) identifier <- identifier - 1
     booleanlist[identifier] <- 1
   }
+  message("Selected: ", paste(originallist[identifier], collapse = ", "))
   if (returnboolean) return(booleanlist) else return(originallist[identifier])
 }
 
@@ -148,7 +149,9 @@ configure_cfg <- function(icfg, iscen, iscenarios, isettings) {
         icfg[[switchname]] <- iscenarios[iscen, switchname]
       }
     }
-    if (icfg$slurmConfig %in% paste(seq(1:16))) icfg$slurmConfig <- choose_slurmConfig(identifier = icfg$slurmConfig)
+    if (icfg$slurmConfig %in% paste(seq(1:16)) & ! any(c("--testOneRegi", "--debug") %in% argv)) {
+      icfg$slurmConfig <- choose_slurmConfig(identifier = icfg$slurmConfig)
+    }
     if (icfg$slurmConfig %in% c(NA, ""))       {
       if(! exists("slurmConfig")) slurmConfig <- choose_slurmConfig()
       icfg$slurmConfig <- slurmConfig
@@ -281,8 +284,8 @@ testOneRegi_region <- ""
 if (any(c("--reprepare", "--restart") %in% argv)) {
   # choose results folder from list
   if ("--reprepare" %in% argv) {
-    possibledirs <- sort(unique(sub("/(non_optimal|fulldata).gdx","",sub("/config.Rdata","",sub("./output/","",
-    Sys.glob(c(file.path("./output","*","non_optimal.gdx"),file.path("./output","*","fulldata.gdx"),file.path("./output","*","config.Rdata"))))))))
+    possibledirs <- sub("/(non_optimal|fulldata).gdx","",sub("/config.Rdata","",sub("./output/","",
+    Sys.glob(c(file.path("./output","*","non_optimal.gdx"),file.path("./output","*","fulldata.gdx"),file.path("./output","*","config.Rdata"))))))
   } else {
     possibledirs <- sub("/(non_optimal|fulldata).gdx","",sub("./output/","",
     Sys.glob(c(file.path("./output","*","non_optimal.gdx"),file.path("./output","*","fulldata.gdx")))))
@@ -290,7 +293,7 @@ if (any(c("--reprepare", "--restart") %in% argv)) {
   # DK: The following outcommented lines are specially made for listing results of coupled runs
   # runs <- lucode2::findCoupledruns("./output/")
   # possibledirs <- sub("./output/", "", lucode2::findIterations(runs, modelpath = "./output", latest = TRUE))
-  outputdirs <- chooseFromList(possibledirs, "runs to be restarted", returnboolean = FALSE)
+  outputdirs <- chooseFromList(sort(unique(possibledirs)), "runs to be restarted", returnboolean = FALSE)
   message("\nAlso restart subsequent runs? Enter y, else leave empty:")
   restart_subsequent_runs <- get_line() %in% c("Y", "y")
   if ("--testOneRegi" %in% argv) {
@@ -430,6 +433,7 @@ if (any(c("--reprepare", "--restart") %in% argv)) {
 
     # testOneRegi settings
     if ("--testOneRegi" %in% argv & is.na(config.file)) {
+      cfg$title            <- "testOneRegi"
       cfg$description      <- "A REMIND run with default settings using testOneRegi"
       cfg$gms$optimization <- "testOneRegi"
       cfg$output           <- NA
@@ -438,8 +442,6 @@ if (any(c("--reprepare", "--restart") %in% argv)) {
       cfg$force_replace    <- TRUE
       if (testOneRegi_region != "") cfg$gms$c_testOneRegi_region <- testOneRegi_region
     }
-
-    cat("\n",scen,"\n")
 
     # configure cfg according to settings from csv if provided
     if (!is.na(config.file)) {
@@ -463,6 +465,8 @@ if (any(c("--reprepare", "--restart") %in% argv)) {
       }
     }
 
+    cat("\n",cfg$title,"\n")
+
     if ("--debug" %in% argv) {
       cfg$gms$cm_nash_mode <- "debug"
       cfg$slurmConfig      <- slurmConfig
@@ -474,7 +478,7 @@ if (any(c("--reprepare", "--restart") %in% argv)) {
     }
 
     # save the cfg object for the later automatic start of subsequent runs (after preceding run finished)
-    filename <- paste0(scen,".RData")
+    filename <- paste0(cfg$title,".RData")
     message("   Writing cfg to file ", filename)
     save(cfg, file=filename)
 
