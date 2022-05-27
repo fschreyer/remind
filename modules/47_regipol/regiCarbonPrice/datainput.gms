@@ -149,4 +149,20 @@ $offdelim
 *** difference between 2015 land-use change emissions from Magpie and UNFCCC 2015 land-use change emissions
 p47_LULUCFEmi_GrassiShift(t,regi)$(p47_EmiLULUCFCountryAcc("2015",regi)) = (pm_macBaseMagpie("2015",regi,"co2luc") - p47_EmiLULUCFCountryAcc("2015",regi)* 1e-3/sm_c_2_co2);
 
+
+*** -------------------------Primary Energy Tax--------------------------
+
+*PW* charge tax on PE gas in energy security scenario for Germany (in trUSD/TWa)
+$ifThen.cm_EnSecScen "%cm_EnSecScen%" == "on"
+  pm_tau_pe_tax("2025",regi,"pegas")$(sameAs(regi,"DEU")) = 0.4;
+  pm_tau_pe_tax("2030",regi,"pegas")$(sameAs(regi,"DEU")) = 0.3;
+  pm_tau_pe_tax("2035",regi,"pegas")$(sameAs(regi,"DEU")) = 0.25;
+  pm_tau_pe_tax("2040",regi,"pegas")$(sameAs(regi,"DEU")) = 0.2;
+  pm_tau_pe_tax("2045",regi,"pegas")$(sameAs(regi,"DEU")) = 0.2;
+  pm_tau_pe_tax("2050",regi,"pegas")$(sameAs(regi,"DEU")) = 0.2;
+  pm_tau_pe_tax("2055",regi,"pegas")$(sameAs(regi,"DEU")) = 0.15;
+  pm_tau_pe_tax("2060",regi,"pegas")$(sameAs(regi,"DEU")) = 0.1;
+$endIf.cm_EnSecScen
+
+
 *** EOF ./modules/47_regipol/regiCarbonPrice/datainput.gms
