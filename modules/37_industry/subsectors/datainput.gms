@@ -306,6 +306,8 @@ $endif.sec_steel_scen
 
 
 *** FS: quick fix, load sec steel share from calibration GDX to avoid infes
+$ifthen.calibrate "%CES_parameters%" == "load"
 Execute_Loadpoint 'input' p37_steel_secondary_max_share = p37_steel_secondary_max_share;
+$endif.calibrate
 
 *** EOF ./modules/37_industry/subsectors/datainput.gms
