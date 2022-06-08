@@ -213,8 +213,11 @@ p37_CESMkup(t,regi,"feh2_cement") = 100* sm_TWa_2_MWh * 1e-12;
 
 
 *** overwrite or extent CES markup cost if specified by switch
+*** phase-in from 2030 to 2040
 $ifThen.CESMkup not "%cm_CESMkup_ind%" == "standard"
-  p37_CESMkup(t,regi,in)$(p37_CESMkup_input(in)) = p37_CESMkup_input(in);
+  p37_CESMkup(t,regi,in)$(p37_CESMkup_input(in) AND t.val ge 2040) = p37_CESMkup_input(in);
+  p37_CESMkup(t,regi,in)$(p37_CESMkup_input(in) AND t.val eq 2035) = p37_CESMkup(t,regi,in) + 1/2 * (p37_CESMkup_input(in) - p37_CESMkup(t,regi,in));
+  p37_CESMkup(t,regi,in)$(p37_CESMkup_input(in) AND t.val eq 2030) = p37_CESMkup(t,regi,in) + 1/4 * (p37_CESMkup_input(in) - p37_CESMkup(t,regi,in));
 $endIf.CESMkup
 
 display p37_CESMkup;

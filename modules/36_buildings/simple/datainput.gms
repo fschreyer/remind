@@ -100,8 +100,11 @@ p36_CESMkup(t,regi,"feelhpb") = 200 * sm_TWa_2_MWh * 1e-12;
 p36_CESMkup(t,regi,"feheb") = 25 * sm_TWa_2_MWh * 1e-12;
 
 *** overwrite or extent CES markup cost if specified by switch
+*** phase-in from 2030 to 2040
 $ifThen.CESMkup not "%cm_CESMkup_build%" == "standard" 
-  p36_CESMkup(t,regi,in)$(p36_CESMkup_input(in)) = p36_CESMkup_input(in);
+  p36_CESMkup(t,regi,in)$(p36_CESMkup_input(in) AND t.val ge 2040) = p36_CESMkup_input(in);
+  p36_CESMkup(t,regi,in)$(p36_CESMkup_input(in) AND t.val eq 2035) = p36_CESMkup(t,regi,in) + 1/2 * (p36_CESMkup_input(in) - p36_CESMkup(t,regi,in));
+  p36_CESMkup(t,regi,in)$(p36_CESMkup_input(in) AND t.val eq 2030) = p36_CESMkup(t,regi,in) + 1/4 * (p36_CESMkup_input(in) - p36_CESMkup(t,regi,in));
 $endIf.CESMkup
 
 display p36_CESMkup;
