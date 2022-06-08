@@ -232,6 +232,14 @@ $offdelim
   /
 ;
 
+Parameter p37_chemicals_feedstock_share(ttot,all_regi)   "minimum share of feso/feli/fega in total chemicals FE input [0-1]"
+  /
+$ondelim
+$include "./modules/37_industry/subsectors/input/p37_chemicals_feedstock_share.cs4r";
+$offdelim
+  /
+;
+
 p37_steel_secondary_max_share(t,regi)
   = f37_steel_secondary_max_share(t,regi,"%cm_GDPscen%");
 

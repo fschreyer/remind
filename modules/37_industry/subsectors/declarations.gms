@@ -19,6 +19,7 @@ Parameters
   p37_CESMkup(ttot,all_regi,all_in)                                            "CES markup cost parameter [trUSD/CES input]"                                  
   p37_cesIO_up_steel_secondary(tall,all_regi,all_GDPscen)                      "upper limit to secondary steel production based on scrap availability"        
   p37_steel_secondary_max_share(tall,all_regi)                                 "maximum share of secondary steel production"
+  p37_chemicals_feedstock_share(ttot,all_regi)   "minimum share of feso/feli/fega in total chemicals FE input [0-1]"
 
 *** output parameters only for reporting
   o37_emiInd(ttot,all_regi,all_enty,secInd37,all_enty)                   "industry CCS emissions [GtC/a]"                                                                                
@@ -55,6 +56,7 @@ Equations
   q37_IndCCSCost                                          "Calculate industry CCS costs"
   q37_demFeIndst(ttot,all_regi,all_enty,all_emiMkt)       "industry final energy demand (per emission market)"
   q37_costCESmarkup(ttot,all_regi,all_in)                 "calculation of additional CES markup cost to represent demand-side technology cost of end-use transformation, for example, cost of heat pumps etc."
+  q37_chemicals_feedstocks_limit(ttot,all_regi)           "lower bound on feso/feli/fega in chemicals FE input for feedstocks"
 ;
 
 *** EOF ./modules/37_industry/subsectors/declarations.gms
