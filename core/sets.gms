@@ -63,6 +63,7 @@ gdp_SDP_RC
 gdp_SSP1        "SSP1 fastGROWTH medCONV"
 gdp_SSP2        "SSP2 medGROWTH medCONV"
 gdp_SSP2EU
+gdp_SSP2EU-ariadne
 gdp_SSP3        "SSP3 slowGROWTH slowCONV"
 gdp_SSP4        "SSP4  medGROWTH mixedCONV"
 gdp_SSP5        "SSP5 fastGROWTH fastCONV"
@@ -2414,6 +2415,13 @@ seAgg2se(all_enty,all_enty) "map secondary energy aggregation to se"
 	all_sega.segabio
 	all_sega.segafos
         all_sega.segasyn
+/
+
+capTotal(all_enty,all_enty)    "mapping of input to output carriers for calculating total capacities without technology differentiation vm_capTotal"
+/       
+        pecoal.seel
+        pegas.seel
+        pebiolc.seel
 /
 
 *RP* mappings for storage technologies

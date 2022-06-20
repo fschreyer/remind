@@ -77,6 +77,12 @@ loop(regi$(sameAs(regi,"DEU")),
 );
 
 
+*** bounds on historic gas capacities in Germany
+vm_capTotal.up("2015",regi,"pegas","seel")$(sameas(regi,"DEU"))=35/1000;
+vm_capTotal.up("2020",regi,"pegas","seel")$(sameas(regi,"DEU"))=40/1000;
+
+
+
 *** only small amount of co2 injection ccs until 2030 in Germany
 vm_co2CCS.up(t,regi,"cco2","ico2",te,rlf)$((t.val le 2030) AND (sameas(regi,"DEU"))) = 1e-3;
 *** no Pe2Se fossil CCS in Germany, if c_noPeFosCCDeu = 1 chosen 
@@ -98,7 +104,7 @@ vm_capEarlyReti.up('2025',regi,'pc') = 0.65;
 
 *** energy security scenario assumes 5GW(el) electrolysis installed by 2030 in Germany at minimum
 $ifThen.cm_EnSecScen "%cm_EnSecScen%" == "on"
-    vm_cap.lo("2030",regi,"elh2","1")$(sameAs(regi,"DEU"))=5/pm_eta_conv("2030",regi,"elh2")/1000;
+    vm_cap.lo("2030",regi,"elh2","1")$(sameAs(regi,"DEU"))=5*pm_eta_conv("2030",regi,"elh2")/1000;
 $endIf.cm_EnSecScen
 
 

@@ -197,6 +197,12 @@ $offdelim
 ;
 p29_capitalQuantity(t,regi,ppfKap) = f29_capitalQuantity(t,regi,"%cm_GDPscen%",ppfKap);
 
+*** FS: temporary fix, try scaling EE capital down for industry to avoid negative efficiencies in calibration to new industry trajectories in Germany
+$ifthen.cm_calibration_FE "%cm_demScen%" == "gdp_SSP2EU-ariadne" 
+p29_capitalQuantity(t,"DEU","kap_otherInd") = p29_capitalQuantity(t,"DEU","kap_otherInd") / 2; 
+$endif.cm_calibration_FE
+
+
 *** fix industry energy efficiency capital for mrremind rounding
 loop ((ttot,regi,ppfKap_industry_dyn37(in))$( t(ttot-1) AND t(ttot+1) ),
   sm_tmp
