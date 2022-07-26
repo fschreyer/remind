@@ -35,6 +35,27 @@ Parameter
 ;
 pm_cesdata_sigma(ttot,in)$( p37_cesdata_sigma(in) ) = p37_cesdata_sigma(in);
 
+pm_cesdata_sigma(ttot,"en_cement_non_electric")$ (ttot.val le 2025) = 0.7;
+pm_cesdata_sigma(ttot,"en_cement_non_electric")$ (ttot.val eq 2030) = 1.3;
+pm_cesdata_sigma(ttot,"en_cement_non_electric")$ (ttot.val eq 2035) = 1.7;
+pm_cesdata_sigma(ttot,"en_cement_non_electric")$ (ttot.val eq 2040) = 2.0;
+
+pm_cesdata_sigma(ttot,"en_chemicals_fhth")$ (ttot.val le 2025) = 0.7;
+pm_cesdata_sigma(ttot,"en_chemicals_fhth")$ (ttot.val eq 2030) = 1.3;
+pm_cesdata_sigma(ttot,"en_chemicals_fhth")$ (ttot.val eq 2035) = 2.0;
+pm_cesdata_sigma(ttot,"en_chemicals_fhth")$ (ttot.val eq 2040) = 3.0;
+
+pm_cesdata_sigma(ttot,"en_steel_furnace")$ (ttot.val le 2025) = 0.5;
+pm_cesdata_sigma(ttot,"en_steel_furnace")$ (ttot.val eq 2030) = 0.7;
+pm_cesdata_sigma(ttot,"en_steel_furnace")$ (ttot.val eq 2035) = 1.3;
+pm_cesdata_sigma(ttot,"en_steel_furnace")$ (ttot.val eq 2040) = 2.0;
+
+pm_cesdata_sigma(ttot,"en_otherInd_hth")$ (ttot.val le 2025) = 0.7;
+pm_cesdata_sigma(ttot,"en_otherInd_hth")$ (ttot.val eq 2030) = 1.3;
+pm_cesdata_sigma(ttot,"en_otherInd_hth")$ (ttot.val eq 2035) = 1.7;
+pm_cesdata_sigma(ttot,"en_otherInd_hth")$ (ttot.val eq 2040) = 2.0;
+
+
 *** abatement parameters for industry CCS MACs
 $include "./modules/37_industry/fixed_shares/input/pm_abatparam_Ind.gms";
 
@@ -109,6 +130,37 @@ loop (industry_ue_calibration_target_dyn37(out)$( pm_energy_limit(out) ),
       )
     );
 );
+
+
+*** Specific energy demand limits for other industry and chemicals in TWa/trUSD
+*** exponential decrease of minimum specific energy demand per value added up to 90% by 2100
+sm_tmp2 = 0.9;   !! maximum "efficiency gain" relative to 2015 baseline value 
+sm_tmp  = 2100;   !! period in which closing could be achieved
+
+loop (industry_ue_calibration_target_dyn37(out)$( sameas(out,"ue_chemicals") OR  sameas(out,"ue_otherInd")),
+  p37_energy_limit_slope(ttot,regi,out)$( ttot.val ge 2015 )
+  = ( ( sum(ces_eff_target_dyn37(out,in), p37_cesIO_baseline("2015",regi,in))
+      / p37_cesIO_baseline("2015",regi,out)
+      )
+    )
+  * exp((2015 - ttot.val) / ((2015 - sm_tmp) / log(1 - sm_tmp2)));
+
+  !! To account for strong 2015-20 drops due to imperfect 2020 energy data,
+  !! use the lower of the calculated curve, or 95 % of the baseline specific
+  !! energy demand
+  p37_energy_limit_slope(ttot,regi,out)$( ttot.val ge 2015 )
+  = min(
+      p37_energy_limit_slope(ttot,regi,out),
+      ( 0.95
+      * ( sum(ces_eff_target_dyn37(out,in), p37_cesIO_baseline(ttot,regi,in))
+        / p37_cesIO_baseline(ttot,regi,out)
+	)
+      )
+    );
+);
+
+display p37_energy_limit_slope;
+
 
 *** CCS for industry is off by default
 emiMacSector(emiInd37_fuel) = NO;
@@ -407,5 +459,23 @@ execute_load "input_ref.gdx", vm_demFEsector;
       vm_demFEsector.l(t,regi,entySE,"fesos","indst","ETS")
     );
 );
+
+
+
+*** FS: maximum share of biomass use in industry subsector
+*** set to prevent too fast or technically unrealistic switch to biomass in industry subsectors
+
+*** initialize maximum biomass share in all industry subsectors at 100%
+p37_BioShareMaxSubsec(t,regi,entyFeCC37,secInd37)=1;
+
+
+*** for steel set maximum biomass share in solids to 30% until 2025 and linearly increase up to 80% in 2050
+p37_BioShareMaxSubsec(t,regi,"fesos","steel")$(t.val gt 2015 AND t.val le 2025)=0.3;
+p37_BioShareMaxSubsec(t,regi,"fesos","steel")$(t.val gt 2025 AND t.val le 2050)= 0.3 + (t.val - 2025) * 0.02;
+p37_BioShareMaxSubsec(t,regi,"fesos","steel")$(t.val gt 2050)=p37_BioShareMaxSubsec("2050",regi,"fesos","steel");
+
+*** for Germany set maximum biomass share of solids in steel to 10% at all times
+p37_BioShareMaxSubsec(t,regi,"fesos","steel")$(t.val ge 2020 AND sameas(regi,"DEU"))=0.1;
+
 
 *** EOF ./modules/37_industry/subsectors/datainput.gms

@@ -150,4 +150,19 @@ q37_chemicals_feedstocks_limit(t,regi)$( t.val ge cm_startyear ) ..
   * p37_chemicals_feedstock_share(t,regi)
 ;
 
+*** limits of switching to biomass use in industry subsectors
+q37_BioLimitSubsec(t,regi,entyFe,emiMkt)..
+  sum( se2fe(entySeBio,entyFe,te),
+    vm_demFEsector(t,regi,entySeBio,entyFE,"indst",emiMkt)
+  )
+  =l=
+  sum(secInd37_emiMkt(secInd37,emiMkt),
+      p37_BioShareMaxSubsec(t,regi,entyFe,secInd37)
+      * sum( (secInd37_2_pf(secInd37,in),
+              fe2ppfen37(entyFe,in)),
+          vm_cesIO(t,regi,in))
+  )
+;
+
+
 *** EOF ./modules/37_industry/subsectors/equations.gms

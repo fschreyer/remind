@@ -23,6 +23,7 @@ Parameters
   p37_chemicals_feedstock_share(ttot,all_regi)                                 "minimum share of feso/feli/fega in total chemicals FE input [0-1]"
   p37_BAU_industry_ETS_solids(tall,all_regi)                                   "industry solids demand in baseline scenario"
   p37_cesIO_baseline(tall,all_regi,all_in)                                     "vm_cesIO from the baseline scenario"
+  p37_BioShareMaxSubsec(ttot,all_regi,all_enty,secInd37)                       "maximum biomass share in industry subsector per energy carrier"
 
 *** output parameters only for reporting
   o37_emiInd(ttot,all_regi,all_enty,secInd37,all_enty)                   "industry CCS emissions [GtC/a]"                                                                                
@@ -60,6 +61,7 @@ Equations
   q37_demFeIndst(ttot,all_regi,all_enty,all_emiMkt)       "industry final energy demand (per emission market)"
   q37_costCESmarkup(ttot,all_regi,all_in)                 "calculation of additional CES markup cost to represent demand-side technology cost of end-use transformation, for example, cost of heat pumps etc."
   q37_chemicals_feedstocks_limit(ttot,all_regi)           "lower bound on feso/feli/fega in chemicals FE input for feedstocks"
+  q37_BioLimitSubsec(ttot,all_regi,all_enty,all_emiMkt)   "limits of switching to biomass use in industry subsectors"
 ;
 
 *** EOF ./modules/37_industry/subsectors/declarations.gms
