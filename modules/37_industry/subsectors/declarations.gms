@@ -33,6 +33,15 @@ Parameters
   o37_demFeIndSub(ttot,all_regi,all_enty,all_enty,secInd37,all_emiMkt)   "FE demand per industry subsector"                                                                              
   o37_demFeIndSub_SecCC(ttot,all_regi,secInd37)                          "FE per subsector whose emissions can be captured, helper parameter for calculation of industry captured CO2"   
 
+
+*** output parameters for CES Mkup testing
+  o37_FEshare(ttot,all_regi,all_in,secInd37)                                "FE share per industry subsector"
+  o37_totalFE(ttot,all_regi,secInd37)                                       "total FE per industry subsector"
+  o37_RelPriceCES(ttot,all_regi,all_in,all_in)                              "relative CES price of industry inputs"
+  o37_RelPriceCES_Base(ttot,all_regi,all_in,all_in)                         "relative CES price of industry inputs of calibration baseline run"
+  o37_SEC(ttot,all_regi,secInd37)                                           "specific energy consumption per industrial product"
+
+
 $ifThen.CESMkup not "%cm_CESMkup_ind%" == "standard" 
   p37_CESMkup_input(all_in)  "markup cost parameter read in from config for CES levels in industry to influence demand-side cost and efficiencies in CES tree [trUSD/CES input]" / %cm_CESMkup_ind% /
 $endIf.CESMkup

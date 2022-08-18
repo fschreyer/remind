@@ -63,5 +63,38 @@ pm_IndstCO2Captured(ttot,regi,entySe,entyFe,secInd37,emiMkt)$(
   / o37_demFeIndSub_SecCC(ttot,regi,secInd37);
 
 
+*** output parameters for testing of different CES mark-up cost
+
+$ontext
+loop(secInd37,
+  o37_FEshare(t,regi,in,secInd37)
+);
+$offtext
+
+
+
+*** calculate output parameters for testing effect of CES mark-up cost
+o37_totalFE(t,regi,secInd37) = sum(secInd37_2_pf(secInd37,in)$(ppfen_industry_dyn37(in) ),
+                                      vm_cesIO.l(t,regi,in));
+
+
+o37_FEshare(t,regi,in,secInd37)$(ppfen_industry_dyn37(in) ) = sum(secInd37_2_pf(secInd37,in)$(ppfen_industry_dyn37(in)),
+                                                                vm_cesIO.l(t,regi,in) )
+                                                              / o37_totalFE(t,regi,secInd37);
+
+
+o37_SEC(t,regi,secInd37) = o37_totalFE(t,regi,secInd37)
+                            / sum( secInd37_2_pf(secInd37,out)$(industry_ue_calibration_target_dyn37(out)),
+                                vm_cesIO.l(t,regi,out));
+
+o37_RelPriceCES(t,regi,in,in2)$(ppfen_industry_dyn37(in) 
+                                    AND ppfen_industry_dyn37(in2)
+                                    AND o01_CESderivatives(t,regi,"inco",in2) gt 0) = o01_CESderivatives(t,regi,"inco",in) 
+                                                                                        / o01_CESderivatives(t,regi,"inco",in2); 
+
+o37_RelPriceCES_Base(t,regi,in,in2)$(ppfen_industry_dyn37(in) 
+                                    AND ppfen_industry_dyn37(in2)
+                                    AND pm_cesdata(t,regi,in2,"price") gt 0) = pm_cesdata(t,regi,in,"price") 
+                                                                                / pm_cesdata(t,regi,in2,"price");
 *** EOF ./modules/37_industry/subsectors/postsolve.gms
 
