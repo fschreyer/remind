@@ -16,6 +16,16 @@ Parameters
   p36_CESMkup(ttot,all_regi,all_in)               "CES markup cost parameter [trUSD/CES input]"
   p36_floorspace(tall,all_regi)                   "buildings floorspace, billion m2, in simple realization only used for reporting"
   p36_uedemand_build(tall,all_regi,all_in)        "useful energy demand in buildings in TWh/a, in simple realization only used for reporting"
+
+*** output parameters for CES Mkup testing
+  o36_FEshare(ttot,all_regi,all_in)                                "FE share for buildings heating"
+  o36_totalFE(ttot,all_regi)                                       "total FE for buildings heating"
+  o36_RelPriceCES(ttot,all_regi,all_in,all_in)                     "relative CES price of buildings heating inputs"
+  o36_RelPriceCES_Base(ttot,all_regi,all_in,all_in)                "relative CES price of buildings heating inputs of calibration baseline run"
+  o36_SEC(ttot,all_regi)                                           "total FE for heating per enhb output of heating nest"
+
+  o36_fe2ueEff(ttot,all_regi,all_in)                                "fe2ue efficiency"
+  o36_totalUE(ttot,all_regi)                                        "total UE for buildings heating"
   ;
 
 $ifThen.CESMkup not "%cm_CESMkup_build%" == "standard" 
