@@ -138,11 +138,12 @@ $ifthen.import_h2_ariadne "%cm_import_ariadne%" == "on"
 $endif.import_h2_ariadne
 $endif.import_h2_EU
 
-*** phase in import quantities given by p24_seTrade_Quantity linearly from 2035 to 2050
+*** phase in import quantities given by p24_seTrade_Quantity from 2030 to 2050
 p24_seTradeCapacity(t,regi,regi2,entySe)$(t.val ge 2050) = p24_seTrade_Quantity(regi,regi2,entySe);
 p24_seTradeCapacity(t,regi,regi2,entySe)$(t.val eq 2045) = p24_seTrade_Quantity(regi,regi2,entySe)*0.75;
 p24_seTradeCapacity(t,regi,regi2,entySe)$(t.val eq 2040) = p24_seTrade_Quantity(regi,regi2,entySe)*0.5;
 p24_seTradeCapacity(t,regi,regi2,entySe)$(t.val eq 2035) = p24_seTrade_Quantity(regi,regi2,entySe)*0.25;
+p24_seTradeCapacity(t,regi,regi2,entySe)$(t.val eq 2030) = p24_seTrade_Quantity(regi,regi2,entySe)*0.1;
 
 
 *** in energy security scenario, phase-in trade earlier already from 2030
