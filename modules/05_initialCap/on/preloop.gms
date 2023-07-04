@@ -540,7 +540,7 @@ if (cm_startyear gt 2005,
   Execute_Loadpoint 'input_ref' pm_emifac = pm_emifac;
   Execute_Loadpoint 'input_ref' pm_EN_demand_from_initialcap2 = pm_EN_demand_from_initialcap2;
   Execute_Loadpoint 'input_ref' pm_pedem_res = pm_pedem_res;
-  Execute_Loadpoint 'input_ref' pm_inco0_t = pm_inco0_t;
+***  Execute_Loadpoint 'input_ref' pm_inco0_t = pm_inco0_t;
   Execute_Loadpoint 'input_ref' pm_dataeta = pm_dataeta;
   Execute_Loadpoint 'input_ref' pm_data = pm_data;
   Execute_Loadpoint 'input_ref' pm_aux_capLowerLimit = pm_aux_capLowerLimit;
