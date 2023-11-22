@@ -2966,6 +2966,23 @@ es2ppfen(all_esty,all_in)      "matching ES in ESM to ppfEn in MACRO"
 
 ;
 
+
+
+***-------------- Sets for exogenuous supply curves ------------------
+Sets
+enty_MportSC(all_enty) "energy carriers that can be imported via supply curve"
+//
+
+regi_entyMportSC(all_regi,all_enty) "regions and energy carriers which can have supply curve imports"
+//
+
+CoeffSupplyCurve "coefficients of exogenuous supply curves"
+/
+  "1"
+  "2"
+/
+;
+
 ***-----------------------------------------------------------------------------
 ***-----------------------------------------------------------------------------
 ***                             Helpful constructs: alias

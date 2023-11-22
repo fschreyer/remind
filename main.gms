@@ -1395,6 +1395,18 @@ $setGlobal cm_import_ariadne  off !! def off
 *** then the values from the region group disaggregation will be overwritten by this region-specific value.
 *** For example: "2030.2050.MEA.EU27_regi.seh2 0.5, 2030.2050.MEA.DEU.seh2 0.3".  
 $setGlobal cm_trade_SE_exog off !! def off
+*** cm_exog_supplyCurve
+*** set exogenous supply curve for imports to specific regions and energy carriers (currently only SE carriers).
+*** It is mostly used for testing model behavior. 
+*** Example of switch: "EU27_regi.seliqsyn.1 50, EUR27_regi.seliqsyn.2 0.1"
+*** means exogenuous supply curve for seliqsyn for all regions in EU27_regi
+*** with linear coefficient (a) of 50 USD/MWh and quadratic coefficient (b) of 0.1 USD/ (MWh*TWh).
+*** The supply cost curve would then be: Cost = ax^2 + bx and the marginal cost: MCost = 2ax + b. 
+*** The quadrat coefficient would imply in this example an increase in supply cost of 2 * 0.1 USD/MWh for increasing supply by 1 TWh. 
+*** Note: This supply curve is regional, i.e. it does not take into account price increases due to imports of other regions. 
+*** Therefore, the quadratic coefficient needs to be interpreted as the regional price increase with respect to the regional level of imports, 
+*** not with respect to the global level. 
+$setGlobal cm_exog_supplyCurve off !! def off
 *** cm_EnSecScen             "switch for running an ARIADNE energy security scenario, introducing a tax on PE fossil energy in Germany"
 *** switch on energy security scenario for Germany (used in ARIADNE project), sets tax on fossil PE
 *** switch to activate energy security scenario assumptions for Germany including additional tax on gas/oil

@@ -1571,5 +1571,34 @@ p_prodAllReference(t,regi,te) =
 *' initialize vm_changeProdStartyearCost for tax calculation
 vm_changeProdStartyearCost.l(t,regi,te) = 0;
 
+
+***-------------- Datainput for exogenuous supply curves ------------------
+
+$IFTHEN.trade_SE_exog not "%cm_exog_supplyCurve%" == "off"
+*** map coefficients from region groups to regions (e.g. from EU27 to DEU, which part of EU27)
+loop((ext_regi,enty,CoeffSupplyCurve)$(pm_supplyCurve_input(ext_regi,enty,CoeffSupplyCurve)),
+  pm_supplyCurve_coeff(t,regi,enty,CoeffSupplyCurve)$(regi_group(ext_regi,regi)) = pm_supplyCurve_input(ext_regi,enty,CoeffSupplyCurve);
+);
+
+*** convert coefficient 1 from USD/MWh to trUSD/TWa
+pm_supplyCurve_coeff(t,regi,enty,"1") = pm_supplyCurve_coeff(t,regi,enty,"1") * sm_DpGJ_2_TDpTWa  / 3.66;
+*** convert coefficient 2 from USD/(MWh*TWh) to trUSD/(TWa^2)
+pm_supplyCurve_coeff(t,regi,enty,"2") = pm_supplyCurve_coeff(t,regi,enty,"2") * sm_TWa_2_MWh**2 * 1e+6;
+
+*** fill set of energy carriers to which supply curve should be applied, only take energy carriers defined in switch
+loop((ext_regi,enty,CoeffSupplyCurve)$(pm_supplyCurve_input(ext_regi,enty,CoeffSupplyCurve)),
+      enty_MportSC(enty)=YES;
+);
+
+*** fill set of regions and energy carriers to which supply curve should be applied, only take combinations defined in switch
+loop((ext_regi,enty,CoeffSupplyCurve)$(pm_supplyCurve_input(ext_regi,enty,CoeffSupplyCurve)),
+  regi_entyMportSC(regi,enty)$(regi_groupExt(ext_regi,regi))=YES;
+);
+
+
+display enty_MportSC;
+display regi_entyMportSC;
+$ENDIF.trade_SE_exog
+
 *** EOF ./core/datainput.gms
 

@@ -675,4 +675,29 @@ o_carbon_reemitted(ttot,all_regi,all_enty)   "output parameter"
 o_emi_conv(all_enty)    "output parameter" / co2 3666.6666666666666666666666666667, ch4 28, n2o 416.4286, so2 1,	bc  1, oc  1 /
 ;
 
+
+***-------------- Declarations for exogenuous supply curves ------------------
+
+$IFTHEN.trade_SE_exog not "%cm_exog_supplyCurve%" == "off"
+
+Parameter
+pm_supplyCurve_input(ext_regi,all_enty,CoeffSupplyCurve)         "input parameter to read coefficients of SE supply curve from config [units: coeff 1 -> USD/MWh, coeff 2 -> USD/(MWh*TWh) ]" / %cm_exog_supplyCurve% /
+pm_supplyCurve_coeff(ttot,all_regi,all_enty,CoeffSupplyCurve)    "regional coefficients of SE supply curve [REMIND units: coeff 1 -> trUSD2005/TWa, coeff 2 -> trUSD2005/(TWa^2) ]"
+;
+
+Positive Variables
+vm_Mport_SC(ttot,all_regi,all_enty)                                  "Imports via supply curve [TWa]"
+vm_cost_Mport_SC(ttot,all_regi,all_enty)                              "Cost of imports via supply curve [trUSD]"
+;
+Equations
+q_Mport_SupplyCurve(ttot,all_regi,all_enty)                          "User-defined cost supply curve for imports"
+;
+
+Scalar
+cm_start_year_MportSC                                                 "start year for imports from exogenuous supply curves" / 2035 /
+;
+
+
+$ENDIF.trade_SE_exog
+
 *** EOF ./core/declarations.gms
