@@ -24,6 +24,9 @@ q33_capconst_dac(t,regi)..
 	=e=
 	- sum(teNoTransform2rlf_dyn33("dac",rlf2), vm_capFac(t,regi,"dac") * vm_cap(t,regi,"dac",rlf2))
 	-  (1 / pm_eta_conv(t,regi,"gash2c")) * fm_dataemiglob("pegas","seh2","gash2c","cco2") * vm_otherFEdemand(t,regi,"fegas")
+*** additional DAC from exogenuous supply curves activated via cm_exog_supplyCurve
+  	- vm_Mport_SC(t,regi,"cco2")$(regi_entyMportSC(regi,"cco2") 
+									AND t.val ge cm_start_year_MportSC)
 	;
 
 ***---------------------------------------------------------------------------
