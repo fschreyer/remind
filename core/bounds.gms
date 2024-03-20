@@ -529,4 +529,19 @@ v_changeProdStartyearSlack.up(t,regi,te)$( (t.val gt 2005) AND (t.val eq cm_star
 v_changeProdStartyearSlack.lo(t,regi,te)$( (t.val gt 2005) AND (t.val eq cm_startyear ) ) = - c_SlackMultiplier * p_adj_seed_reg(t,regi) * p_adj_seed_te(t,regi,te) ;
 
 
+*** for testing: complete FE coal phase-out by 2050
+***vm_demFEsector.up(t,regi,"sesofos","fesos",sector,emiMkt)$(	t.val ge 2050 AND
+***								regi_group("EU27_regi",regi))=1e-5;
+
+*** for testing: complete PE fossil phase-out by 2050
+
+vm_demPe.up(t,regi,peFos,entySE,te)$(   t.val ge 2050 AND
+								                        regi_group("EU27_regi",regi) AND
+                                        pe2se(peFos,entySE,te)) = 1e-4;
+
+
+*** for debugging: why does the model have to build gastr after 2050 in ECE?
+***vm_deltaCap.up(t,"ECE","gastr","1")$(t.val ge 2050)=0;
+
+
 *** EOF ./core/bounds.gms
