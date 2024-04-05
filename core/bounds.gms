@@ -534,10 +534,12 @@ v_changeProdStartyearSlack.lo(t,regi,te)$( (t.val gt 2005) AND (t.val eq cm_star
 ***								regi_group("EU27_regi",regi))=1e-5;
 
 *** for testing: complete PE fossil phase-out by 2050
-
 vm_demPe.up(t,regi,peFos,entySE,te)$(   t.val ge 2050 AND
 								                        regi_group("EU27_regi",regi) AND
                                         pe2se(peFos,entySE,te)) = 1e-4;
+
+*** also test: model has to have some biomass solids in industry
+vm_demFeSector.lo(t,"EWN","sesobio","fesos","indst","ETS")$(t.val ge 2050)=0.004;
 
 
 *** for debugging: why does the model have to build gastr after 2050 in ECE?
