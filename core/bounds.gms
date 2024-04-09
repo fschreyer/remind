@@ -541,6 +541,9 @@ vm_demPe.up(t,regi,peFos,entySE,te)$(   t.val ge 2050 AND
 *** also test: model has to have some biomass solids in industry
 vm_demFeSector.lo(t,"EWN","sesobio","fesos","indst","ETS")$(t.val ge 2050)=0.004;
 
+*** further constraint: max. 1e-5 TWa coal in  vm_demFeSector entries
+vm_demFeSector.up(t,"EWN","sesofos","fesos",sector,emiMkt)$(t.val ge 2050)=1e-5;
+
 
 *** for debugging: why does the model have to build gastr after 2050 in ECE?
 ***vm_deltaCap.up(t,"ECE","gastr","1")$(t.val ge 2050)=0;
