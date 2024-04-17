@@ -40,6 +40,11 @@ v_shGasLiq_fe.l(t,regi,sector) = 0;
 pm_share_CCS_CCO2(t,regi) = 0; 
 pm_pvpRegi(ttot,regi,enty) = 0;
 
+*** initialize supply curve variables at zero to avoid confusion in output GDX with old data from input GDX
+vm_cost_Mport_SC.l(ttot,regi,enty) = 0;
+vm_Mport_SC.l(ttot,regi,enty) = 0;
+
+
 *** overwrite default targets with gdx values if wanted
 Execute_Loadpoint 'input' p_emi_budget1_gdx = sm_budgetCO2eqGlob;
 Execute_Loadpoint 'input' vm_demPe.l = vm_demPe.l;
