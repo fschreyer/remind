@@ -118,6 +118,8 @@ if (cm_ccapturescen eq 2,  !! no carbon capture at all
   vm_cap.fx(t,regi_capturescen,"bioftcrec",rlf)    = 0;
   vm_cap.fx(t,regi_capturescen,"bioh2c",rlf)       = 0;
   vm_cap.fx(t,regi_capturescen,"bioigccc",rlf)     = 0;
+*** switch of industry carbon capture as well
+  vm_emiIndCCS.fx(t,regi_capturescen,emiInd37)$(t.val ge 2035)     = 1e-4;
 elseif (cm_ccapturescen eq 3),  !! no bio carbon capture:
   vm_cap.fx(t,regi_capturescen,"biogasc",rlf)      = 0;
   vm_cap.fx(t,regi_capturescen,"bioftcrec",rlf)    = 0;
