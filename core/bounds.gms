@@ -335,6 +335,8 @@ vm_capEarlyReti.up(ttot,regi,te) = 1e-6;
 
 ***generally allow full early retiremnt for all fossil technologies without CCS
 vm_capEarlyReti.up(ttot,regi,te)$(teFosNoCCS(te)) = 1;
+*** for testing: also allow early retirement of biomass technologies
+*** vm_capEarlyReti.up(ttot,regi,te)$(teBio(te)) = 1;
 *** FS: allow nuclear early retirement (for nucscen 7)
 vm_capEarlyReti.up(ttot,regi,"tnrs") = 1;
 
