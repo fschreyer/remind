@@ -103,10 +103,11 @@ v21_taxrevCCS(t,regi)
 ***---------------------------------------------------------------------------
 *'  Calculation of net-negative emissions tax: tax rate (defined as fraction of carbon price) times net-negative emissions
 *'  Documentation of overall tax approach is above at q21_taxrev.
+*'  Only Run from 2060 for now to not interfere with net-zero GHG EU targets.
 ***---------------------------------------------------------------------------
 q21_taxrevNetNegEmi(t,regi)$(t.val ge max(2010,cm_startyear))..
-v21_taxrevNetNegEmi(t,regi) =e= cm_frac_NetNegEmi * p_priceCO2(t,regi) * v21_emiALLco2neg(t,regi)
-                                 - pm_taxrevNetNegEmi0(t,regi);
+v21_taxrevNetNegEmi(t,regi) =e= (cm_frac_NetNegEmi * p_priceCO2(t,regi) * v21_emiALLco2neg(t,regi)
+                                 - pm_taxrevNetNegEmi0(t,regi))$(t.val ge 2060);
 
 ***---------------------------------------------------------------------------
 *'  Auxiliary calculation of net-negative emissions: 
