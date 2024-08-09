@@ -397,14 +397,28 @@ $IFTHEN.trade_SE_shareDemand not "%cm_trade_SE_shareDemand%" == "off"
 *** Check after ten iterations for the first time
 *** Change in SE import quantities over last two iterations must be within 1% for all years, regions and energy carriers for convergence
 if (iteration.val gt 10,
+  p24_Mport_relChange_dev(t,regi,tradeSe,iteration)=0;
   loop((t,regi,tradeSe)$p24_Mport_iter(t,regi,tradeSe,iteration),
+$ontext
+
     if(       p24_Mport_iter_relChange(t,regi,tradeSe,iteration) gt 1.01
           OR  p24_Mport_iter_relChange(t,regi,tradeSe,iteration) lt 0.99
           OR  p24_Mport_iter_relChange(t,regi,tradeSe,iteration-1) gt 1.01
           OR  p24_Mport_iter_relChange(t,regi,tradeSe,iteration-1) lt 0.99,
+    p24_Mport_relChange_dev(t,regi,tradeSe,"1")=p24_Mport_iter_relChange(t,regi,tradeSe,iteration);
+    p24_Mport_relChange_dev(t,regi,tradeSe,"2")=p24_Mport_iter_relChange(t,regi,tradeSe,iteration-1);
     s80_bool = 0;
     p80_messageShow("se_trade") = YES;
     );
+$offtext
+
+    if(       (p24_Mport_iter_relChange(t,regi,tradeSe,iteration) gt 1.01
+          OR  p24_Mport_iter_relChange(t,regi,tradeSe,iteration) lt 0.99),
+    p24_Mport_relChange_dev(t,regi,tradeSe,"1")=p24_Mport_iter_relChange(t,regi,tradeSe,iteration);
+    s80_bool = 0;
+    p80_messageShow("se_trade") = YES;
+    );
+
   );
 );
 
@@ -513,6 +527,14 @@ $ifthen.internalizeDamages not "%internalizeDamages%" == "off"
 	   display pm_gmt_conv, pm_sccConvergenceMaxDeviation;
 	);
 $endIf.internalizeDamages
+$IFTHEN.trade_SE_shareDemand not "%cm_trade_SE_shareDemand%" == "off"
+        if(sameas(convMessage80,"se_trade"),
+           display "#### 12) SE trade share implementation did not converge";
+           display "#### SE import quantities changed by more than 1% for the one of the last two iterations for some years"
+           display "#### Check out p24_Mport_relChange_dev for relative change of import quantities in last two iterations that were larger than 1%:"
+           display p24_Mport_relChange_dev;
+        );
+$endIf.trade_SE_shareDemand
    );
 
 display "See the indicators below to dig deeper on the respective reasons of non-convergence: "

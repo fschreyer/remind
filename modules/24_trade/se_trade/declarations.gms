@@ -43,6 +43,7 @@ p24_seTradeCapacity_iter(ttot,all_regi,all_regi,all_enty,iteration) "save trade 
 p24_SEPrice_iter(ttot,all_regi,all_enty,iteration)                  "save SE price over iterations for diagnostics"
 p24_Mport_iter(ttot,all_regi,all_enty,iteration)                    "save SE imports over iterations for diagnostics"
 p24_Mport_iter_relChange(ttot,all_regi,all_enty,iteration)          "save relative change of SE imports over iterations for convergence check and diagnostics"
+p24_Mport_relChange_dev(ttot,all_regi,all_enty,iteration)	    "save relative change of SE imports from last two iterations that were larger than 1%"
 $ENDIF.trade_SE_shareDemand
 ;
 
