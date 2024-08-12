@@ -23,8 +23,9 @@ Parameter
 *** scenario-defined shift of land-use change emissions for targets incl. Grassi option
 $ifThen.cm_regipol_LUC NOT "%cm_regipol_LUC%" == "off"
 Parameter
-  p47_emiLUC(ttot,ext_regi) "User-defined land-use change CO2 emissions to hit in specific year and region group. Unit [Mt CO2/yr]" / %cm_regipol_LUC% /
-  p47_emiLUC_regi(ttot,all_regi) "User-defined land-use change CO2 emissions to hit in specific year and region. Unit [Mt CO2/yr]"
+  p47_emiLUC(ttot,ext_regi) 			"User-defined land-use change CO2 emissions to hit in specific year and region group. Unit [Mt CO2/yr]" / %cm_regipol_LUC% /
+  p47_emiLUC_adj(ttot,ext_regi) 		"Adjusted trajectory of land-use change CO2 emissions per aggregated region. Unit [Mt CO2/yr]"
+  p47_emiLUC_adj_regi(ttot,all_regi) 		"Adjusted trajectory of land-use change CO2 emissions per region. Unit [Mt CO2/yr]"
 ;
 $endIf.cm_regipol_LUC
 

@@ -266,19 +266,46 @@ p47_LULUCFEmi_GrassiShift(t,regi)$(p47_EmiLULUCFCountryAcc("2020",regi)) =
 *** shift land-use change emissions for Grassi targets based on exogenuous assumption from scenario config
 $ifThen.cm_regipol_LUC NOT "%cm_regipol_LUC%" == "off"
 
-*** rescaling all ext_regi provided by cm_regipol_LUC
+
+*** set historical land-use change emissions until 2020 to UNFCCC data
+   p47_emiLUC_adj_regi(ttot,regi)$(ttot.val le 2020) =  p47_EmiLULUCFCountryAcc(ttot,regi);
+
+*** by default, set 2025 land-use change emissions equal to 2020 UNFCCC data for aggregated regions, these values get distributed again to subregions later
+   p47_emiLUC_adj("2025",ext_regi) = sum(regi_groupExt(ext_regi,regi), p47_EmiLULUCFCountryAcc("2020",regi));
+
+*** for EU27, set land-use change CO2 emissions for 2025 to historical 2022 values from Eurostat
+*** https://www.eea.europa.eu/en/analysis/indicators/greenhouse-gas-emissions-from-land
+   p47_emiLUC_adj("2025","EU27_regi") = -244;
+
+*** adjust land-use change trajectory by region
 loop((ttot,ext_regi)$(p47_emiLUC(ttot,ext_regi)), 
  loop(regi$regi_groupExt(ext_regi,regi),
-*** calculate shfit in land-use change CO2 emissions by disaggregating shift of region group into regions based on UNFCCC 2015 land-use change emissions 
-*** apply shift to all time steps ttot2 and not only to specific year defined by switch ttot
-    p47_emiLUC_regi(ttot2,regi) = p47_emiLUC(ttot,ext_regi) 
-                                      * p47_EmiLULUCFCountryAcc("2015",regi)
-                                      / sum(regi2$regi_groupExt(ext_regi,regi2),
-                                          p47_EmiLULUCFCountryAcc("2015",regi2)); 
+
+
+*** Linearly increase land-use change CO2 emissions up to desired target value after 2025
+    p47_emiLUC_adj(ttot2,ext_regi)$(ttot2.val gt 2025
+					AND ttot2.val le ttot.val) = p47_emiLUC_adj("2025",ext_regi)
+								+ (p47_emiLUC(ttot,ext_regi) - p47_emiLUC_adj("2025",ext_regi))
+									* (ttot2.val - 2025) / (ttot.val - 2025);
+
+*** Keep land-use change CO2 emissions constant after target year
+    p47_emiLUC_adj(ttot2,ext_regi)$(ttot2.val gt ttot.val) =  p47_emiLUC_adj(ttot,ext_regi);
+
+
+*** distribute land-use change emissions of aggreate region, ext_regi, to subregions, regi, after 2020 using the 2020 UNFCCC regional emissions share
+    p47_emiLUC_adj_regi(ttot2,regi)$(ttot2.val gt 2020) = p47_emiLUC_adj(ttot2,ext_regi)
+                                      			                * p47_EmiLULUCFCountryAcc("2020",regi)
+                                      				              / sum(regi2$regi_groupExt(ext_regi,regi2),
+                                          				              p47_EmiLULUCFCountryAcc("2020",regi2));
+
+
   );
 );
-*** difference between 2015 land-use change emissions from Magpie and user-defined land-use change emissions from cm_regipol_LUC, convert to GtC/yr 
-p47_LULUCFEmi_GrassiShift(ttot,regi)$(p47_emiLUC_regi(ttot,regi)) =  pm_macBaseMagpie(ttot,regi,"co2luc") - p47_emiLUC_regi(ttot,regi) * 1e-3/sm_c_2_co2;
+
+
+*** calculate shift parameter to shift land-use change emissions from Magpie values to national accounting / user-defined values 
+p47_LULUCFEmi_GrassiShift(ttot,regi) =  pm_macBaseMagpie(ttot,regi,"co2luc") - p47_emiLUC_adj_regi(ttot,regi) * 1e-3/sm_c_2_co2;
+
 $endIf.cm_regipol_LUC
 
 
