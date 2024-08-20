@@ -398,9 +398,10 @@ $IFTHEN.trade_SE_shareDemand not "%cm_trade_SE_shareDemand%" == "off"
 *** Change in SE import quantities over last iteration must be within 1% or absolute import quantities must be below 1 TWh/yr for all years, regions and energy carriers for convergence
 
 *** write entries to diagnosis_SETrade_conv.put that fail SE trade convergence criterion
-put diagnosis_SETrade_conv;
+put logfile;
+put "SE Trade Convergence Check" //;
 put "checking which regions and years fail SE trade convergence criterion" //;
-put "t", @15, "regi", @15, "tradeSe", @15,  "iteration", @15, "p24_Mport_relChange_dev"//;
+put "t", @15, "regi", @25, "tradeSe", @35,  "iteration", @50, "p24_Mport_relChange_dev"//;
 
 if (iteration.val gt 10,
   p24_Mport_relChange_dev(t,regi,tradeSe,iteration)=0;
@@ -416,7 +417,7 @@ if (iteration.val gt 10,
     		s80_bool = 0;
     		p80_messageShow("se_trade") = YES;
 *** write to diagnosis_SETrade_conv if not converged
-                put t.tl, @ 15, regi.tl, @15, tradeSe.tl, @15, iteration.tl , @15, p24_Mport_relChange_dev(t,regi,tradeSe,iteration):8:4 /;
+                put t.tl, @ 15, regi.tl, @25, tradeSe.tl, @35, iteration.tl , @50, p24_Mport_iter_relChange(t,regi,tradeSe,iteration):8:5 /;
     		);
 	);
 
@@ -425,7 +426,7 @@ if (iteration.val gt 10,
   );
 );
 
-putclose diagnosis_SETrade_conv;
+putclose logfile;
 $ENDIF.trade_SE_shareDemand
 
 
