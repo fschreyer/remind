@@ -1772,7 +1772,10 @@ $setglobal cm_taxrc_RE  none   !! def = none   !! regexp = none|REdirect
 *' *  (off): no, only infeasable regions are repeated, standard setting
 *' *  (on):  also non-optimal regions are solved again, up to cm_solver_try_max
 $setglobal cm_repeatNonOpt off      !! def = off  !! regexp = off|on
-
+*' cm_newTech_develop_lo      "sets lower bounds on new technologies in future time steps based on expectations of current project pipeline"
+*' (off): no additional lower bounds on capacities of new technologies
+*' (optimistic): so far, assumes that 50 MtCO2/yr DAC capacities will be installed by 2035 at minimum
+$setglobal cm_newTech_develop_lo off !! def = off !! regexp= off|optimistic
 *' @stop
 
 *-------------------------------------------------------------------------------------
