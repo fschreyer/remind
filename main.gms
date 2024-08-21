@@ -1773,6 +1773,11 @@ $setglobal cm_repeatNonOpt off      !! def = off  !! regexp = off|on
 *' (off): no additional lower bounds on capacities of new technologies
 *' (optimistic): so far, assumes that 50 MtCO2/yr DAC capacities will be installed by 2035 at minimum
 $setglobal cm_newTech_develop_lo off !! def = off !! regexp= off|optimistic
+*' c33_tech_cdr_fedem
+*' Flag to adjust FE demand of CDR technologies via config file.
+*' Example: "dac.feels 4, dac.fehes 10.5" sets electricity demand for DAC to 4 EJ/GtC and heat demand for DAC to 10.5 EJ/GtC
+*' Note: check units of technology before. This switch overwrites p33_fedem.
+$setglobal c33_tech_cdr_fedem "off"      !! def = off
 *' @stop
 
 *-------------------------------------------------------------------------------------
