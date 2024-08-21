@@ -308,6 +308,17 @@ q32_flexPriceBalance(t,regi)$(cm_FlexTaxFeedback eq 1)..
   	vm_demSe(t,regi,enty,enty2,te) * v32_flexPriceShare(t,regi,te)) 
 ;
 
+q32_flexPriceShare_Pos(t,regi,te)$(teFlexTax(te))..
+  v32_flexPriceShare_Pos(t,regi,te)
+  =e=
+*** DLNP approximation of max(v32_flexPriceShare(t,regi,te),0)
+  ( sqrt
+    ( sqr(v32_flexPriceShare(t,regi,te))
+      + sqr(eps) )
+    + v32_flexPriceShare(t,regi,te) )
+  / 2
+;
+
 *** This calculates the flexibility benefit or cost per unit electricity input 
 *** of flexibile or inflexible technology.  Flexible technologies benefit
 *** (v32_flexPriceShare < 1), while inflexible technologies are penalized
@@ -323,7 +334,7 @@ q32_flexPriceBalance(t,regi)$(cm_FlexTaxFeedback eq 1)..
 q32_flexAdj(t,regi,te)$(teFlexTax(te))..
   vm_flexAdj(t,regi,te) 
   =e=
-  ( (1 - v32_flexPriceShare(t,regi,te))
+  ( (1 - v32_flexPriceShare_Pos(t,regi,te))
   * max(0, min(2, pm_SEPrice(t,regi,"seel"))) * p32_phaseInFlexTax(t)
   )$( cm_flex_tax eq 1 AND t.val ge 2025 )
 ;
