@@ -4,7 +4,7 @@
 # |  AGPL-3.0, you are granted additional permissions described in the
 # |  REMIND License Exception, version 1.0 (see LICENSE file).
 # |  Contact: remind@pik-potsdam.de
-name,                        type,       reason
+name,type,reason
 cm_emiscen,                  parameter,  not needed
 pm_calibrate_eff_scale,      parameter,  not needed
 pm_delta_kap,                input,      questionnaire
@@ -13,7 +13,6 @@ pm_exogDemScen,              input,      added by codeCheck
 pm_fedemand,                 parameter,  not needed
 pm_incinerationRate,         parameter,  not needed
 pm_outflowPrcIni,            parameter,  not needed
-pm_secBioShare,              parameter,  not needed
 pm_specFeDem,                parameter,  not needed
 pm_tau_ces_tax,              input,      questionnaire
 pm_ts,                       parameter,  not needed
