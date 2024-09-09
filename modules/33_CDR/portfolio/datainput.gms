@@ -53,7 +53,7 @@ p33_LimRock(regi) = pm_pop("2005",regi) / sum(regi2,pm_pop("2005",regi2));
 *' If c33_tech_cdr_fedem switch used, overwrite p33_fedem by values from this switch.
 $IFTHEN.cdr_FEdem not "%c33_tech_cdr_fedem%" == "off"
 display p33_fedem_config;
-p33_fedem(te,entyFe)$(p33_fedem_config(te,entyFe) = p33_fedem_conifg(te,entyFe);
+p33_fedem(te,entyFe)$(p33_fedem_config(te,entyFe)) = p33_fedem_conifg(te,entyFe);
 display p33_fedem;
 $ENDIF.cdr_FEdem
 
