@@ -276,6 +276,10 @@ vm_demFeSector.lo("2030",regi,"seliqsyn","fedie","trans","other")$(regi_group("E
 $ENDIF.Refuel_EU
 
 
+*** forbid biomass exports of EU27 regions in the after 2030
+vm_Xport.up(t,regi,"pebiolc")$(regi_group("EU27_regi",regi) AND t.val gt 2030) = 0;
+
+
 *' This bounds fixes CES function quantity trajectories to exogenous data if cm_exogDem_scen is activated.
 *' It is used, for example, to hit specific, steel and cement production trajectories in policy scenarios
 *' for project-specific scenarios. It is not necessarily a policy but a different (exogenuous) assumption
