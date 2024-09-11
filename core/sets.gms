@@ -3009,7 +3009,7 @@ es2ppfen(all_esty,all_in)      "matching ES in ESM to ppfEn in MACRO"
 ;
 
 
-
+$IFTHEN.trade_SE_exog not "%cm_exog_supplyCurve%" == "off"
 ***-------------- Sets for exogenuous supply curves ------------------
 Sets
 enty_MportSC(all_enty) "energy carriers that can be imported via supply curve"
@@ -3024,7 +3024,7 @@ CoeffSupplyCurve "coefficients of exogenuous supply curves"
   "2"
 /
 ;
-
+$ENDIF.trade_SE_exog
 ***-----------------------------------------------------------------------------
 ***-----------------------------------------------------------------------------
 ***                             Helpful constructs: alias

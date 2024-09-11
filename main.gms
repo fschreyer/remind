@@ -1463,10 +1463,10 @@ $setGlobal cm_SEtaxRampUpParam  GLO.elh2.a 0.2, GLO.elh2.b 20    !! def = GLO.el
 *** cm_exog_supplyCurve
 *** set exogenous supply curve for imports to specific regions and energy carriers (currently only SE carriers).
 *** It is mostly used for testing model behavior. 
-*** Example of switch: "EU27_regi.seliqsyn.1 50, EUR27_regi.seliqsyn.2 0.1"
+*** Example of switch: "EU27_regi.seliqsyn.1 50, EU27_regi.seliqsyn.2 0.1"
 *** means exogenuous supply curve for seliqsyn for all regions in EU27_regi
-*** with linear coefficient (a) of 50 USD/MWh and quadratic coefficient (b) of 0.1 USD/ (MWh*TWh).
-*** The supply cost curve would then be: Cost = ax^2 + bx and the marginal cost: MCost = 2ax + b. 
+*** with linear coefficient (b) of 50 USD/MWh and quadratic coefficient (a) of 0.1 USD/ (MWh*TWh).
+*** The supply cost curve would then be: Cost = ax^2+bx and the marginal cost: MCost = 2ax + b. 
 *** The quadrat coefficient would imply in this example an increase in supply cost of 2 * 0.1 USD/MWh for increasing supply by 1 TWh. 
 *** Note: This supply curve is regional, i.e. it does not take into account price increases due to imports of other regions. 
 *** Therefore, the quadratic coefficient needs to be interpreted as the regional price increase with respect to the regional level of imports, 

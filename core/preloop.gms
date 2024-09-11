@@ -40,10 +40,11 @@ v_shGasLiq_fe.l(t,regi,sector) = 0;
 pm_share_CCS_CCO2(t,regi) = 0; 
 pm_taxCO2eqSum(t,regi) = 0;
 
+$IFTHEN.trade_SE_exog not "%cm_exog_supplyCurve%" == "off"
 *** initialize supply curve variables at zero to avoid confusion in output GDX with old data from input GDX
 vm_cost_Mport_SC.l(ttot,regi,enty) = 0;
 vm_Mport_SC.l(ttot,regi,enty) = 0;
-
+$ENDIF.trade_SE_exog
 
 *** overwrite default targets with gdx values if wanted
 Execute_Loadpoint 'input' p_emi_budget1_gdx = sm_budgetCO2eqGlob;
