@@ -1641,6 +1641,12 @@ pm_supplyCurve_coeff(t,regi,enty,"1") = pm_supplyCurve_coeff(t,regi,enty,"1") * 
 *** convert coefficient 2 from USD/(MWh*TWh) to trUSD/(TWa^2)
 pm_supplyCurve_coeff(t,regi,enty,"2") = pm_supplyCurve_coeff(t,regi,enty,"2") * sm_TWa_2_MWh**2 * 1e+6;
 
+*** add mark-up to linear coefficient before 2050 to capture higher short-term import prices
+pm_supplyCurve_coeff(t,regi,enty,"1")$(t.val le 2030) = 3 * pm_supplyCurve_coeff(t,regi,enty,"1");
+pm_supplyCurve_coeff(t,regi,enty,"1")$(t.val eq 2035) = 2 * pm_supplyCurve_coeff(t,regi,enty,"1");
+pm_supplyCurve_coeff(t,regi,enty,"1")$(t.val eq 2040) = 1.5 * pm_supplyCurve_coeff(t,regi,enty,"1");
+
+
 *** fill set of energy carriers to which supply curve should be applied, only take energy carriers defined in switch
 loop((ext_regi,enty,CoeffSupplyCurve)$(pm_supplyCurve_input(ext_regi,enty,CoeffSupplyCurve)),
       enty_MportSC(enty)=YES;
