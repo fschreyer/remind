@@ -278,6 +278,8 @@ $ENDIF.Refuel_EU
 
 *** forbid biomass exports of EU27 regions in the after 2030
 vm_Xport.up(t,regi,"pebiolc")$(regi_group("EU27_regi",regi) AND t.val gt 2030) = 0;
+*** forbid fossil exports of EU27 regions in the after 2040
+vm_Xport.up(t,regi,peFos)$(regi_group("EU27_regi",regi) AND t.val gt 2040) = 0;
 
 
 *' This bounds fixes CES function quantity trajectories to exogenous data if cm_exogDem_scen is activated.
