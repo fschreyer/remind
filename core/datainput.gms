@@ -746,7 +746,7 @@ loop(ext_regi$pm_extRegiEarlyRetiRate(ext_regi),
 );
 *Tech-specific*
 *RP*: reduce early retirement for technologies with additional characteristics that are difficult to represent in REMIND, eg. industries built around heating/CHP plants, or flexibility from ngt plants
-pm_regiEarlyRetiRate(t,regi,"ngt")     = 0.3 * pm_regiEarlyRetiRate(t,regi,"ngt")    ; !! ngt should only be phased out very slowly, as they provide flexibility - which REMIND is not too good at capturing endogeneously
+pm_regiEarlyRetiRate(t,regi,"ngt")     =  pm_regiEarlyRetiRate(t,regi,"ngt")    ; !! ngt should only be phased out very slowly, as they provide flexibility - which REMIND is not too good at capturing endogeneously
 pm_regiEarlyRetiRate(t,regi,"gaschp")  = 0.5 * pm_regiEarlyRetiRate(t,regi,"gaschp") ; !! chp should only be phased out slowly, as district heating networks/ industry uses are designed to a specific heat input
 pm_regiEarlyRetiRate(t,regi,"coalchp") = 0.5 * pm_regiEarlyRetiRate(t,regi,"coalchp"); !! chp should only be phased out slowly, as district heating networks/ industry uses are designed to a specific heat input
 pm_regiEarlyRetiRate(t,regi,"biochp")  = 0.5 * pm_regiEarlyRetiRate(t,regi,"biochp") ; !! chp should only be phased out slowly, as district heating networks/ industry uses are designed to a specific heat input
