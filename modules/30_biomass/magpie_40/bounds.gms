@@ -15,8 +15,8 @@
 vm_fuExtr.up(t,regi,"pebios","5")$(t.val ge 2030)  = p30_datapebio(regi,"pebios","5","maxprod",t);
 vm_fuExtr.up(t,regi,"pebioil","5")$(t.val ge 2030) = p30_datapebio(regi,"pebioil","5","maxprod",t);
 
-vm_fuExtr.lo(t,regi,"pebios","5")$(t.val ge 2030) = 0.9 * p30_datapebio(regi,"pebios","5","maxprod",t);
-vm_fuExtr.lo(t,regi,"pebioil","5")$(t.val ge 2030) = 0.9 * p30_datapebio(regi,"pebioil","5","maxprod",t);
+vm_fuExtr.lo(t,regi,"pebios","5")$(t.val eq 2030) = 0.9 * p30_datapebio(regi,"pebios","5","maxprod",t);
+vm_fuExtr.lo(t,regi,"pebioil","5")$(t.val eq 2030) = 0.9 * p30_datapebio(regi,"pebioil","5","maxprod",t);
 
 
 
