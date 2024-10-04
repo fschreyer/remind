@@ -395,33 +395,38 @@ $endIf.internalizeDamages
 $IFTHEN.trade_SE_shareDemand not "%cm_trade_SE_shareDemand%" == "off"
 *** Check whether SE trade has converged if trade is set by share of demand
 *** Check after ten iterations for the first time
-*** Change in SE import quantities over last two iterations must be within 1% for all years, regions and energy carriers for convergence
+*** Change in SE import quantities over last iteration must be within 1% or absolute import quantities must be below 1 TWh/yr for all years, regions and energy carriers for convergence
+
+*** write entries to diagnosis_SETrade_conv.put that fail SE trade convergence criterion
+put logfile;
+put "SE Trade Convergence Check" //;
+put "checking which regions and years fail SE trade convergence criterion" //;
+put "t", @15, "regi", @25, "tradeSe", @35,  "iteration", @50, "p24_Mport_relChange_dev"//;
+
 if (iteration.val gt 10,
   p24_Mport_relChange_dev(t,regi,tradeSe,iteration)=0;
   loop((t,regi,tradeSe)$p24_Mport_iter(t,regi,tradeSe,iteration),
-$ontext
 
-    if(       p24_Mport_iter_relChange(t,regi,tradeSe,iteration) gt 1.01
-          OR  p24_Mport_iter_relChange(t,regi,tradeSe,iteration) lt 0.99
-          OR  p24_Mport_iter_relChange(t,regi,tradeSe,iteration-1) gt 1.01
-          OR  p24_Mport_iter_relChange(t,regi,tradeSe,iteration-1) lt 0.99,
-    p24_Mport_relChange_dev(t,regi,tradeSe,"1")=p24_Mport_iter_relChange(t,regi,tradeSe,iteration);
-    p24_Mport_relChange_dev(t,regi,tradeSe,"2")=p24_Mport_iter_relChange(t,regi,tradeSe,iteration-1);
-    s80_bool = 0;
-    p80_messageShow("se_trade") = YES;
-    );
-$offtext
+*** Check for convergence if either SE imports are below 1 TWh/yr or relative change to last iteration below 1%
+    if( p24_Mport_iter(t,regi,tradeSe,iteration) gt (1 / sm_TWa_2_TWh),
 
-    if(       (p24_Mport_iter_relChange(t,regi,tradeSe,iteration) gt 1.01
-          OR  p24_Mport_iter_relChange(t,regi,tradeSe,iteration) lt 0.99),
-    p24_Mport_relChange_dev(t,regi,tradeSe,"1")=p24_Mport_iter_relChange(t,regi,tradeSe,iteration);
-    s80_bool = 0;
-    p80_messageShow("se_trade") = YES;
-    );
+	    if(       (p24_Mport_iter_relChange(t,regi,tradeSe,iteration) gt 1.01
+        	  OR  p24_Mport_iter_relChange(t,regi,tradeSe,iteration) lt 0.99),
+    		
+		p24_Mport_relChange_dev(t,regi,tradeSe,"1")=p24_Mport_iter_relChange(t,regi,tradeSe,iteration);
+    		s80_bool = 0;
+    		p80_messageShow("se_trade") = YES;
+*** write to diagnosis_SETrade_conv if not converged
+                put t.tl, @ 15, regi.tl, @25, tradeSe.tl, @35, iteration.tl , @50, p24_Mport_iter_relChange(t,regi,tradeSe,iteration):8:5 /;
+    		);
+	);
+
+
 
   );
 );
 
+putclose logfile;
 $ENDIF.trade_SE_shareDemand
 
 

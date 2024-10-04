@@ -1015,13 +1015,6 @@ parameter
   cm_H2targets = 0; !! def 0
 *'
 parameter
-  cm_PriceDurSlope_elh2       "slope of price duration curve of electrolysis"
-;
-  cm_PriceDurSlope_elh2 = 15;  !! def = 15
-*' cm_PriceDurSlope_elh2, slope of price duration curve for electrolysis (increase means more flexibility subsidy for electrolysis H2)
-*' This switch only has an effect if the flexibility tax is on by cm_flex_tax set to 1
-*' Default value is based on data from German Langfristszenarien (see ./modules/32_power/IntC/datainput.gms).
-parameter
   cm_elh2_CF       "switch to change capacity factor of electrolyis, must be within (0-1]"
 ;
   cm_elh2_CF = 0.38;  !! def = 0.38
@@ -1285,9 +1278,10 @@ $setGlobal cm_regiExoPrice  off    !! def = off
 ***     The 'nzero' scenario applies declared net-zero targets for countries explicitly handled by the model (DEU, CHA, USA, IND, JPN, UKI, FRA and EU27_regi)  
 ***     Requires regiCarbonPrice realization in regipol module
 $setGlobal cm_emiMktTarget  off    !! def = off
-*** cm_regipol_LUC "user-defined shift of land-use change emissions from Magpie trajectories when employing cm_emiMktTarget with the Grassi offset (LULUCFGrassi option)"
+*** cm_regipol_LUC "user-defined adjustment of land-use change emissions from Magpie trajectories when employing cm_emiMktTarget with the Grassi offset (LULUCFGrassi option)"
 ***   Example on how to use:
-***    cm_regipol_LUC = "2050.EU27_regi -340"  shifts land-use change emissions of regions within the EU27 region to hit -340 MtCO2/yr by 2050 in EU27.
+***    cm_regipol_LUC = "2050.EU27_regi -340"  adjusts land-use change emissions of regions within the EU27 region to hit -340 MtCO2/yr by 2050 in EU27.
+***    Linear interpolation from historcal UNFCCC emissions values to desired target value for time steps inbetween. 
 ***    Regional disaggregation happens via the 2015 share of regional land-use change emissions from the EU27 total based on UNFCCC data.
 $setGlobal cm_regipol_LUC  off    !! def = off
 *** cm_quantity_regiCO2target "emissions quantity upper bound from specific year for region group."
@@ -1356,6 +1350,14 @@ $setGlobal cm_VREminCap    off !! def = off
 ***     amount of Carbon Capture and Storage (including DACCS and BECCS) is limited to a maximum of 2GtCO2 per yr globally, and 250 Mt CO2 per yr in EU28.
 ***   This switch only works for model native regions. If you want to apply it to a group region use cm_implicitQttyTarget instead.
 $setGlobal cm_CCSmaxBound    off  !! def = off
+*** c_tech_CO2capturerate "changes CO2 capture rate of carbon capture technologies"
+***   Example on how to use:
+***     c_tech_CO2capturerate   bioh2c 0.8, bioftcrec 0.4
+***   This sets the CO2 capture rate of the bioh2c technology to 80% and the capture of bioftcrec (Bio-based Fischer-Tropsch with carbon capture)
+***   to 40%. The capture rate here is measured as carbon captured relative to the total carbon content of the input fuel (including carbon that is converted into the output fuel).
+***   Note: The change in capture rate via this switch follows directly after reading in the generisdata_emi.prn file. Hence, the subsequent corrections of the capture rate
+***   related to CO2 pipeline leakage still come on top of this.
+$setGlobal c_tech_CO2capturerate    "bioh2c 0.8"  !! def = off
 *** c_CES_calibration_new_structure      <-   0        switch to 1 if you want to calibrate a CES structure different from input gdx
 $setglobal c_CES_calibration_new_structure  0     !!  def  =  0  !! regexp = 0|1
 *** c_CES_calibration_write_prices       <-   0       switch to 1 if you want to generate price file, you can use this as new p29_cesdata_price.cs4r price input file
@@ -1430,6 +1432,10 @@ $setGlobal cm_import_EU  off !! def off
 *** (on) ARIADNE-specific H2 imports for Germany, rest EU has H2 imports from cm_import_EU switch
 *** (off) no ARIADNE-specific H2 imports for Germany
 $setGlobal cm_import_ariadne  off !! def off
+*** cm_PriceDurSlope_elh2, slope of price duration curve for electrolysis (increase means more flexibility subsidy for electrolysis H2)
+*** This switch only has an effect if the flexibility tax is on by cm_flex_tax set to 1
+*** Default value is based on data from German Langfristszenarien (see ./modules/32_power/IntC/datainput.gms).
+$setGlobal cm_PriceDurSlope_elh2 GLO 15 !! def = GLO 15
 *** cm_trade_SE_exog
 *** set exogenous SE trade scenarios (requires se_trade realization of modul 24 to be active)
 *** e.g. "2030.2050.MEA.DEU.seh2 0.5", means import of SE hydrogen from MEA to Germany from 2050 onwards of 0.5 EJ/yr,
@@ -1454,6 +1460,18 @@ $setGlobal cm_trade_SE_shareDemand off !! def off
 *** cm_SEtaxRampUpParam = "off" disables v21_tau_SE_tax 
 *** For details, please see ./modules/21_tax/on/equations.gms.
 $setGlobal cm_SEtaxRampUpParam  GLO.elh2.a 0.2, GLO.elh2.b 20    !! def = GLO.elh2.a 0.2, GLO.elh2.b 20
+*** cm_exog_supplyCurve
+*** set exogenous supply curve for imports to specific regions and energy carriers (currently only SE carriers).
+*** It is mostly used for testing model behavior. 
+*** Example of switch: "EU27_regi.seliqsyn.1 50, EU27_regi.seliqsyn.2 0.1"
+*** means exogenuous supply curve for seliqsyn for all regions in EU27_regi
+*** with linear coefficient (b) of 50 USD/MWh and quadratic coefficient (a) of 0.1 USD/ (MWh*TWh).
+*** The supply cost curve would then be: Cost = ax^2+bx and the marginal cost: MCost = 2ax + b. 
+*** The quadrat coefficient would imply in this example an increase in supply cost of 2 * 0.1 USD/MWh for increasing supply by 1 TWh. 
+*** Note: This supply curve is regional, i.e. it does not take into account price increases due to imports of other regions. 
+*** Therefore, the quadratic coefficient needs to be interpreted as the regional price increase with respect to the regional level of imports, 
+*** not with respect to the global level. 
+$setGlobal cm_exog_supplyCurve off !! def off
 *** cm_EnSecScen             "switch for running an ARIADNE energy security scenario, introducing a tax on PE fossil energy in Germany"
 *** switch on energy security scenario for Germany (used in ARIADNE project), sets tax on fossil PE
 *** switch to activate energy security scenario assumptions for Germany including additional tax on gas/oil
@@ -1763,7 +1781,16 @@ $setglobal cm_taxrc_RE  none   !! def = none   !! regexp = none|REdirect
 *' *  (off): no, only infeasable regions are repeated, standard setting
 *' *  (on):  also non-optimal regions are solved again, up to cm_solver_try_max
 $setglobal cm_repeatNonOpt off      !! def = off  !! regexp = off|on
-
+*' cm_newTech_develop_lo      "sets lower bounds on new technologies in future time steps based on expectations of current project pipeline"
+*' (off): no additional lower bounds on capacities of new technologies
+*' (optimistic): so far, assumes that 50 MtCO2/yr DAC capacities will be installed by 2035 at minimum
+*' (very_optimistic): assumes that 200 MtCO2/yr DAC capacities will be installed by 2040 at minimum
+$setglobal cm_newTech_develop_lo off !! def = off !! regexp= off|optimistic|very_optimistic
+*' c33_tech_cdr_fedem
+*' Flag to adjust FE demand of CDR technologies via config file.
+*' Example: "dac.feels 4, dac.fehes 10.5" sets electricity demand for DAC to 4 EJ/GtC and heat demand for DAC to 10.5 EJ/GtC
+*' Note: check units of technology before. This switch overwrites p33_fedem.
+$setglobal c33_tech_cdr_fedem off      !! def = off
 *' @stop
 
 *-------------------------------------------------------------------------------------

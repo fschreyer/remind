@@ -55,4 +55,27 @@ if(not te_used33("weathering"),
     vm_cap.fx(t,regi,"weathering",rlf) = 0;
 );
 
+
+
+$ifthen.newTech_develop "%cm_newTech_develop_lo%" == "optimistic"
+*** set minimum DAC deployment of 50 MtCO2/yr globally by 2035 
+*** based on all project announcement in IEA CCUS database
+*** distribute to regions by GDP
+*** https://www.iea.org/data-and-statistics/data-product/ccus-projects-database
+vm_cap.lo(t,regi,"dac","1")$(t.val eq 2035) = 50 / sm_c_2_co2 * 1e-3 
+                                              * pm_gdp(t,regi) 
+                                              / sum(regi2,pm_gdp(t,regi2));
+
+
+$endif.newTech_develop
+
+$ifthen.newTech_develop "%cm_newTech_develop_lo%" == "very_optimistic"
+*** set minimum DAC deployment of 100 MtCO2/yr globally by 2040
+vm_cap.lo(t,regi,"dac","1")$(t.val eq 2040) = 200 / sm_c_2_co2 * 1e-3
+                                              * pm_gdp(t,regi)
+                                              / sum(regi2,pm_gdp(t,regi2));
+
+
+$endif.newTech_develop
+
 *** EOF ./modules/33_CDR/portfolio/bounds.gms

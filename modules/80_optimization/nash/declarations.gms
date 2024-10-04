@@ -138,5 +138,4 @@ option   p80_DevPriceAnticipGlobAllMax:3:0:1;
 option   o80_PriceChangePriceAnticipReg:1:2:1;
 option   o80_PriceChangePriceAnticipRegMaxIter:1:1:1;
 
-
 *** EOF ./modules/80_optimization/nash/declarations.gms

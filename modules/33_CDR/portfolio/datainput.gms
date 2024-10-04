@@ -49,5 +49,13 @@ p33_fedem("weathering", "fedie") = 0.3;
 
 *' Factor distributing the global rock limit across regions according to population
 p33_LimRock(regi) = pm_pop("2005",regi) / sum(regi2,pm_pop("2005",regi2));
+
+*' If c33_tech_cdr_fedem switch used, overwrite p33_fedem by values from this switch.
+$IFTHEN.cdr_FEdem not "%c33_tech_cdr_fedem%" == "off"
+display p33_fedem_config;
+p33_fedem(te,entyFe)$(p33_fedem_config(te,entyFe)) = p33_fedem_config(te,entyFe);
+display p33_fedem;
+$ENDIF.cdr_FEdem
+
 *' @stop
 *** EOF ./modules/33_CDR/portfolio/datainput.gms

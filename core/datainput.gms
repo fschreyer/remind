@@ -524,6 +524,30 @@ pm_share_trans("2130",regi) = 0.865;
 pm_share_trans("2150",regi) = 0.872;
 
 
+$ifthen.tech_CO2capturerate not "%c_tech_CO2capturerate%" == "off"
+p_PECarriers_CarbonContent(peFos)=pm_cintraw(peFos);
+*** From conversation: 25 GtC/ZJ is the assumed carbon content of PE biomass (makes default bioh2c capture rate 90%)
+*** Convert to GtC/TWa
+p_PECarriers_CarbonContent("pebiolc")=25 / s_zj_2_twa;
+loop(pe2se(entyPe,entySe,te)$(p_tech_co2capturerate(te)),
+  if(p_tech_CO2capturerate(te) gt 0,
+    if(p_tech_CO2capturerate(te) ge 1,
+		  abort "Error: Inconsistent switch usage. A CO2 capture rate is greater than 1. Check c_tech_CO2capturerate.";
+	  );
+*** Alter CO2 capture rate in fm_dataemiglob
+*** fm_dataemiglob is given in GtC/ZJ
+    fm_dataemiglob(entyPe,entySe,te,"cco2") = p_tech_CO2capturerate(te) * p_PECarriers_CarbonContent(entyPe) * s_zj_2_twa;
+    if(sameAs(entyPe,"pebiolc"),
+      fm_dataemiglob(entyPe,entySe,te,"co2") = -fm_dataemiglob(entyPe,entySe,te,"cco2") ;
+    else
+    fm_dataemiglob(entyPe,entySe,te,"co2") = p_PECarriers_CarbonContent(entyPe) - fm_dataemiglob(entyPe,entySe,te,"cco2") ;
+	);
+  );
+);
+display fm_dataemiglob;
+$endif.tech_CO2capturerate
+
+
 *JH* CO2 capture rate of CCS technologies (new SSP5 assumptions)
 if (c_ccscapratescen eq 2,
   fm_dataemiglob("pecoal","seel","igccc","co2")    = 0.2;
@@ -722,7 +746,7 @@ loop(ext_regi$pm_extRegiEarlyRetiRate(ext_regi),
 );
 *Tech-specific*
 *RP*: reduce early retirement for technologies with additional characteristics that are difficult to represent in REMIND, eg. industries built around heating/CHP plants, or flexibility from ngt plants
-pm_regiEarlyRetiRate(t,regi,"ngt")     = 0.3 * pm_regiEarlyRetiRate(t,regi,"ngt")    ; !! ngt should only be phased out very slowly, as they provide flexibility - which REMIND is not too good at capturing endogeneously
+pm_regiEarlyRetiRate(t,regi,"ngt")     =  pm_regiEarlyRetiRate(t,regi,"ngt")    ; !! ngt should only be phased out very slowly, as they provide flexibility - which REMIND is not too good at capturing endogeneously
 pm_regiEarlyRetiRate(t,regi,"gaschp")  = 0.5 * pm_regiEarlyRetiRate(t,regi,"gaschp") ; !! chp should only be phased out slowly, as district heating networks/ industry uses are designed to a specific heat input
 pm_regiEarlyRetiRate(t,regi,"coalchp") = 0.5 * pm_regiEarlyRetiRate(t,regi,"coalchp"); !! chp should only be phased out slowly, as district heating networks/ industry uses are designed to a specific heat input
 pm_regiEarlyRetiRate(t,regi,"biochp")  = 0.5 * pm_regiEarlyRetiRate(t,regi,"biochp") ; !! chp should only be phased out slowly, as district heating networks/ industry uses are designed to a specific heat input
@@ -734,7 +758,10 @@ pm_regiEarlyRetiRate(t,regi,"biohp")   = 0.5 * pm_regiEarlyRetiRate(t,regi,"bioh
 $ifthen.tech_earlyreti not "%c_tech_earlyreti_rate%" == "off"
 loop((ext_regi,te)$p_techEarlyRetiRate(ext_regi,te),
   pm_regiEarlyRetiRate(t,regi,te)$(regi_group(ext_regi,regi) and (t.val lt 2035 or sameas(ext_regi,"GLO"))) = p_techEarlyRetiRate(ext_regi,te);
+*** Add further technologies that can be retired early depending on switch
+  teEarlyReti(te) = YES;
 );
+display teEarlyReti;
 $endif.tech_earlyreti
 
 *SB* Time-dependent early retirement rates in Baseline scenarios
@@ -1171,7 +1198,6 @@ loop(ttot$(ttot.val ge 2005),
   p_adj_seed_te(ttot,regi,"coalftrec")       = 0.25;
   p_adj_seed_te(ttot,regi,"coalftcrec")      = 0.25;
   p_adj_seed_te(ttot,regi,"coaltr")          = 4.00;
-  p_adj_seed_te(ttot,regi,'dac')             = 0.25;
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
   p_adj_seed_te(ttot,regi,"bfcc")            = 0.05;
   p_adj_seed_te(ttot,regi,"idrcc")           = 0.05;
@@ -1220,7 +1246,6 @@ $ifthen.WindOff %cm_wind_offshore% == "1"
   p_adj_coeff(ttot,regi,"windoff")         = 0.35;
 $endif.WindOff
 
-  p_adj_coeff(ttot,regi,"dac")             = 0.8;
   p_adj_coeff(ttot,regi,teGrid)            = 0.3;
   p_adj_coeff(ttot,regi,teStor)            = 0.05;
   
@@ -1601,5 +1626,40 @@ p_prodAllReference(t,regi,te) =
 
 *' initialize vm_changeProdStartyearCost for tax calculation
 vm_changeProdStartyearCost.l(t,regi,te) = 0;
+
+
+***-------------- Datainput for exogenuous supply curves ------------------
+
+$IFTHEN.trade_SE_exog not "%cm_exog_supplyCurve%" == "off"
+*** map coefficients from region groups to regions (e.g. from EU27 to DEU, which part of EU27)
+loop((ext_regi,enty,CoeffSupplyCurve)$(pm_supplyCurve_input(ext_regi,enty,CoeffSupplyCurve)),
+  pm_supplyCurve_coeff(t,regi,enty,CoeffSupplyCurve)$(regi_group(ext_regi,regi)) = pm_supplyCurve_input(ext_regi,enty,CoeffSupplyCurve);
+);
+
+*** convert coefficient 1 from USD/MWh to trUSD/TWa
+pm_supplyCurve_coeff(t,regi,enty,"1") = pm_supplyCurve_coeff(t,regi,enty,"1") * sm_DpGJ_2_TDpTWa  / 3.66;
+*** convert coefficient 2 from USD/(MWh*TWh) to trUSD/(TWa^2)
+pm_supplyCurve_coeff(t,regi,enty,"2") = pm_supplyCurve_coeff(t,regi,enty,"2") * sm_TWa_2_MWh**2 * 1e+6;
+
+*** add mark-up to linear coefficient before 2050 to capture higher short-term import prices
+pm_supplyCurve_coeff(t,regi,enty,"1")$(t.val le 2030) = 3 * pm_supplyCurve_coeff(t,regi,enty,"1");
+pm_supplyCurve_coeff(t,regi,enty,"1")$(t.val eq 2035) = 2 * pm_supplyCurve_coeff(t,regi,enty,"1");
+pm_supplyCurve_coeff(t,regi,enty,"1")$(t.val eq 2040) = 1.5 * pm_supplyCurve_coeff(t,regi,enty,"1");
+
+
+*** fill set of energy carriers to which supply curve should be applied, only take energy carriers defined in switch
+loop((ext_regi,enty,CoeffSupplyCurve)$(pm_supplyCurve_input(ext_regi,enty,CoeffSupplyCurve)),
+      enty_MportSC(enty)=YES;
+);
+
+*** fill set of regions and energy carriers to which supply curve should be applied, only take combinations defined in switch
+loop((ext_regi,enty,CoeffSupplyCurve)$(pm_supplyCurve_input(ext_regi,enty,CoeffSupplyCurve)),
+  regi_entyMportSC(regi,enty)$(regi_groupExt(ext_regi,regi))=YES;
+);
+
+
+display enty_MportSC;
+display regi_entyMportSC;
+$ENDIF.trade_SE_exog
 
 *** EOF ./core/datainput.gms

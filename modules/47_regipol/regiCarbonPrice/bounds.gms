@@ -217,6 +217,8 @@ $IFTHEN.CoalRegiPol not "%cm_CoalRegiPol%" == "off"
 $ENDIF.CoalRegiPol
 
 *' upper and lower bounds for near-term hydrogen and e-fuel development based on data from the IEA projects database
+
+$ontext
 *' only for EU27 for now, distributed to regions by 2015 GDP share
 *' about 3 (GWel) electrolysis capacity operational or with FID by 2025
 vm_cap.lo("2025",regi,"elh2","1")$(regi_group("EU27_regi",regi))= 3 * pm_eta_conv("2025",regi,"elh2")*pm_gdp("2015",regi) 
@@ -226,8 +228,19 @@ vm_cap.lo("2025",regi,"elh2","1")$(regi_group("EU27_regi",regi))= 3 * pm_eta_con
 *' up to about 6 (GWel) electrolysis capacity if some of the planned projects before FID realized by 2025
 vm_cap.up("2025",regi,"elh2","1")$(regi_group("EU27_regi",regi))= 6 * pm_eta_conv("2025",regi,"elh2")*pm_gdp("2015",regi) 
                                                                       / sum(regi2$(regi_group("EU27_regi",regi2)),pm_gdp("2015",regi2)) * 1e-3;
+$offtext
 
-*' up to about 30 (GWel) electrolysis capacity if about half of planned projects before FID realized by 2030
+*' set lower and upper bounds for 2025 based on projects annoucements
+*' distribute to regions via GDP share
+*' 5 GW(el) at least globally in 2025
+vm_cap.lo("2025",regi,"elh2","1")= 5 * pm_eta_conv("2025",regi,"elh2")*pm_gdp("2015",regi)
+                                         / sum(regi2,pm_gdp("2015",regi2)) * 1e-3;
+*' 10 GW(el) at maximum globally in 2025
+vm_cap.up("2025",regi,"elh2","1")= 10 * pm_eta_conv("2025",regi,"elh2")*pm_gdp("2015",regi)
+                                         / sum(regi2,pm_gdp("2015",regi2)) * 1e-3;
+
+
+*' in EU up to about 30 (GWel) electrolysis capacity if about half of planned projects before FID realized by 2030
 vm_cap.up("2030",regi,"elh2","1")$(regi_group("EU27_regi",regi))= 30 * pm_eta_conv("2030",regi,"elh2")*pm_gdp("2015",regi) 
                                                                       / sum(regi2$(regi_group("EU27_regi",regi2)),pm_gdp("2015",regi2)) * 1e-3;
 
@@ -261,6 +274,12 @@ vm_demFeSector.lo("2030",regi,"seliqsyn","fedie","trans","other")$(regi_group("E
                                                                                                     * pm_gdp("2015",regi)
                                                                                                     / sum(regi2$(regi_group("EU27_regi",regi2)),pm_gdp("2015",regi2));
 $ENDIF.Refuel_EU
+
+
+*** forbid biomass exports of EU27 regions in the after 2030
+vm_Xport.up(t,regi,"pebiolc")$(regi_group("EU27_regi",regi) AND t.val gt 2030) = 0;
+*** forbid fossil exports of EU27 regions in the after 2040
+*** vm_Xport.up(t,regi,peFos)$(regi_group("EU27_regi",regi) AND t.val gt 2040) = 0;
 
 
 *' This bounds fixes CES function quantity trajectories to exogenous data if cm_exogDem_scen is activated.

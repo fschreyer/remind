@@ -53,6 +53,10 @@ qm_budget(ttot,regi)$( ttot.val ge cm_startyear ) ..
   + sum(enty$(emiMacSector(enty) AND (NOT emiMacMagpie(enty))), pm_macCost(ttot,regi,enty))
   + vm_costMatPrc(ttot,regi)
   + vm_costEnergySys(ttot,regi)
+$IFTHEN.trade_SE_exog not "%cm_exog_supplyCurve%" == "off"
+*** cost from exogenuous regional energy import supply curves activated via cm_exog_supplyCurve
+  + sum(enty_MportSC, vm_cost_Mport_SC(ttot,regi,enty_MportSC))
+$ENDIF.trade_SE_exog
 ;
 
 ***---------------------------------------------------------------------------

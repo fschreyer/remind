@@ -1570,6 +1570,8 @@ elh2
 tdels
 /
 
+teEarlyReti(all_te)	"all technologies of which capacities can be retired before the end of their lifetime"
+
 feForUe(all_enty)    "final energy types that are transformed into useful energys - is filled automatically from the content of fe2ue"
 ppfenFromUe(all_in)  "all ppfEn that are equivalent to UE - is filled automatically from the content of fe2ue"
 
@@ -3006,6 +3008,23 @@ es2ppfen(all_esty,all_in)      "matching ES in ESM to ppfEn in MACRO"
 
 ;
 
+
+$IFTHEN.trade_SE_exog not "%cm_exog_supplyCurve%" == "off"
+***-------------- Sets for exogenuous supply curves ------------------
+Sets
+enty_MportSC(all_enty) "energy carriers that can be imported via supply curve"
+//
+
+regi_entyMportSC(all_regi,all_enty) "regions and energy carriers which can have supply curve imports"
+//
+
+CoeffSupplyCurve "coefficients of exogenuous supply curves"
+/
+  "1"
+  "2"
+/
+;
+$ENDIF.trade_SE_exog
 ***-----------------------------------------------------------------------------
 ***-----------------------------------------------------------------------------
 ***                             Helpful constructs: alias

@@ -35,6 +35,7 @@ positive variables
     v32_TotVREshare(ttot,all_regi)                  "Total VRE share as calculated by summing shSeEl. Unit: Percent"
     v32_shAddIntCostTotVRE(ttot,all_regi)           "Variable containing how much the total VRE share is above the threshold - needed to calculate additional integation costs due to total VRE share."
     vm_shDemSeel(ttot,all_regi,all_te)              "Share of electricity demand per technology in total electricity demand"
+    v32_flexPriceShare_Pos(ttot,all_regi,all_te)    "positive share of average electricity price that flexible technologies see, negative shares set to 0, [share: 0...1]"
 ;
 
 equations
@@ -59,6 +60,7 @@ equations
     q32_TotVREshare(ttot,all_regi)                  "calculate total VRE share"
     q32_shAddIntCostTotVRE(ttot,all_regi)           "calculate how much total VRE share is above threshold value"
     q32_shDemSeel(ttot,all_regi,all_te)             "calculate share of electricity demand per technology in total electricity demand"
+    q32_flexPriceShare_Pos(ttot,all_regi,all_te)    "calculate positive share of electricity price that flexible technologies see"
 ;
 
 variables

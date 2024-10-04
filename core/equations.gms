@@ -156,8 +156,13 @@ q_balSe(t,regi,enty2)$( entySe(enty2) AND (NOT (sameas(enty2,"seel"))) )..
       - vm_emiMacSector(t,regi,"ch4wstl")
       )
     )$( sameas(enty2,"segabio") AND t.val gt 2005 )
-  + sum(prodSeOth2te(enty2,te), vm_prodSeOth(t,regi,enty2,te) )
-  + vm_Mport(t,regi,enty2)
+  + sum(prodSeOth2te(enty2,te), vm_prodSeOth(t,regi,enty2,te) ) 
+  + vm_Mport(t,regi,enty2) 
+$IFTHEN.trade_SE_exog not "%cm_exog_supplyCurve%" == "off"
+*** imports from exogenuous supply curves activated via cm_exog_supplyCurve
+  + vm_Mport_SC(t,regi,enty2)$(regi_entyMportSC(regi,enty2)
+                                AND t.val ge cm_start_year_MportSC)
+$ENDIF.trade_SE_exog
   =e=
     sum(se2fe(enty2,enty3,te), vm_demSe(t,regi,enty2,enty3,te))
   + sum(se2se(enty2,enty3,te), vm_demSe(t,regi,enty2,enty3,te))
@@ -1105,5 +1110,22 @@ q_shbiofe_lo(t,regi,entyFe,sector,emiMkt)$((sameas(entyFe,"fegas") or sameas(ent
   =l=
   sum((entySeBio,te)$se2fe(entySeBio,entyFe,te), vm_demFeSector(t,regi,entySeBio,entyFe,sector,emiMkt))
 ;
+
+
+***-------------- Equations for exogenuous supply curves ------------------
+
+$IFTHEN.trade_SE_exog not "%cm_exog_supplyCurve%" == "off"
+*** user-defined supply curve for imports: Cost = Coeff2 * Imports^2 + Coeff1 * Import
+q_Mport_SupplyCurve(t,regi,enty)$(enty_MportSC(enty))..
+  vm_cost_Mport_SC(t,regi,enty) 
+  =e=
+*** linear term of supply curve
+    pm_supplyCurve_coeff(t,regi,enty,"1") 
+    * vm_Mport_SC(t,regi,enty)
+*** quadratic term of supply curve
+  + pm_supplyCurve_coeff(t,regi,enty,"2") 
+    * vm_Mport_SC(t,regi,enty)**2
+;
+$ENDIF.trade_SE_exog
 
 *** EOF ./core/equations.gms

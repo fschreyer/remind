@@ -113,6 +113,11 @@ p_techEarlyRetiRate(ext_regi,all_te)                 "Technology specific early 
 $ENDIF.tech_earlyreti
 pm_regiEarlyRetiRate(ttot,all_regi,all_te)                "regional early retirement rate (model native regions)"
 
+$ifthen.tech_CO2capturerate not "%c_tech_CO2capturerate%" == "off"
+p_tech_CO2capturerate(all_te)                 "Technology specific CO2 capture rate" / %c_tech_CO2capturerate% /
+p_PECarriers_CarbonContent(all_enty)	  "Carbon content of PE carriers [GtC/TWa]"
+$endif.tech_CO2capturerate
+
 pm_EN_demand_from_initialcap2(all_regi,all_enty)     "PE demand resulting from the initialcap routine. [EJ, Uranium: MT U3O8]"
 pm_budgetCO2eq(all_regi)                             "budget for regional energy-emissions in period 1"
 p_actualbudgetco2(tall)                              "actual level of cumulated emissions starting from 2020 [GtCO2]"
@@ -594,6 +599,8 @@ sm_tgch4_2_pgc                                         "conversion factor 100-yr
 
 s_MtCH4_2_TWa                                        "Energy content of methane. MtCH4 --> TWa: 1 MtCH4 = 1.23 * 10^6 toe * 42 GJ/toe * 10^-9 EJ/GJ * 1 TWa/31.536 EJ = 0.001638 TWa (BP statistical review)"  /0.001638/
 
+sm_h2kg_2_h2kWh                                      "convert kilogramme of hydrogen to kwh energy value." /32.5/
+
 s_D2015_2_D2005                                      "Convert $2015 to $2005 by dividing by 1.2: 1/1.2 = 0.8333"      /0.8333/
 sm_DptCO2_2_TDpGtC                                    "Conversion multiplier to go from $/tCO2 to T$/GtC: 44/12/1000"     /0.00366667/
 
@@ -675,5 +682,30 @@ o_carbon_reemitted(ttot,all_regi,all_enty)   "output parameter"
 
 o_emi_conv(all_enty)    "output parameter" / co2 3666.6666666666666666666666666667, ch4 28, n2o 416.4286, so2 1,	bc  1, oc  1 /
 ;
+
+
+***-------------- Declarations for exogenuous supply curves ------------------
+
+$IFTHEN.trade_SE_exog not "%cm_exog_supplyCurve%" == "off"
+
+Parameter
+pm_supplyCurve_input(ext_regi,all_enty,CoeffSupplyCurve)         "input parameter to read coefficients of SE supply curve from config [units: coeff 1 -> USD/MWh, coeff 2 -> USD/(MWh*TWh) ]" / %cm_exog_supplyCurve% /
+pm_supplyCurve_coeff(ttot,all_regi,all_enty,CoeffSupplyCurve)    "regional coefficients of SE supply curve [REMIND units: coeff 1 -> trUSD2005/TWa, coeff 2 -> trUSD2005/(TWa^2) ]"
+;
+
+Positive Variables
+vm_Mport_SC(ttot,all_regi,all_enty)                                  "Imports via supply curve [TWa]"
+vm_cost_Mport_SC(ttot,all_regi,all_enty)                              "Cost of imports via supply curve [trUSD]"
+;
+Equations
+q_Mport_SupplyCurve(ttot,all_regi,all_enty)                          "User-defined cost supply curve for imports"
+;
+
+Scalar
+cm_start_year_MportSC                                                 "start year for imports from exogenuous supply curves" / 2035 /
+;
+
+
+$ENDIF.trade_SE_exog
 
 *** EOF ./core/declarations.gms
