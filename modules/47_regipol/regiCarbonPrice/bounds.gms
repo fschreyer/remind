@@ -105,9 +105,6 @@ loop(regi$(sameAs(regi,"DEU")),
 *' see IEA CCUS database https://www.iea.org/data-and-statistics/data-tools/ccus-projects-explorer
 vm_emiIndCCS.up(t,regi,emiInd37)$(sameAs(regi,"DEU") AND t.val lt 2030)=0;
 
-*' This limits CO2 underground injection up to 2030 in line with recent developments as of 2023.
-vm_co2CCS.up(t,regi,"cco2","ico2",te,rlf)$((t.val le 2030) AND (sameas(regi,"DEU"))) = 1e-3;
-
 *' ###### Bounds for Germany-specific Policies (activated by switches)
 
 *' Power Sector Bounds for German Ampel Scenario
@@ -262,18 +259,30 @@ vm_cap.up("2030",regi,"MeOH","1")$(regi_group("EU27_regi",regi))= 4.0 / pm_cf("2
                                                                       / sum(regi2$(regi_group("EU27_regi",regi2)),pm_gdp("2015",regi2));
 
 
-*** E-fuel Upscaling if ReFUEL-EU policy is activated
-*** Assume that minimum e-fuel demand by long-distance transport in EU27 of 8 TWh/yr
-$IFTHEN.Refuel_EU "%cm_H2_policy%" == "Refuel_EU"
+$IFTHEN.EU_tech_pol "%cm_EU_techpol%" == "Opt2030"
+*' Bounds for EU technology policy, optimistic case for 2030
+*' 1) Assume that ReFUEL EU quotas generate minimum e-fuel demand in long-distnace transport in the EU27 of 10 TWH/yr
+*' based on https://www.efuel-alliance.eu/fileadmin/Downloads/Paper_TU_Graz_Tobias_Block_JW_AC.pdf
+*' 2) Assume that 25 MtCO2/yr CO2 storage capacity available for EU27 in 2030
+*' Based on IEA CCUS database projects until 2020 (incl. Norway and UK)
+*' -> 1.7 MtCO2/yr operational, 4 MtCO2/yr under construction, 162 MtCO2/yr planned for 2030
+*' Assuming failure rate of CCS from Kazlou et al. (https://doi.org/10.1038/s41558-024-02104-0) of 88% for planned projects,
+*' gives total of about 25 MtCO2/yr in 2030.
+
 *' remove upper bound on 2030 electrolysis production
 vm_cap.up("2030",regi,"elh2","1")$(regi_group("EU27_regi",regi))= INF;
 *' remove upper bound on 2030 e-fuel production
 vm_cap.up("2030",regi,"MeOH","1")$(regi_group("EU27_regi",regi))= INF;
-*' add lower bound of 8 TWh/yr for 2030 e-fuel demand in long-distance transport
-vm_demFeSector.lo("2030",regi,"seliqsyn","fedie","trans","other")$(regi_group("EU27_regi",regi))=8 / sm_TWa_2_TWh
+*' add lower bound of 10 TWh/yr for 2030 e-fuel demand in long-distance transport
+vm_demFeSector.lo("2030",regi,"seliqsyn","fedie","trans","other")$(regi_group("EU27_regi",regi))=10 / sm_TWa_2_TWh
                                                                                                     * pm_gdp("2015",regi)
                                                                                                     / sum(regi2$(regi_group("EU27_regi",regi2)),pm_gdp("2015",regi2));
-$ENDIF.Refuel_EU
+
+
+vm_co2CCS.fx("2030",regi,"cco2","ico2","ccsinje","1")$(regi_group("EU27_regi",regi)) = 25 / sm_c_2_co2 * 1e-3 
+											* pm_gdp("2015",regi)                                                                                                 		     / sum(regi2$(regi_group("EU27_regi",regi2)),
+												pm_gdp("2015",regi2));
+$ENDIF.EU_tech_pol
 
 
 *** forbid biomass exports of EU27 regions in the after 2030

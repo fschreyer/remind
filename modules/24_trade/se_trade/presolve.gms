@@ -20,29 +20,17 @@ vm_Mport.l(t,regi,entySe)$(sum(regi2,p24_seTradeCapacity(t,regi2,regi,entySe)) g
 *** Xport price
 pm_XPortsPrice(t,regi,tradeSe) = pm_SEPrice(t,regi,tradeSe);
 
-display pm_XPortsPrice;
+*** fix export and import price of SE trade to exogenous values
+*** H2 price = linear decrease from 300 EUR2020/MWh(H2) by 2020 to 100 EUR2020/MWh(H2) by 2050 and onward
+*** seliqsyn prices = linear decrease from 400 EUR2020/MWh(liquids) by 2020 to 150 EUR2020/MWh(liquids) by 2050 and onward
+*** seliqbio prices = linear decrease from 30 US$2005/GJ by 2020 to 10$/kg by 2050 and onward
+pm_XPortsPrice(t,regi,"seh2")     = max(300 + (t.val-2020)*(100-300)/(2050-2020),100) / 1e3 / 1.17 * sm_TWa_2_kWh / sm_trillion_2_non;
+pm_XPortsPrice(t,regi,"seliqsyn") = max(400 + (t.val-2020)*(150-400)/(2050-2020),150) / 1e3 / 1.17 * sm_TWa_2_kWh / sm_trillion_2_non;
+pm_XPortsPrice(t,regi,"seliqbio") = max(30 + (t.val-2020)*(10-30)/(2050-2020),2) / sm_trillion_2_non * sm_GJ_2_TWa;
 
-*** Setting Xport price bound to avoid unrealists trading prices.
-*** Lower bound: avoiding epsilon values (caused by using equation marginals for setting prices) or unrealistic small values for secondary energy prices
-*** - H2 and seliqsyn minimum exporting prices = 1$/kg (1$/kg = 0.0308 $/Kwh = 0.0308 / (10^12/(10^9*8760)) T$/TWa = 0.27 T$/TWa)
-*** - seliqbio minimum exporting prices = 5 US$2005/GJ (5/31.71 = 0.158 T$/TWa)
-pm_XPortsPrice(t,regi,"seh2")     = max( 1 / sm_h2kg_2_h2kWh * sm_TWa_2_kWh / sm_trillion_2_non, pm_XPortsPrice(t,regi,"seh2"));
-pm_XPortsPrice(t,regi,"seliqsyn") = max( 1 / sm_h2kg_2_h2kWh * sm_TWa_2_kWh / sm_trillion_2_non, pm_XPortsPrice(t,regi,"seliqsyn"));
-pm_XPortsPrice(t,regi,"seliqbio") = max( 5 / sm_trillion_2_non * sm_GJ_2_TWa, pm_XPortsPrice(t,regi,"seliqbio"));
-
-display pm_XPortsPrice;
-
-*** Upper bound: model marginal prices are not necessarily competitive when we enforce exogenously traded quantitites.
-*** This could cause the secondary energy trade flows to "eat" a bigger amount of the country trade budget than they should,
-*** which could cause infeasiblities in the equations `q23_limit_debt_growth` and `qm_budget`.
-*** The below upper bounds limits avoids this issue by enforcing a maximum secondary energy traded price.
-*** - H2 and seliqsyn maximum exporting prices = linear decrease from 5$/kg by 2020 to 2$/kg by 2050 and onward
-*** - seliqbio maximum exporting prices = linear decrease from 30 US$2005/GJ by 2020 to 10$/kg by 2050 and onward
-pm_XPortsPrice(t,regi,"seh2")     = min( max(5 + (t.val-2020)*(2-5)/(2050-2020),2) / sm_h2kg_2_h2kWh * sm_TWa_2_kWh / sm_trillion_2_non, pm_XPortsPrice(t,regi,"seh2"));
-pm_XPortsPrice(t,regi,"seliqsyn") = min( max(5 + (t.val-2020)*(2-5)/(2050-2020),2) / sm_h2kg_2_h2kWh * sm_TWa_2_kWh / sm_trillion_2_non, pm_XPortsPrice(t,regi,"seliqsyn"));
-pm_XPortsPrice(t,regi,"seliqbio") = min( max(30 + (t.val-2020)*(10-30)/(2050-2020),2) / sm_trillion_2_non * sm_GJ_2_TWa, pm_XPortsPrice(t,regi,"seliqbio"));
 
 display pm_XPortsPrice;
+
 
 $ontext
 *** Mports from where? Mports from regi to regi2, assuming that trade is distributed uniformetly according existent trade capacities

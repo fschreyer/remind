@@ -1,0 +1,38 @@
+title;start;copyConfigFrom;CES_parameters;c_keep_iteration_gdxes;cm_calibration_string;optimization;c_testOneRegi_region;cm_solver_try_max;cm_nash_mode;cm_startIter_EDGET;trade;cm_trade_SE_shareDemand;cm_trade_SE_exog;cm_exog_supplyCurve;c_ccsinjecratescen;c_ccsinjecrateRegi;cm_ccsinjeCost;c_tech_CO2capturerate;cm_frac_NetNegEmi;cm_bioprod_regi_lim;cm_import_tax;cm_1stgen_phaseout;cm_BioSupply_Adjust_EU;cm_bioenergy_SustTax;cm_phaseoutBiolc;c_tech_earlyreti_rate;cm_altFeEmiFac;cm_incolearn;cm_learnRate;cm_PriceDurSlope_elh2;cm_SEtaxRampUpParam;cm_EU_techpol;cm_newTech_develop_lo;c33_tech_cdr_fedem;cm_CESMkup_build;cm_CESMkup_ind;cm_CESMkup_ind_data;cm_wasteIncinerationCCSshare;cm_feedstockEmiUnknownFate;cm_EDGEtr_scen;cm_inco0Factor;cm_adj_coeff_multiplier;cm_adj_seed_multiplier;cm_NucRegiPol;cm_CoalRegiPol;techpol;carbonprice;cm_emiscen;cm_multigasscen;cm_iterative_target_adj;c_budgetCO2from2020;cm_co2_tax_2020;cm_co2_tax_growth;c_peakBudgYr;cm_rcp_scen;subsidizeLearning;regipol;cm_emiMktTarget;cm_regipol_LUC;cm_emiMktTarget_tolerance;regionmapping;extramappings_historic;cm_startyear;path_gdx;path_gdx_ref
+#____Runs for first years____;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+Calib_EU_NPi;0;;calibrate;;;;;;;;se_trade;;;;;;;;;;;;;;;;EUR_regi, NEU_regi;;;;;;;;;;;;on;Mix1;;;;on;on;NPi2018;NPi;9;3;;;1;;;rcp45;;regiCarbonPrice;;;;./config/regionmapping_21_EU11.csv;./config/extramapping_EU27.csv;2005;;
+06_NPi;0;Calib_EU_NPi;load;;;;;;;;;;;;;;;;;EU27_regi 7.5, DEU 1.1;EU27_regi.pebiolc.worldPricemarkup 10;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+# ____ Core Scenarios _____;0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS110;0;;;;;;;;;;se_trade;MEA.EU27_regi.seliqsyn 0.5;;;2;EU27_regi 0.00099;high;bioftcrec 0.62;;EU27_regi 7.5, DEU 1.1;EU27_regi.pebiolc.worldPricemarkup 10;1;;;;GLO.(biodiesel 0.15, bioeths 0.15, bioigcc 0.05, biotr 0.05, biotrmod, biochp 0.05, biohp 0.05, biogas 0.05, biogasc 0.05, bioftrec 0.05, bioh2 0.05), USA_regi.pc 0.13, REF_regi.pc 0.13, CHA_regi.pc 0.13;EUR_regi, NEU_regi;;;GLO 15, EU27_regi 25, FRA 30, EWN 35;off;Opt2030;;off;fehob 1.75, enhb 0.5;manual;feelhth_otherInd 0.9, feelhth_chemicals 0.43;;on;Mix4;;;;on;on;;diffCurvPhaseIn2Lin;9;;9;650;100;;2080;rcp20;globallyOptimal;regiCarbonPrice;2020.2030.EU27_regi.all.year.netGHG_LULUCFGrassi_intraRegBunker 2.122, 2035.2050.EU27_regi.all.year.netGHG_LULUCFGrassi 0.001;2050.EU27_regi -240;0.003;./config/regionmapping_21_EU11.csv;./config/extramapping_EU27.csv;2025;;06_NPi
+06_NZ_CCS130;0;06_NZ_CCS110;;;;;;;;;;;;;;EU27_regi 0.00117;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS180;0;06_NZ_CCS110;;;;;;;;;;;;;;EU27_regi 0.00162;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS350;0;06_NZ_CCS110;;;;;;;;;;;;;;EU27_regi 0.00315;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCSnoLim;0;06_NZ_CCS110;;;;;;;;;;;;;;EU27_regi 0.018;low;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCSnoLim_310LUCSink;0;06_NZ_CCS110;;;;;;;;;;;;;;EU27_regi 0.018;low;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2050.EU27_regi -310;;;;;;
+06_NZ_CCSnoLim_370LUCSink;0;06_NZ_CCS110;;;;;;;;;;;;;;EU27_regi 0.018;low;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2050.EU27_regi -370;;;;;;
+# _____ Sensitivity: HighBio ___;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS110_HighBio;0;06_NZ_CCS110;;;;;;;;;;;;;;;;;;EU27_regi 12.5;;;0.5;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS180_HighBio;0;06_NZ_CCS180;;;;;;;;;;;;;;;;;;EU27_regi 12.5;;;0.5;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCSnoLim_HighBio;0;06_NZ_CCSnoLim;;;;;;;;;;;;;;;;;;EU27_regi 12.5;;;0.5;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCSnoLim_370LUCSink_HighBio;0;06_NZ_CCSnoLim_370LUCSink;;;;;;;;;;;;;;;;;;EU27_regi 12.5;;;0.5;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+# _____ Sensitivity: cheapDAC ___;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS110_cheapDAC;0;06_NZ_CCS110;;;;;;;;;;;;;;;;;;;;;;;;;;;dac 0.25;;;;optimistic;dac.feels 2.64, dac.fehes 10.56;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS180_cheapDAC;0;06_NZ_CCS180;;;;;;;;;;;;;;;;;;;;;;;;;;;dac 0.25;;;;optimistic;dac.feels 2.64, dac.fehes 10.56;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCSnoLim_cheapDAC;0;06_NZ_CCSnoLim;;;;;;;;;;;;;;;;;;;;;;;;;;;dac 0.25;;;;optimistic;dac.feels 2.64, dac.fehes 10.56;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCSnoLim_370LUCSink_cheapDAC;0;06_NZ_CCSnoLim_370LUCSink;;;;;;;;;;;;;;;;;;;;;;;;;;;dac 0.25;;;;optimistic;dac.feels 2.64, dac.fehes 10.56;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#____Sensitivity H2:;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS110_expH2;0;06_NZ_CCS110;;;;;;;;;;;;;;;;;;;;;;;;;;elh2=2000;;GLO 15, EU27_regi 20, FRA 25, EWN 25;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS180_expH2;0;06_NZ_CCS180;;;;;;;;;;;;;;;;;;;;;;;;;;elh2=2000;;GLO 15, EU27_regi 20, FRA 25, EWN 25;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCSnoLim_expH2;0;06_NZ_CCSnoLim;;;;;;;;;;;;;;;;;;;;;;;;;;elh2=2000;;GLO 15, EU27_regi 20, FRA 25, EWN 25;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCSnoLim_370LUCSink_expH2;0;06_NZ_CCSnoLim_370LUCSink;;;;;;;;;;;;;;;;;;;;;;;;;;elh2=2000;;GLO 15, EU27_regi 20, FRA 25, EWN 25;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+# ____ HighImp Scenarios___;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS110_highImp;0;06_NZ_CCS110;;;;;;;;;;off;;EU27_regi.seliqsyn.1 128, EU27_regi.segasyn.1 128, EU27_regi.seh2.1 85;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS180_highImp;0;06_NZ_CCS180;;;;;;;;;;off;;EU27_regi.seliqsyn.1 128, EU27_regi.segasyn.1 128, EU27_regi.seh2.1 85;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCSnoLim_highImp;0;06_NZ_CCSnoLim;;;;;;;;;;off;;EU27_regi.seliqsyn.1 128, EU27_regi.segasyn.1 128, EU27_regi.seh2.1 85;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCSnoLim_370LUCSink_highImp;0;06_NZ_CCSnoLim_370LUCSink;;;;;;;;;;off;;EU27_regi.seliqsyn.1 128, EU27_regi.segasyn.1 128, EU27_regi.seh2.1 85;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+#____Sensitivity NoImp:;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS110_noImp;0;06_NZ_CCS110;;;;;;;;;;off;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCS180_noImp;0;06_NZ_CCS180;;;;;;;;;;off;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCSnoLim_noImp;0;06_NZ_CCSnoLim;;;;;;;;;;off;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+06_NZ_CCSnoLim_370LUCSink_noImp;0;06_NZ_CCSnoLim_370LUCSink;;;;;;;;;;off;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+# ___ Tests____;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
