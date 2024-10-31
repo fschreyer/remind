@@ -293,7 +293,7 @@ $setglobal capitalMarket  debt_limit           !! def = debt_limit
 *' * (standard): macro-economic commodities and primary energy commodities trading
 *' * (se_trade): macro-economic commodities, primary energy commodities and secondary energy hydrogen and electricity trading
 *' * (capacity): capacity-based trade implementation
-$setglobal trade  standard           !! def = standard
+$setglobal trade  se_trade           !! def = standard
 *'----------------------   26_agCosts  ----------------------------------------
 *'
 *' * (off): agricultural costs zero, no trade taken into account
@@ -1699,12 +1699,15 @@ $setGLobal c_agricult_base_shift off !! def off
 *** Note that all regions to which this switch is not applied receive the default parameter values.
 *** For details, please see ./modules/21_tax/on/equations.gms.
 $setGLobal cm_elh2_tax_rampup standard !! def standard
-*** H2 policy flag
-*** Allows to set specific H2-related policies
+*** cm_EU_techpol
+*** Allows to set specific EU-related technology policies
 *** Options:
 *** off -> no additional policy
-*** Refuel_EU -> minimum e-fuel demand of 8 TWh/yr in 2030 by aviation ReFUEL-EU quota in EU27, distributed by GDP to EU regions
-$setGLobal cm_H2_policy off !! def off
+*** Opt2030 -> assumes 	1) minimum e-fuel demand of 10 TWh/yr in 2030 (based on ReFuelEU quota)
+***		       	2) minimum CO2 storage of 25 Mt CO2/yr available to EU based on
+***			   IEA CCUS project pipeline until 2030 and 88% failure rate
+*** both bounds are distributed across EU regions via GDP
+$setGLobal cm_EU_techpol "Opt2030" !! def off !! regexp = off|Opt2030
 *** wind offshore switch
 *** cm_wind_offshore  1, wind energy is represented by "wind" and "windoff", where "wind" means wind onshore. Later this will be the default and the name "wind" will be made to change to windon
 *** cm_wind_offshore  0, means wind energy is only represented by "wind", which is a mixture of both wind onshore and wind offshore
