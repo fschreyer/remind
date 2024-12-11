@@ -79,6 +79,7 @@ gdp_SSP2EU_CAMP_strong "CAMPAIGNers scenario with high ambition lifestyle change
 gdp_SSP2_demDiffer_IKEA "Demand reduction in Global North (CAZ,EUR,JPN,NEU,USA) and demand increase in Emerging regions (IND,LAM,OAS,SSA). Reduction follows the factor f of demRedStrong scenario, while increase uses factor 2-f."
 gdp_SSP2_demRedStrong "edget internal demScen, might be removed soon"
 gdp_SSP2_demRedWeak
+gdp_SSP2_highDemDEU
 /
 
 all_GDPpcScen    "all possible GDP per capita scenarios (GDP and Population from the same SSP-scenario"
@@ -135,16 +136,17 @@ SLCF_building_transport
 
 all_LU_emi_scen  "all emission baselines for CH4 and N2O land use emissions from MAgPIE"
 /
-    SDP         "very low emissions (from SDP scenario in MAgPIE)"
-          SDP_EI
-          SDP_MC
-          SDP_RC
-    SSP1        "low    emissions (from SSP1 scenario in MAgPIE)"
-    SSP2        "medium emissions (from SSP2 scenario in MAgPIE)"
-    SSP2EU
-          SSP3        "currently not available"
-    SSP4        "currently not available"
-    SSP5        "high   emissions (from SSP5 scenario in MAgPIE)"
+SDP         "very low emissions (from SDP scenario in MAgPIE)"
+SDP_EI
+SDP_MC
+SDP_RC
+SSP1        "low    emissions (from SSP1 scenario in MAgPIE)"
+SSP2        "medium emissions (from SSP2 scenario in MAgPIE)"
+SSP2EU
+SSP2_lowEn
+SSP3        "currently not available"
+SSP4        "currently not available"
+SSP5        "high   emissions (from SSP5 scenario in MAgPIE)"
 /
 
 all_fossilScen    "all possible scenarios for fossils"
@@ -922,6 +924,15 @@ set
 ;
 $endif.altFeEmiFac
 
+$ifthen.limitSolidsFossilRegi not %cm_limitSolidsFossilRegi% == "off"
+  set limitSolidsFossilextRegi(ext_regi) "set to store ext_regi regions where fossil solids use in each (sector x emiMkt) is limited by the amount used in the previous year" / %cm_limitSolidsFossilRegi% /
+      limitSolidsFossilRegi(all_regi)    "set to store regi regions where fossil solids use in each (sector x emiMkt) is limited by the amount used in the previous year"
+  ;
+  loop(ext_regi$limitSolidsFossilextRegi(ext_regi),
+    limitSolidsFossilRegi(all_regi)$(regi_group(ext_regi,all_regi)) = YES;
+  );
+$endif.limitSolidsFossilRegi
+
 ***###############################################################################
 ***######################## R SECTION START (MODULES) ###############################
 *** THIS CODE IS CREATED AUTOMATICALLY, DO NOT MODIFY THESE LINES DIRECTLY
@@ -1125,13 +1136,6 @@ opTime5(opTimeYr) "actual life time of ??? in years - 5 years time steps for the
 t(ttot) $ (ttot.val ge cm_startyear) = Yes;
 tsu(ttot) $ (ttot.val lt 2005) = Yes;
 display ttot;
-
-*** time sets used for MAGICC
-Sets
-  t_magiccttot(tall) "time periods including spin-up"
-  t_magicc(tall)     "time periods exported to magicc"
-  t_extra(tall)      "averaging between REMIND and MAGICC" / 2000 * 2004 /
-;
 
 
 
@@ -2209,18 +2213,6 @@ xirog       "parameters decribing exhaustible extraction coss including long-run
 *** This is a work-around to ensure emissions are printed in correct order.
   numberEmiRCP "number of emission types" / 1 * 23 /
 
-  unitsMagicc "units used for MAGICC"
-  /
-    GtC
-    kt
-    Mt
-    MtCH4
-    MtCO
-    MtN
-    MtN2O-N
-    MtS
-  /
-
 ***-----------------------------------------------------------------------------
 *** Definition of the main characteristics set 'char':
 ***-----------------------------------------------------------------------------
@@ -2949,68 +2941,6 @@ sectorEndoEmi2te(all_enty,all_enty,all_te,sectorEndoEmi)   "map sectors to techn
         seliqbio.fepet.tdbiopet.trans
         seliqfos.fepet.tdfospet.trans
         seliqsyn.fepet.tdsynpet.trans
-/
-emiRCP2emiREMIND "mapping between emission types expected by MAGICC and provided by REMIND"
-/
-    CO    . CO
-    NMVOC . VOC
-    NOx   . NOx
-    SOx   . SO2
-    BC    . BC
-    OC    . OC
-/
-emiFgas2emiRCP(all_enty,emiRCP)   "match F-gases to MAGICC emissions"
-/
-    emiFgasCF4       . CF4
-    emiFgasC2F6      . C2F6
-    emiFgasC6F14     . C6F14
-    emiFgasHFC23     . HFC23
-    emiFgasHFC32     . HFC32
-    emiFgasHFC43-10  . HFC43-10
-    emiFgasHFC125    . HFC125
-    emiFgasHFC134a   . HFC134a
-    emiFgasHFC143a   . HFC143a
-    emiFgasHFC227ea  . HFC227ea
-    emiFgasHFC245fa  . HFC245fa
-    emiFgasSF6       . SF6
-/
-emiRCP2order "order of emission types expected by MAGICC"
-/
-    FossilCO2 .  1
-    OtherCO2  .  2
-    CH4       .  3
-    N2O       .  4
-    SOx       .  5
-    CO        .  6
-    NMVOC     .  7
-    NOx       .  8
-    BC        .  9
-    OC        . 10
-    NH3       . 11
-    CF4       . 12
-    C2F6      . 13
-    C6F14     . 14
-    HFC23     . 15
-    HFC32     . 16
-    HFC43-10  . 17
-    HFC125    . 18
-    HFC134a   . 19
-    HFC143a   . 20
-    HFC227ea  . 21
-    HFC245fa  . 22
-    SF6       . 23
-/
-
-emiRCP2unitsMagicc(emiRCP,unitsMagicc) "match units to emission types"
-/
-    (FossilCO2,OtherCO2)  . GtC
-    (CH4)                 . MtCH4
-    (N2O)                 . MtN2O-N
-    (SOx)                 . MtS
-    (CO)                  . MtCO
-    (NH3,NOx)             . MtN
-    (NMVOC,BC,OC)         . Mt
-    (CF4,C2F6,C6F14,HFC23,HFC32,HFC43-10,HFC125,HFC134a,HFC143a,HFC227ea,HFC245fa,SF6) . kt
 /
 
 

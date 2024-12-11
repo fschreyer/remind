@@ -85,10 +85,16 @@ vm_prodSe.fx(t,regi,"pecoal","seel","pco") = 0;
 vm_demPe.fx(t,regi,"pewin","seel","wind") = 0;
 vm_prodSe.fx(t,regi,"pewin","seel","wind") = 0;
 
-*' Switch off grey hydrogen investments in gash2 technology from 2025. Our current seh2 hydrogen represents only additional (clean) hydrogen use cases to current ones
-*' and there are no plans to expand grey hydrogen production for that.
+*' Switch off coal-h2 hydrogen investments. Our current seh2 hydrogen represents only additional (clean) hydrogen use cases to current ones.
+*' However, as we have too high H2 demand in 2025 and 2030 from the input data, we need to allow grey hydrogen for these time periods to meet the hydrogen demand
+*' which cannot be fully met by incoming low-carbon H2 techologies. This should be removed once FE H2 industry input data is adapted.
 *' It is allowed before 2020 to not make the model infeasible for low demands of hydrogen in that year.
-vm_deltaCap.up(t,regi,"gash2",rlf)$((t.val ge 2025)) = 1e-8;
+vm_deltaCap.fx(t,regi,"coalh2",rlf)$(t.val ge 2020) = 0;
+vm_deltaCap.fx(t,regi,"gash2",rlf)$((t.val gt 2030)) = 0;
+*' upper bound of 0.5 EJ/yr on grey hydrogen to prevent building too much grey H2 before 2020, distributed to regions via GDP share
+vm_cap.up("2020",regi,"gash2","1") =  0.5 / 3.66 * 1e3 / 8760 * pm_gdp("2020",regi) / sum(regi2,pm_gdp("2020",regi2));
+
+
 *' @stop
 
 *** -----------------------------------------------------------------------------------------------------------------
@@ -287,6 +293,30 @@ loop(te$(sameas(te,"ngcc") OR sameas(te,"ngt") OR sameas(te,"gaschp")),
   vm_cap.lo("2015",regi,te,"1")$pm_histCap("2015",regi,te) = 0.95 * pm_histCap("2015",regi,te);
   vm_cap.lo("2020",regi,te,"1")$pm_histCap("2020",regi,te) = 0.95 * pm_histCap("2020",regi,te);
 );
+
+
+*** bounds on near-term electrolysis capacities
+*' set lower and upper bounds for 2025 based on projects annoucements
+*' from IEA Hydryogen project database:
+*' https://www.iea.org/data-and-statistics/data-product/hydrogen-production-and-infrastructure-projects-database
+*' distribute to regions via GDP share
+*' in future this should be differentiated by region based on regionalized input data of project announcements
+*' 2 GW(el) at least globally in 2025, about operational capacity as of 2023
+vm_cap.lo("2025",regi,"elh2","1")= 2 * pm_eta_conv("2025",regi,"elh2")*pm_gdp("2025",regi)
+                                         / sum(regi2,pm_gdp("2025",regi2)) * 1e-3;
+*' 20 GW(el) at maximum globally in 2025 (be more generous to not overconstrain regions which scale-up fastest)
+vm_cap.up("2025",regi,"elh2","1")= 20 * pm_eta_conv("2025",regi,"elh2")*pm_gdp("2025",regi)
+                                         / sum(regi2,pm_gdp("2025",regi2)) * 1e-3;
+
+*** bounds on biomass technologies
+*' set upper bounds on biomass gasification for h2 production, which is not deployed as of 2025
+*' set maximum of 0.1 EJ/yr production by 2030 for each technology
+vm_cap.up("2030",regi,"bioh2","1")= 0.1 / 3.66 * 1e3 / 8760 * pm_gdp("2030",regi) / sum(regi2,pm_gdp("2030",regi2));
+vm_cap.up("2030",regi,"bioh2c","1")= 0.1 / 3.66 * 1e3 / 8760 * pm_gdp("2030",regi) / sum(regi2,pm_gdp("2030",regi2));
+
+
+*** fix capacities for advanced bio carbon capture technologies to zero in 2020 (i.e. no BECCS in 2020)
+vm_cap.fx("2020",regi,te,rlf)$(teBio(te) AND teCCS(te)) = 0;
 
 *** fix emissions to historical emissions in 2010
 *** RP: turned off in March 2018, as it produces substantial negative side-effects (requiring strong early retirement in 2010, which influences the future investments even in Reference scenarios)
@@ -520,8 +550,8 @@ v_shfe.lo(t,regi,entyFe,sector)$pm_shfe_lo(t,regi,entyFe,sector) = pm_shfe_lo(t,
 v_shGasLiq_fe.up(t,regi,sector)$pm_shGasLiq_fe_up(t,regi,sector) = pm_shGasLiq_fe_up(t,regi,sector);
 v_shGasLiq_fe.lo(t,regi,sector)$pm_shGasLiq_fe_lo(t,regi,sector) = pm_shGasLiq_fe_lo(t,regi,sector);
 
-*** RH: Fix H2 in buildings to zero until given year (always zero by default)
-vm_demFeSector.up(t,regi,"seh2","feh2s","build",emiMkt)$(t.val le c_H2InBuildOnlyAfter) = 0;
+*** Set H2 upper bound in buildings for years defined at cm_H2InBuildOnlyAfter
+vm_demFeSector.up(t,regi,"seh2","feh2s","build",emiMkt)$(t.val le cm_H2InBuildOnlyAfter) = 1e-6;
 
 ***----------------------------------------------------------------------------
 ***  Controlling if active, dampening factor to align edge-t non-energy transportation costs with historical GDP data

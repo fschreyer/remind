@@ -25,8 +25,9 @@ pm_temperatureImpulseResponseCO2(tall,tall) = 0;
 vm_demFeForEs.L(t,regi,entyFe,esty,teEs) = 0;
 vm_demFeForEs.L(t,regi,fe2es(entyFe,esty,teEs)) = 0.1;
 
-pm_taxCO2eq_iterationdiff(t,regi) = 0;
-pm_taxCO2eq_iterationdiff_tmp(t,regi) = 0;
+*** -------- initial declaration of parameters for iterative target adjustment
+pm_taxCO2eq_anchor_iterationdiff(t) = 0;
+pm_taxCO2eq_anchor_iterationdiff_tmp(t) = 0;
 
 *------------------------------------------------------------------------------------
 ***                        calculations based on sets
@@ -153,6 +154,11 @@ table f_dataglob_SSP5(char,all_te)        "Techno-economic assumptions consisten
 $include "./core/input/generisdata_tech_SSP5.prn"
 $include "./core/input/generisdata_trade.prn"
 ;
+table f_dataglob_SSP3(char,all_te)        "Techno-economic assumptions consistent with SSP3"
+$include "./core/input/generisdata_tech_SSP3.prn"
+$include "./core/input/generisdata_trade.prn"
+;
+
 
 *** initializing energy service capital
 pm_esCapCost(tall,all_regi,all_teEs) = 0;
@@ -186,6 +192,9 @@ if (c_techAssumptScen eq 2,
 );
 if (c_techAssumptScen eq 3,
                fm_dataglob(char,te) = f_dataglob_SSP5(char,te)
+);
+if (c_techAssumptScen eq 4,
+               fm_dataglob(char,te) = f_dataglob_SSP3(char,te)
 );
 
 *RP* include global flexibility parameters
@@ -959,6 +968,7 @@ $offdelim
 
 $if %cm_LU_emi_scen% == "SSP1"   p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047/sm_EJ_2_TWa;
 $if %cm_LU_emi_scen% == "SSP2"   p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079/sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP2_lowEn"   p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079/sm_EJ_2_TWa;
 $if %cm_LU_emi_scen% == "SSP3"   p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079/sm_EJ_2_TWa;
 $if %cm_LU_emi_scen% == "SSP5"   p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0066/sm_EJ_2_TWa;
 $if %cm_LU_emi_scen% == "SDP"    p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047/sm_EJ_2_TWa;
@@ -1001,10 +1011,14 @@ $include "./core/input/f_maxProdGradeRegiWindOff.cs3r"
 $offdelim
 ;
 pm_dataren(all_regi,"maxprod",rlf,"windoff") = sm_EJ_2_TWa * f_maxProdGradeRegiWindOff(all_regi,"maxprod",rlf);
-pm_dataren(all_regi,"nur",rlf,"windoff")     = 1.25 * f_maxProdGradeRegiWindOff(all_regi,"nur",rlf);  !! increase wind offshore capacity factors by 25% as the NREL values seem to underestimate offshore capacity factors compared to historic values
+*** increase wind offshore capacity factors by 25% to account for very different real-world values
+*** NREL values seem underestimated, potentially partially due to assuming low turbines
+pm_dataren(all_regi,"nur",rlf,"windoff")     = 1.25 * f_maxProdGradeRegiWindOff(all_regi,"nur",rlf);
 
-pm_shareWindPotentialOff2On(all_regi) = sum(rlf,f_maxProdGradeRegiWindOff(all_regi,"maxprod",rlf)$(rlf.val le 8)) /
-                      sum(rlf,f_maxProdGradeRegiWindOn(all_regi,"maxprod",rlf)$(rlf.val le 8));
+pm_shareWindPotentialOff2On(all_regi) =
+    sum(rlf $ (rlf.val le 8), f_maxProdGradeRegiWindOff(all_regi,"maxprod",rlf))
+  /
+    sum(rlf $ (rlf.val le 8), f_maxProdGradeRegiWindOn( all_regi,"maxprod",rlf));
 
 pm_shareWindOff("2010",regi) = 0.05;
 pm_shareWindOff("2015",regi) = 0.1;
@@ -1055,20 +1069,28 @@ display p_datapot, pm_dataren;
 *** --------------------------------------------------------------------------
 loop(regi,
   loop(teReNoBio(te),
-    p_aux_capToDistr(regi,te) = pm_histCap("2015",regi,te)$(pm_histCap("2015",regi,te) gt 1e-10);
-    s_aux_cap_remaining = p_aux_capToDistr(regi,te);
-*RP* fill up the renewable grades to calculate the total capacity needed to produce the amount calculated in initialcap2,
-***    assuming the best grades are filled first (with 20% of each grade not yet used)
+    p_aux_capToDistr(regi,te) = pm_histCap("2015",regi,te) $ (pm_histCap("2015",regi,te) gt 1e-10);
 
-    loop(teRe2rlfDetail(te,rlf)$(pm_dataren(regi,"nur",rlf,te) > 0),
+*** Knowing the historical capacity (pm_histCap) in 2015, let us estimate on which grades this capacity was distributed.
+*** We assume that the best grades were filled first, but only up to 80% of their potential.
+    s_aux_cap_remaining = p_aux_capToDistr(regi,te);
+    loop(teRe2rlfDetail(te,rlf) $ (pm_dataren(regi,"nur",rlf,te) > 0),
       if(s_aux_cap_remaining > 0,
-        p_aux_capThisGrade(regi,te,rlf) = min(s_aux_cap_remaining, ( (pm_dataren(regi,"maxprod",rlf,te) * 0.8) / pm_dataren(regi,"nur",rlf,te) ) );
-        s_aux_cap_remaining         = s_aux_cap_remaining - p_aux_capThisGrade(regi,te,rlf);
+        p_aux_capThisGrade(regi,te,rlf) = min(
+            s_aux_cap_remaining,
+            0.8 * pm_dataren(regi,"maxprod",rlf,te) / pm_dataren(regi,"nur",rlf,te)); !! installedCapacity = maxprod / capacityFactor 
+        s_aux_cap_remaining = s_aux_cap_remaining - p_aux_capThisGrade(regi,te,rlf);
       );
     );  !! teRe2rlfDetail
 
-    p_avCapFac2015(regi,te) = sum(teRe2rlfDetail(te,rlf), p_aux_capThisGrade(regi,te,rlf) * pm_dataren(regi,"nur",rlf,te) )
-                                 / ( sum(teRe2rlfDetail(te,rlf), p_aux_capThisGrade(regi,te,rlf) ) + 1e-10)
+*** With this estimated distribution of capacity across grades (p_aux_capThisGrade),
+*** let us compute the average capacity factor of each technology in 2015 (p_avCapFac2015).
+    p_avCapFac2015(regi,te) =
+        sum(teRe2rlfDetail(te,rlf),
+          p_aux_capThisGrade(regi,te,rlf) * pm_dataren(regi,"nur",rlf,te))
+      / 
+        (sum(teRe2rlfDetail(te,rlf), p_aux_capThisGrade(regi,te,rlf))
+        + 1e-10)
   );    !! teReNoBio
 );      !! regi
 
@@ -1089,34 +1111,31 @@ $offdelim
 p_histCapFac(tall,all_regi,"windon") $ (p_histCapFac(tall,all_regi,"windon") eq 0) = p_histCapFac(tall,all_regi,"wind");
 p_histCapFac(tall,all_regi,"wind") = 0;
 
-*** RP rescale wind capacity factors in REMIND to account for very different real-world CF 
-*** (potentially partially due to assumed low-wind turbine set-ups in the NREL data)
-*** Because of the lag effect (turbines in the 2000s were much smaller and thus yielded lower CFs),
-*** only implement half of the calculated ratio of historic to REMIND capFac as rescaling for the new CFs - realised as (x+1)/2
 
-*cb* CF calibration analogously for wind and spv: calibrate 2015, and assume gradual phase-in of grade-based CF (until 2045 for wind, until 2030 for spv)
-p_aux_capacityFactorHistOverREMIND(regi,"windon")  $ p_avCapFac2015(regi,"windon")  = p_histCapFac("2015",regi,"windon")  / p_avCapFac2015(regi,"windon");
-p_aux_capacityFactorHistOverREMIND(regi,"windoff") $ p_avCapFac2015(regi,"windoff") = p_histCapFac("2015",regi,"windoff") / p_avCapFac2015(regi,"windoff");
+*** Capacity factor for wind and solar
+*** Effective capacity factor pm_dataren("nur") * pm_cf scales from historical values in 2015 to grade-based values in 2030
+***   pm_dataren("nur",rlf) is the capacity factor of a given rlf grade
+***   pm_cf is a multiplier that scales linearly from p_aux_capacityFactorHistOverREMIND in 2015 to 1 in 2030
+*** This scaling accounts for lag effects, for instance turbines in the 2000s were much smaller hence yielding lower capacity factors
+p_aux_capacityFactorHistOverREMIND(regi,teVRE) = 1;
+p_aux_capacityFactorHistOverREMIND(regi,teVRE) $ (p_histCapFac("2015",regi,teVRE) and p_avCapFac2015(regi,teVRE)) =
+  p_histCapFac("2015",regi,teVRE) / p_avCapFac2015(regi,teVRE);
 
-*** linear phase-in of Remind capacity factors instead of historical ones
-loop(t$(t.val ge 2015 AND t.val le 2035),
-  pm_cf(t,regi,teWind) =
-    (2035 - pm_ttot_val(t)) / (2035-2015) * pm_cf(t,regi,teWind) * p_aux_capacityFactorHistOverREMIND(regi,teWind)
-    +
-    (pm_ttot_val(t) - 2015) / (2035-2015) * pm_cf(t,regi,teWind)
+loop(t $ (t.val ge 2015 AND t.val lt 2030),
+  pm_cf(t,regi,teVRE) =
+    pm_cf(t,regi,teVRE) !! always 1 for VRE in f_cf, but could be modified by modules
+    * ( (2030 - pm_ttot_val(t)) * p_aux_capacityFactorHistOverREMIND(regi,teVRE)
+      + (pm_ttot_val(t) - 2015)
+    ) / (2030 - 2015) 
 );
 
 *CG* set storage and grid of windoff to be the same as windon
 pm_cf(t,regi,"storwindoff") = pm_cf(t,regi,"storwindon");
 pm_cf(t,regi,"gridwindoff") = pm_cf(t,regi,"gridwindon");
 
-p_aux_capacityFactorHistOverREMIND(regi,"spv")$p_avCapFac2015(regi,"spv") =  p_histCapFac("2015",regi,"spv") / p_avCapFac2015(regi,"spv");
-pm_cf("2015",regi,"spv") = pm_cf("2015",regi,"spv") * p_aux_capacityFactorHistOverREMIND(regi,"spv");
-pm_cf("2020",regi,"spv") = pm_cf("2020",regi,"spv") * (p_aux_capacityFactorHistOverREMIND(regi,"spv")+1)/2;
-pm_cf("2025",regi,"spv") = pm_cf("2025",regi,"spv") * (p_aux_capacityFactorHistOverREMIND(regi,"spv")+3)/4;
 
 
-display p_aux_capacityFactorHistOverREMIND, pm_dataren;
+display p_aux_capacityFactorHistOverREMIND, pm_dataren, pm_cf;
 
 
 *** FS: sensitivity scenarios for renewable potentials
@@ -1191,7 +1210,6 @@ $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
   p_adj_seed_te(ttot,regi,"bfcc")            = 0.05;
   p_adj_seed_te(ttot,regi,"idrcc")           = 0.05;
 $endif.cm_subsec_model_steel
-  p_adj_seed_te(ttot,regi,"elh2") = 0.5;
   p_adj_seed_te(ttot,regi,"MeOH") = 0.5;
   p_adj_seed_te(ttot,regi,"h22ch4") = 0.5;
 
@@ -1232,7 +1250,6 @@ $endif.cm_subsec_model_steel
   p_adj_coeff(ttot,regi,teGrid)            = 0.3;
   p_adj_coeff(ttot,regi,teStor)            = 0.05;
   
-  p_adj_coeff(ttot,regi,"elh2")            = 0.5;
   p_adj_coeff(ttot,regi,"MeOH")            = 0.5;
   p_adj_coeff(ttot,regi,"h22ch4")            = 0.5;
 
@@ -1503,31 +1520,6 @@ pm_incinerationRate(ttot,all_regi)=f_incinerationShares(ttot,all_regi);
 *** the differences are cancelled out here!!!
 pm_cesdata(ttot,regi,in,"offset_quantity")$(ttot.val ge 2005)       = 0;
 
-*** ----- MAGICC RCP scenario emission data -----------------------------------
-*** load default values from the scenario depending on cm_rcp_scen
-*** (0): no RCP scenario, standard setting
-*** (1): RCP2.6 - this only works with emiscen = 8
-*** (2): RCP3.7 - this only works with emiscen = 5
-*** (3): RCP4.5 - this only works with emiscen = 5
-*** (4): RCP6.0 - this only works with emiscen = 5
-*** (5): RCP8.5 - this only works with emiscen = 5
-*** (6): RCP2.0 - this only works with emiscen = 8
-
-$include "./core/magicc/magicc_scen_bau.inc";
-$include "./core/magicc/magicc_scen_450.inc";
-$include "./core/magicc/magicc_scen_550.inc";
-
-*** ----- Parameters needed for MAGICC ----------------------------------------
-
-table p_regi_2_MAGICC_regions(all_regi,RCP_regions_world_bunkers)    "map REMIND to MAGICC regions"
-$ondelim
-$include "./core/input/p_regi_2_MAGICC_regions.cs3r"
-$offdelim
-;
-p_regi_2_MAGICC_regions(regi,"WORLD") = 1;
-p_regi_2_MAGICC_regions(regi,"BUNKERS") = 0;
-display p_regi_2_MAGICC_regions ;
-
 ***-----------------------------------------------------------------
 *RP* vintages
 ***-----------------------------------------------------------------
@@ -1547,8 +1539,6 @@ loop(te,
 );
 
 
-*** -------- initial declaration of parameters for iterative target adjustment
-o_reached_until2150pricepath(iteration) = 0;
 
 *** ---- FE demand trajectories for calibration -------------------------------
 *** also used for limiting secondary steel demand in baseline and policy
