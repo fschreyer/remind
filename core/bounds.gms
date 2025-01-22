@@ -85,12 +85,16 @@ vm_prodSe.fx(t,regi,"pecoal","seel","pco") = 0;
 vm_demPe.fx(t,regi,"pewin","seel","wind") = 0;
 vm_prodSe.fx(t,regi,"pewin","seel","wind") = 0;
 
-*' Switch off coal-h2 hydrogen investments. Our current seh2 hydrogen represents only additional (clean) hydrogen use cases to current ones.
+*' Switch off coal-h2 hydrogen investments after 2020, and gas-h2 investments after 2030. Our current seh2 hydrogen represents only additional (clean) hydrogen use cases to current ones.
 *' However, as we have too high H2 demand in 2025 and 2030 from the input data, we need to allow grey hydrogen for these time periods to meet the hydrogen demand
 *' which cannot be fully met by incoming low-carbon H2 techologies. This should be removed once FE H2 industry input data is adapted.
 *' It is allowed before 2020 to not make the model infeasible for low demands of hydrogen in that year.
 vm_deltaCap.fx(t,regi,"coalh2",rlf)$(t.val ge 2020) = 0;
-vm_deltaCap.fx(t,regi,"gash2",rlf)$((t.val gt 2030)) = 0;
+vm_deltaCap.fx(t,regi,"gash2",rlf)$(t.val gt 2030)  = 0;
+vm_cap.lo(t,regi,"coalh2",rlf)$(t.val ge 2020) = 0;
+vm_cap.lo(t,regi,"gash2",rlf)$(t.val gt 2030)  = 0;
+
+
 *' upper bound of 0.5 EJ/yr on grey hydrogen to prevent building too much grey H2 before 2020, distributed to regions via GDP share
 vm_cap.up("2020",regi,"gash2","1") =  0.5 / 3.66 * 1e3 / 8760 * pm_gdp("2020",regi) / sum(regi2,pm_gdp("2020",regi2));
 
@@ -299,7 +303,7 @@ loop(te$(sameas(te,"ngcc") OR sameas(te,"ngt") OR sameas(te,"gaschp")),
 *' set lower and upper bounds for 2025 based on projects annoucements
 *' from IEA Hydryogen project database:
 *' https://www.iea.org/data-and-statistics/data-product/hydrogen-production-and-infrastructure-projects-database
-*' distribute to regions via GDP share
+*' distribute to regions via GDP share of 2025 (we do not use later time steps as they may have different GDPs depending on the scenario)
 *' in future this should be differentiated by region based on regionalized input data of project announcements
 *' 2 GW(el) at least globally in 2025, about operational capacity as of 2023
 vm_cap.lo("2025",regi,"elh2","1")= 2 * pm_eta_conv("2025",regi,"elh2")*pm_gdp("2025",regi)
@@ -310,10 +314,12 @@ vm_cap.up("2025",regi,"elh2","1")= 20 * pm_eta_conv("2025",regi,"elh2")*pm_gdp("
 
 *** bounds on biomass technologies
 *' set upper bounds on biomass gasification for h2 production, which is not deployed as of 2025
-*' set maximum of 0.1 EJ/yr production by 2030 for each technology
-vm_cap.up("2030",regi,"bioh2","1")= 0.1 / 3.66 * 1e3 / 8760 * pm_gdp("2030",regi) / sum(regi2,pm_gdp("2030",regi2));
-vm_cap.up("2030",regi,"bioh2c","1")= 0.1 / 3.66 * 1e3 / 8760 * pm_gdp("2030",regi) / sum(regi2,pm_gdp("2030",regi2));
-
+*' allow for small production of 0.1 EJ/yr at by 2030 for each technology globally, distributed to regions by GDP share in 2025
+vm_cap.up("2030",regi,"bioh2","1")= 0.1 / 3.66 * 1e3 / 8760 * pm_gdp("2025",regi) / sum(regi2,pm_gdp("2025",regi2));
+vm_cap.up("2030",regi,"bioh2c","1")= 0.1 / 3.66 * 1e3 / 8760 * pm_gdp("2025",regi) / sum(regi2,pm_gdp("2025",regi2));
+*' allow zero vm_deltaCap for bio-H2 up to 2030 to be consistent with above bounds
+vm_deltaCap.lo(t,regi,"bioh2","1")$(t.val le 2030) = 0;
+vm_deltaCap.lo(t,regi,"bioh2c","1")$(t.val le 2030) = 0;
 
 *** fix capacities for advanced bio carbon capture technologies to zero in 2020 (i.e. no BECCS in 2020)
 vm_cap.fx("2020",regi,te,rlf)$(teBio(te) AND teCCS(te)) = 0;
