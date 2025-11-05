@@ -124,13 +124,19 @@ $ifThen.cm_implicitQttyTargetType "%cm_implicitQttyTargetType%" == "scenario"
 
   p47_implicitQttyTargetScenario("EU27_bio4"  ,"2035","EU27_regi","tax","t","PE","biomass") = 0.19;
   p47_implicitQttyTargetScenario("EU27_bio4"  ,"2050","EU27_regi","tax","t","PE","biomass") = 0.126667;
+  p47_implicitQttyTargetScenario("EU27_bio7"  ,t     ,"EU27_regi","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2050)) = 0.221666;
   p47_implicitQttyTargetScenario("EU27_bio7p5",t     ,"EU27_regi","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2050)) = 0.237825;
   p47_implicitQttyTargetScenario("EU27_bio12" ,t     ,"EU27_regi","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2050)) = 0.38;
+  p47_implicitQttyTargetScenario("GLO_bio100" ,t     ,"GLO","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2050)) = 3.17;
 
   p47_implicitQttyTargetScenario("EU27_limVRE" ,"2025","EU27_regi","tax","t","PE","wind")  = 0.072;
   p47_implicitQttyTargetScenario("EU27_limVRE" ,"2050","EU27_regi","tax","t","PE","wind")  = 0.201;
   p47_implicitQttyTargetScenario("EU27_limVRE" ,"2025","EU27_regi","tax","t","PE","solar") = 0.04;
   p47_implicitQttyTargetScenario("EU27_limVRE" ,"2050","EU27_regi","tax","t","PE","solar") = 0.168;
+
+  p47_implicitQttyTargetScenario("EU28_CCS250Mt",t    ,"EUR_regi","tax","t","CCS","all")$((t.val ge 2035) AND (t.val le 2050)) = 250;
+  p47_implicitQttyTargetScenario("GLO_CCS2Gt"   ,t    ,"GLO","tax","t","CCS","all")$((t.val ge 2035) AND (t.val le 2050)) = 2000;
+
 *** assign active scenarios to the current run
 loop(qttyTargetActiveScenario,
   pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,qttyTarget,qttyTargetGroup)$p47_implicitQttyTargetScenario(qttyTargetActiveScenario,ttot,ext_regi,taxType,targetType,qttyTarget,qttyTargetGroup) = p47_implicitQttyTargetScenario(qttyTargetActiveScenario,ttot,ext_regi,taxType,targetType,qttyTarget,qttyTargetGroup);
@@ -230,29 +236,6 @@ $IFTHEN.renewablesFloorCost not "%cm_renewables_floor_cost%" == "off"
 	parameter p_new_renewables_floor_cost(all_te) / %cm_renewables_floor_cost% /;
 	pm_data(regi,"floorcost",te)$((regi_group("EUR_regi",regi)) AND (p_new_renewables_floor_cost(te))) = pm_data(regi,"floorcost",te)  + p_new_renewables_floor_cost(te);
 $ENDIF.renewablesFloorCost
-
-*** VRE capacity factor adjustments for Germany in line with results from detailed models in ARIADNE project
- loop(te$sameas(te,"windon"),
-  loop(regi$sameas(regi,"DEU"),
-    pm_cf("2025",regi,te) =  1.04 * pm_cf("2025",regi,te);
-    pm_cf("2030",regi,te) =  1.08 * pm_cf("2030",regi,te);
-    pm_cf("2035",regi,te) =  1.12 * pm_cf("2035",regi,te);
-    pm_cf("2040",regi,te) =  1.16 * pm_cf("2040",regi,te);
-    pm_cf("2045",regi,te) =  1.2  * pm_cf("2045",regi,te);
-    pm_cf(t,regi,te)$(t.val gt 2045) =  pm_cf("2045",regi,te);
-  );
-);
-
-loop(te$sameas(te,"spv"),
-  loop(regi$sameas(regi,"DEU"),
-    pm_cf("2025",regi,te) =  1.02 * pm_cf("2025",regi,te);
-    pm_cf("2030",regi,te) =  1.04 * pm_cf("2030",regi,te);
-    pm_cf("2035",regi,te) =  1.06 * pm_cf("2035",regi,te);
-    pm_cf("2040",regi,te) =  1.08 * pm_cf("2040",regi,te);
-    pm_cf("2045",regi,te) =  1.10 * pm_cf("2045",regi,te);
-    pm_cf(t,regi,te)$(t.val gt 2045) =  pm_cf("2045",regi,te);
-  );
-);
 
 
 *** p_EmiLULUCFCountryAcc contains historic LULUCF emissions from UNFCCC, 

@@ -10,18 +10,88 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### input data/calibration
 
 ### changed
-- Consolidated the `MAGICC7_AR6.R` climate reporting script and the `climateAssessmentInterimRun.R` climate assessment iteration script for damage runs using the `remindClimateAssessment` and `piamenv` packages [[#2082](https://github.com/remindmodel/remind/pull/2082), [#2099](https://github.com/remindmodel/remind/pull/2099)]
-- Enhanced `reporting.R` to read extra data needed for reporting directly from inputdata [[#2084](https://github.com/remindmodel/remind/pull/2084)]
+- **45_carbonprice** Use ScenarioMIP settings as new default for regional carbon price differentiation in 45_carbonprice/functionalForm 
+    [[#2229](https://github.com/remindmodel/remind/pull/2229)]
 
 ### added
-- 
+- **40_techpol** implement renewable energy share targets for NPi2025 realization based on NewClimate policy protocol
+    [[#2226](https://github.com/remindmodel/remind/pull/2226)]
+
+### removed
+- **21_tax** remove input files with upper bounds on subsidies for final energy, as it is directly applied as part of input data generation
+    [#2207](https://github.com/remindmodel/remind/pull/2207)
+- **core** remove no longer used technolgies (pcc, pco, apCarPeT) 
+    [#2228](https://github.com/remindmodel/remind/pull/2228)    
+
+### fixed
+-
+
+
+## [3.5.2] - 2025-09-26
+
+### input data/calibration
+- **mrcommons** New input data rev including new subtype of landuse CO2 emissions (`co2luc`) 
+    [#167](https://github.com/pik-piam/mrcommons/pull/167)
+
+### changed
+
+- **scripts** Refactored the MAgPIE coupling interface (`getReportData.R`) introducing MAgPIE-to-REMIND mappings and replacing magclass with quitte/dplyr.
+    [#2103](https://github.com/remindmodel/remind/pull/2103)
+- **scripts** Upgrade renv from 1.1.4 to 1.1.5
+    [#2192](https://github.com/remindmodel/remind/pull/2192)
+- **core** Restructured core declarations file with different subsections and better documentation. Added units where missing and flagged declarations that can be either be removed or moved to another module in future steps.
+    [#2142](https://github.com/remindmodel/remind/pull/2142)
+- **core** Moved variable and parameter declarations from core to more fitting modules.
+    [#2189](https://github.com/remindmodel/remind/pull/2189)
+
+### added
+
+- **scripts** Make it possible to provide a renv.lock to be used for a run (useful for the releases)
+    [#2195](https://github.com/remindmodel/remind/pull/2195) 
+- **scripts** Update release scripts: the release uses the renv snapshot, the develop does not
+    [#2196](https://github.com/remindmodel/remind/pull/2196)
+- **11_aerosols** Add renewed pipeline exoGAINS2025 for the calculation of air pollutant emissions in REMIND. 
+    [#2205](https://github.com/remindmodel/remind/pull/2205) 
+- **33_CDR** Adds biochar as novel CDR option. Biochar can be produced via three established and one future pe2se technology.
+    [#2168](https://github.com/remindmodel/remind/pull/2168)
+
+### removed
+
+- **11_aerosols** Remove old pipeline exoGAINS for the calculation of air pollutant emissions in REMIND. 
+    [#2209](https://github.com/remindmodel/remind/pull/2209)
+- **21_tax** remove input file with upper bound on subsidy for fuel extraction, as it no longer has any effect on the data 
+    [#2201](https://github.com/remindmodel/remind/pull/2201)
+
+### fixed
+-
+
+
+## [3.5.1] - 2025-07-10
+
+
+### changed
+- **scripts** Consolidated the `MAGICC7_AR6.R` climate reporting script and the `climateAssessmentInterimRun.R` climate assessment iteration script 
+    for damage runs using the `remindClimateAssessment` and `piamenv` packages 
+    [[#2082](https://github.com/remindmodel/remind/pull/2082)], 
+    [[#2099](https://github.com/remindmodel/remind/pull/2099)]
+- **scripts** Enhanced `reporting.R` to read extra data needed for reporting directly from inputdata 
+    [[#2084](https://github.com/remindmodel/remind/pull/2084)]
+- **scripts** nashAnalysis is deprecated in favor of improved nashConvergenceReport.
+    [[#2138](https://github.com/remindmodel/remind/pull/2138)]
+- **core** Updated costs for learning technologies based on the data in the IRENA 2023 report Renewable Power Generation Costs, 
+    and made the convergence from regional to global values slower. Increased floor costs for wind onshore, decreased floor costs for wind offshore, 
+    and increased learning rates for both on- and offshore. 
+- **core** restricted near-term growth of electrolysis by putting a global upper bound of 100 GW(el) in 2030 and 
+    increasing adjustment cost parameter and decreasing adjustment cost seed value 
+    [[#2126](https://github.com/remindmodel/remind/pull/2126)]
+
+### added
+- **45_carbonprice** ScenarioMIP settings for regional carbon price differentiation added to 45_carbonprice/functionalForm [[#2117](https://github.com/remindmodel/remind/pull/2117)]
 
 ### removed
 - **config** Two scenario config files (damagepaper) were used for the NGFS runs but are not needed anymore.
   [[#2107](https://github.com/remindmodel/remind/pull/2107)]
-
-### fixed
--
+- **45_carbonprice/46_carbonpriceRegi** remove reading in and printing contents of `fm_histShare.cs3r`
 
 
 ## [3.5.0] - 2025-04-04

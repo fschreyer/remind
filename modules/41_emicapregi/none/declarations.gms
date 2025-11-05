@@ -4,10 +4,15 @@
 *** |  AGPL-3.0, you are granted additional permissions described in the
 *** |  REMIND License Exception, version 1.0 (see LICENSE file).
 *** |  Contact: remind@pik-potsdam.de
-*** SOF ./modules/35_transport/edge_esm/output.gms
+*** SOF ./modules/41_emicapregi/none/declarations.gms
 
-$ifthen.calibrate %CES_parameters% == "load"
-  Execute "Rscript -e 'edgeTransport::iterativeEdgeTransport()'";
-$endif.calibrate
+variables
+vm_perm(ttot,all_regi)                              "emission allowances [GtCeq]"
+;
 
-*** EOF ./modules/35_transport/edge_esm/output.gms
+parameter
+pm_shPerm(tall, all_regi)                           "emission permit shares [share]"
+pm_emicapglob(tall)                                 "global emission cap [GtC]"
+;
+
+*** EOF ./modules/41_emicapregi/none/declarations.gms
