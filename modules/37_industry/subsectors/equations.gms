@@ -205,6 +205,99 @@ q37_costCESmarkup(t,regi,in)$(ppfen_industry_dyn37(in))..
 ;
 
 ***--------------------------------------------------------------------------
+*'  Biomass Substitution Cost
+*'
+*'  For the substitution of coal with biomass, biomass substitution cost in industry
+*'  are assumed to follow a convex cost curve depending on the share of biomass in total
+*'  solid fuel use in industry.
+*'  The general logic is that biomass substitution starts in sectors where substitution is
+*'  relatively easy as it is only used energetically (in other industry and cement) and becomes
+*'  more expensive once the biomass substitution reaches the steel and chemicals sectors
+*'  where more pre-treatment is necessary to substitute it in the production processes. 
+*'  The substitution cost curve is defined as follows:
+*'  C(q) = a * s * q
+*'  where C are the total biomass substitution costs in industry,
+*'  s is the share of biomass in total solid fuel use in industry,
+*'  q is the total biomass use in industry. 
+*'  Moreover, a is the steepness of the cost curve which depends on the share of 
+*'  solids used for steel and chemicals in total industry solids ((feso_steel + feso_chemicals) / feso_total)
+*'  as well as  on the assumed marginal cost of biomass substitution once biomass 
+*'  is used in the steel and chemicals sector (C_threshold).
+*'  This pre-factor (a) is calculated such that the marginal costs at the threshold share are equal to C_threshold
+*'  once the biomass share reaches the share of solids not used in steel and chemicals:
+*'  dC / dq = a * s, if s = 1 - (feso_steel + feso_chemicals) / feso_total -> dC/dq = C_threshold. This gives:
+*'  a = C_threshold / (1 - (feso_steel + feso_chemicals) / feso_total).
+*'  Note that strictly speaking s also depends on q, which effectively adds an extra term to the marginal cost the model sees
+*'  due to increasing share of biomass (s) with higher biomass (q). However, to calibrate the function
+*'  we neglect this effect as bottom-up marginal costs are usually given for specific small replacements. 
+***--------------------------------------------------------------------------
+
+*' calculate biomass share in industry for solid fuels (fesos)
+q37_bioShareIndst(t,regi,entyFe)$( sameAs(entyFe,"fesos")) ..
+  v37_bioShareIndst(t,regi,entyFe)
+  * sum( (se2fe(entySe,entyFe,te),emiMkt),
+      vm_demFeSector_afterTax(t,regi,entySe,entyFe,"indst",emiMkt)
+    )
+  =e=
+    sum( (se2fe(entySeBio,entyFe,te),emiMkt),
+      vm_demFeSector_afterTax(t,regi,entySeBio,entyFe,"indst",emiMkt)
+    )
+;
+
+*' calculate share of steel and chemicals in total solid fuel use in industry
+q37_steelChemSolidShare(t,regi) ..
+  v37_steelChemSolidShare(t,regi)
+  * ( sum(fe2ppfEn(entyFe,ppfen_industry_dyn37(in)),
+        sum(secInd37_emiMkt(secInd37,emiMkt),
+          sum(secInd37_2_pf(secInd37,in),
+            vm_cesIO(t,regi,in)
+          )
+        )
+      )
+    + sum( (secInd37_emiMkt(secInd37Prc,emiMkt),
+            secInd37_tePrc(secInd37Prc,tePrc),
+            tePrc2opmoPrc(tePrc,opmoPrc)),
+        pm_specFeDem(t,regi,"fesos",tePrc,opmoPrc)
+        * vm_outflowPrc(t,regi,tePrc,opmoPrc)
+      )
+  )
+  =e=
+  sum(fe2ppfEn(entyFe,ppfen_industry_dyn37(in)),
+        sum(secInd37_emiMkt(secInd37,emiMkt)$(     sameas(secInd37,"steel") 
+                                                OR sameas(secInd37,"chemicals")),
+          sum(secInd37_2_pf(secInd37,in),
+            vm_cesIO(t,regi,in)
+          )
+        )
+      )
+    + sum( (secInd37_emiMkt(secInd37Prc,emiMkt),
+            secInd37_tePrc(secInd37Prc,tePrc),
+            tePrc2opmoPrc(tePrc,opmoPrc)),
+        pm_specFeDem(t,regi,"fesos",tePrc,opmoPrc)
+        * vm_outflowPrc(t,regi,tePrc,opmoPrc)
+      )
+;
+
+*' calculate biomass substitution cost pre-factor depending on steel and chemicals share in solid fuel use
+q37_bioSubstCostPrefactor(t,regi) ..
+  v37_bioSubstCostPrefactor(t,regi)
+  =e=
+    p37_bioSubstCostThreshold(t,regi)
+  / ( 1 - v37_steelChemSolidShare(t,regi) )
+; 
+
+*' calculate substitution cost for biomass solids in industry
+q37_bioSubstCostIndst(t,regi) ..
+  vm_bioSubstCostIndst(t,regi)
+  =e=
+  v37_bioSubstCostPrefactor(t,regi)
+  * v37_bioShareIndst(t,regi,"fesos")
+  * sum( (se2fe(entySeBio,entyFe,te),emiMkt),
+      vm_demFeSector_afterTax(t,regi,entySeBio,entyFe,"indst",emiMkt)
+    )
+;
+
+***--------------------------------------------------------------------------
 *'  Feedstock balances
 *'
 *'  Feedstocks are used for emissions accounting of the chemicals sector,

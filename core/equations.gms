@@ -48,6 +48,9 @@ q_costInv(t,regi)..
   sum(in$(ppfen_CESMkup(in)),
     vm_costCESMkup(t,regi,in)
   )
+*** biomass subsitution cost in industry (solid biomass needs to be pre-treated, industry processes adapted, e.g when using biomass in blast-furnaces instead of coal)
+  +
+  vm_bioSubstCostIndst(t,regi)
 ;
 
 

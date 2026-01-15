@@ -666,6 +666,10 @@ loop((ttot,ext_regi)$p37_wasteIncinerationCCSMaxShare(ttot,ext_regi),
 );
 $endIf.cm_wasteIncinerationCCSshare
 
+
+*** biomass subsitution cost
+p37_bioSubstCostThreshold(t,regi) = cm_bioSubstCostIndst * sm_TWa_2_MWh * 1e-12;  !! convert from $/MWh to $/TWa
+
 *** ---------------------------------------------------------------------------
 ***        2. Process-Based
 *** ---------------------------------------------------------------------------

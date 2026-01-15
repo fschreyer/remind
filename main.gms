@@ -664,6 +664,11 @@ parameter
   cm_IndCCSscen          = 1;        !! def = 1
 *'
 parameter
+  cm_bioSubstCostIndst             "Parameter to define biomass substitution cost function in industry, determines marginal cost of substituting coal by biomass once replacement reaches steel and chemicals [US$/MWh]"
+;
+  cm_bioSubstCostIndst          = 30;        !! def = 30
+*'
+parameter
   cm_optimisticMAC          "assume optimistic Industry MAC from AR5 Ch. 10?"
 ;
   cm_optimisticMAC       = 0;        !! def = 0

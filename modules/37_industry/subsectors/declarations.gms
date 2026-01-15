@@ -51,6 +51,10 @@ Parameters
   p37_IndFeBal_FeedStock_RH(ttot,all_regi,all_enty,emiMkt)   "testing parameter Ind FE Balance right-hand side feedstock term"
   p37_EmiEnDemand_NonEnCorr(ttot,all_regi)                   "energy demand co2 emissions with non-energy correction"
   p37_EmiEnDemand(ttot,all_regi)                             "energy demand co2 emissions without non-energy correction"
+
+
+*** biomass subsitution cost parameters
+  p37_bioSubstCostThreshold(ttot,all_regi)                   "marginal cost of subsituting coal by solid biomass once biomass penetration reaches steel and chemicals sector [trn$US/TWa]"
   
 *** output parameters only for reporting
   o37_cementProcessEmissions(ttot,all_regi,all_enty)                     "cement process emissions [GtC/a]"
@@ -90,6 +94,13 @@ Positive Variables
   vm_emiIndCCS(ttot,all_regi,all_enty)                                      "industry CCS emissions [GtC/a]"
   vm_IndCCSCost(ttot,all_regi,all_enty)                                     "industry CCS cost"
   v37_emiIndCCSmax(ttot,all_regi,emiInd37)                                  "maximum abatable industry emissions"
+
+  !! biomass subsitution cost
+  vm_bioSubstCostIndst(ttot,all_regi)                                       "total cost of substituting coal by solid biomass in industry [trn$US]" 
+  v37_bioShareIndst(ttot,all_regi,all_enty)                                 "share of solid biomass in industry solid fuel use [share]"
+  v37_bioSubstCostPrefactor(ttot,all_regi)                                  "biomass substitution cost pre-factor depending on steel and chemicals share in solid fuel use"  
+  v37_steelChemSolidShare(ttot,all_regi)                                    "share of solids going to steel and chemicals sectors in total industry solids [share]"
+
 
   !! feedstocks
   v37_incinerationEmi(ttot,all_regi,all_enty,all_enty,all_emiMkt)           "Emissions from incineration of plastic waste, only carbon that is not captured [GtC]"
@@ -150,6 +161,12 @@ $endif.no_calibration
   q37_emiNonFosNonIncineratedPlastics(ttot,all_regi,all_enty,all_emiMkt)            "calculate negative emissions from non-fossil non-incinerated plastics"
   q37_emiNonPlasticWaste(ttot,all_regi,all_enty,all_emiMkt)                         "calculate emissions from non-plastic waste"
   q37_emiFeedstockNoEnergy(ttot,all_regi,all_enty,all_emiMkt)                       "calculate total emissions from feedstocks that are not accounted as energy-related emissions"
+
+  !! biomass subsitution cost
+  q37_bioShareIndst(ttot,all_regi,all_enty)                                          "calculate share of biomass in solid fuels in industry"
+  q37_steelChemSolidShare(ttot,all_regi)                                             "calculate share of solids going to steel and chemicals sectors in total industry solids"
+  q37_bioSubstCostPrefactor(ttot,all_regi)                                           "calculate biomass substitution cost pre-factor depending on steel and chemicals share in solid fuel use"
+  q37_bioSubstCostIndst(ttot,all_regi)                                               "calculate total cost of substituting coal by solid biomass in industry"
 
   !! process-based implementation
   q37_demMatPrc(tall,all_regi,mat)                                                  "Material demand of processes"
