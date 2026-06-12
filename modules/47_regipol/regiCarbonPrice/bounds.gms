@@ -30,7 +30,7 @@ $ifThen.tech_bounds_2025 "%cm_tech_bounds_2025%" == "on"
 loop(regi$(sameAs(regi,"DEU")),
 *' solar PV
     p47_histCap("2020",regi,"spv")=51; 
-    p47_histCap("2025",regi,"spv")=120; 
+    p47_histCap("2025",regi,"spv")=125; 
 *' onshore wind
     p47_histCap("2020",regi,"windon")=54; 
     p47_histCap("2025",regi,"windon")=68;
