@@ -329,6 +329,7 @@ loop(regi,
              if( abs(p80_convNashTaxrev_iter(iteration,t,regi)) gt 0.001,
                  s80_bool = 0;
                  p80_messageShow("taxconv") = YES;
+                 p80_taxRevConvFailed(t,regi) = p80_convNashTaxrev_iter(iteration,t,regi);
              );
          );
     );
@@ -507,7 +508,7 @@ display "Reasons for non-convergence in this iteration (if not yet converged)";
 		      display "#### Just trying a different gdx may help.";
 	      );	 
 	      if(sameas(convMessage80, "taxconv"),
-		      display "#### 4.) Taxes did not converge in all regions and time steps. Absolute level of tax revenue must be smaller than 0.1 percent of GDP. Check p80_convNashTaxrev_iter below.";
+		      display "#### 4.) Taxes did not converge in all regions and time steps. Absolute level of tax revenue must be smaller than 0.1 percent of GDP. Check p80_taxRevConvFailed below.";
 	      );
         if(sameas(convMessage80, "DevPriceAnticip"),
 		      display "#### 5.) The total monetary value of the price anticipation term times the traded amount are larger than the goods imbalance threshold * 0.1";
@@ -605,7 +606,7 @@ $endIf.internalizeDamages
 display "See the indicators below to dig deeper on the respective reasons of non-convergence: "
 
 display "tax convergence indicators";
-display p80_convNashTaxrev_iter;
+display p80_taxRevConvFailed;
 
 display "detailed trade convergence indicators";
 display p80_defic_trade, p80_defic_sum,p80_defic_sum_rel;

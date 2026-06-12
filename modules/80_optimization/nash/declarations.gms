@@ -104,6 +104,7 @@ p80_SolNonOpt(all_regi)                    "solve status"
 pm_fuExtrForeign(ttot,all_regi,all_enty,rlf) "foreign fuel extraction"
 
 p80_convNashTaxrev_iter(iteration,ttot,all_regi) "deviation of tax revenue relative to GDP per iteration, thus 0.01 means 1 percent [1]"
+p80_taxRevConvFailed(ttot,all_regi)              "diagnostic parameter to track tax revenues relative to GDP per iteration which is greater than tolerated convergence range of 0.1% of GDP%; 0.01 means 1 percent of GDP [1]"
 p80_convNashObjVal_iter(iteration,all_regi)          "deviation of objective value to objective value from last iteration per iteration"
 p80_fadeoutPriceAnticip_iter(iteration)           "Helper parameter, describes fadeout of price anticipation during iterations per iteration"
 $ifthen.cm_implicitQttyTarget not "%cm_implicitQttyTarget%" == "off"
