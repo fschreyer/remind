@@ -194,6 +194,17 @@ loop(regi$(sameAs("DEU", regi)),
   pm_secBioShare("2020",regi,"fesos","indst") = 0.2;
 );
 
+
+
+$ifthen.NonCalibration NOT "%CES_parameters%" == "calibrate" 
+*** demand-side coal bounds in Germany after 2020 only in non-calibration runs as these bounds tend to distort calibration results 
+*** possibly because there is less freedom for the model in the first calibration iterations to modify solids production routes
+loop(regi$(sameAs("DEU", regi)),
+*** set maximum coal share in buildings after 2020 to 2020 value as coal heating is not going to recover once phased out
+  pm_secBioShare(t,regi,"fesos","build")$(t.val gt 2020) = pm_secBioShare("2020",regi,"fesos","build");
+);
+$endif.NonCalibration
+
 display pm_secBioShare;
 
 pm_IO_input(regi,all_enty,all_enty2,all_te)   = 0;
