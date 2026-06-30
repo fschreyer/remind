@@ -1522,6 +1522,7 @@ $setglobal c_ccsinjecrateRegi  off  !! def = "off"
 ***   ("forcing_SSP5") settings consistent with SSP 5
 $setglobal c_SSP_forcing_adjust  forcing_SSP2   !! def = forcing_SSP2  !! regexp = forcing_SSP(1|2|3|5)
 *** cm_regiExoPrice "set exogenous co2 tax path for specific regions using a switch, require regipol module to be set to regiCarbonPrice (e.g. GLO.(2025 38,2030 49,2035 63,2040 80,2045 102,2050 130,2055 166,2060 212,2070 346,2080 563,2090 917,2100 1494,2110 1494,2130 1494,2150 1494) )"
+*** Note: this switch currently only works with regions that are listed in the first dimension of regi_group (e.g. EUR_regi, EU27_regi, USA_regi, GLO etc.). 
 $setGlobal cm_regiExoPrice  off    !! def = off
 *** cm_regiExoPrice_fromFile "set exogenous co2 tax path for specific regions from another run, require regipol module to be set to regiCarbonPrice (e.g. "PathToGDX.gdx")"
 $setGlobal cm_regiExoPrice_fromFile  off    !! def = off
