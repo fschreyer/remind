@@ -7,14 +7,6 @@
 *** SOF ./modules/21_tax/on/preloop.gms
 
 
-*** Adjustment of final energy subsidies to avoid neg. implicit 2005 prices that result in huge demand increases in 2010 and 2015
-*** Maximum final energy subsidy levels (in $/Gj) from REMIND version prior to rev. 5429
-p21_tau_fe_sub(ttot,regi,sector,entyFe)$p21_max_fe_sub(ttot,regi,entyFe) = max(p21_tau_fe_sub(ttot,regi,sector,entyFe),-p21_max_fe_sub(ttot,regi,entyFe));
-*** Subsidy proportional cap to avoid liquids increasing dramatically
-p21_tau_fe_sub(ttot,regi,sector,entyFe)$p21_prop_fe_sub(ttot,regi,entyFe) = p21_tau_fe_sub(ttot,regi,sector,entyFe) * p21_prop_fe_sub(ttot,regi,entyFe);
-*** Maximum primary energy subsidy levels (in $/Gj) to provide plausible upper bound: 40$/barrel ~ 8 $/GJ"
-p21_tau_fuEx_sub(ttot,regi,enty)$f21_max_pe_sub(ttot,regi,enty) = max(p21_tau_fuEx_sub(ttot,regi,enty),-f21_max_pe_sub(ttot,regi,enty)*0.001/sm_EJ_2_TWa);
-
 *** ------------------------- Temporal development of final energy TAXES and SUBSIDIES, depending on cm_fetaxscen
 *** Set time path for:
 ***   - final energy taxes (p21_tau_fe_tax, p21_tau_pe2se_tax)
@@ -48,12 +40,16 @@ if (cm_fetaxscen eq 0, !! no FE and ResEx sub
     p21_tau_fe_sub(ttot,regi,sector,entyFe)$(ttot.val gt 2005) = p21_tau_fe_sub("2005",regi,sector,entyFe);
     p21_tau_fuEx_sub(ttot,regi,entyPe)$(ttot.val gt 2005) = p21_tau_fuEx_sub("2005",regi,entyPe);
     if ( (cm_fetaxscen eq 5),
-       p21_tau_fe_sub(ttot,regi,sector,entyFe)$(f21_sub_convergence_rollback("2035",regi,sector,entyFe) gt 0 AND ttot.val gt 2025 AND ttot.val le 2035 )
+      p21_tau_fe_sub(ttot,regi,sector,entyFe)$(f21_sub_convergence_rollback("2035",regi,sector,entyFe) gt 0 AND ttot.val gt 2025 AND ttot.val le 2035 )
    	      = p21_tau_fe_sub("2025",regi,sector,entyFe) 
          + ( f21_sub_convergence_rollback("2035",regi,sector,entyFe) * 0.001 / sm_EJ_2_TWa - p21_tau_fe_sub("2025",regi,sector,entyFe) ) * ( (ttot.val - 2025) / (2035 - 2025) );
-    p21_tau_fe_sub(ttot,regi,sector,entyFe)$(f21_sub_convergence_rollback("2035",regi,sector,entyFe) gt 0 AND ttot.val  gt 2035) = f21_sub_convergence_rollback("2035",regi,sector,entyFe) * 0.001 / sm_EJ_2_TWa;
-       
+      p21_tau_fe_sub(ttot,regi,sector,entyFe)$(f21_sub_convergence_rollback("2035",regi,sector,entyFe) gt 0 AND ttot.val  gt 2035) = f21_sub_convergence_rollback("2035",regi,sector,entyFe) * 0.001 / sm_EJ_2_TWa;
     );
+*** Limit subsidy feelt and feels maximum value at 2050 onward to 0.2 [$/TWa] to avoid negative electricity prices. Linearly reduce values from 2035.
+    p21_tau_fe_sub(ttot,regi,sector,entyFe)$((ttot.val gt 2035) AND (ttot.val le 2050) AND (p21_tau_fe_sub("2050",regi,sector,entyFe) lt -0.2) AND (sameas(entyFe,"feelt") OR sameas(entyFe,"feels"))) = 
+      p21_tau_fe_sub("2035",regi,sector,entyFe) - 
+      (p21_tau_fe_sub("2050",regi,sector,entyFe) - (-0.2)) * (ttot.val - 2035) / (2050 - 2035);
+    p21_tau_fe_sub(ttot,regi,sector,entyFe)$((ttot.val gt 2050)) = p21_tau_fe_sub("2050",regi,sector,entyFe);
   elseif(cm_fetaxscen eq 2) or (cm_fetaxscen eq 3) or (cm_fetaxscen eq 4), 
     p21_tau_fe_sub(ttot,regi,sector,entyFe)$(ttot.val gt 2005)=p21_tau_fe_sub("2005",regi,sector,entyFe);
     p21_tau_fuEx_sub(ttot,regi,entyPe)$(ttot.val gt 2005)=p21_tau_fuEx_sub("2005",regi,entyPe);

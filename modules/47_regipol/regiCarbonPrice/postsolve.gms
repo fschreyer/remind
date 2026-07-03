@@ -96,27 +96,27 @@ p47_emiTargetMkt(ttot,regi, emiMktExt,"netGHG_noLULUCF_noBunkers") =
 *** net CO2 per Mkt with Grassi LULUCF shift
 p47_emiTargetMkt(ttot,regi, emiMktExt,"netCO2_LULUCFGrassi") =
   p47_emiTargetMkt(ttot,regi, emiMktExt,"netCO2")
-  - ( p47_LULUCFEmi_GrassiShift(ttot,regi) )$(sameas(emiMktExt,"other") or sameas(emiMktExt,"all"));
+  - ( pm_emiLULUCF_GrassiShift(ttot,regi) )$(sameas(emiMktExt,"other") or sameas(emiMktExt,"all"));
 
 *** net CO2 per Mkt without bunkers and with Grassi LULUCF shift
 p47_emiTargetMkt(ttot,regi, emiMktExt,"netCO2_LULUCFGrassi_noBunkers") =
   p47_emiTargetMkt(ttot,regi, emiMktExt,"netCO2_noBunkers")
-  - ( p47_LULUCFEmi_GrassiShift(ttot,regi) )$(sameas(emiMktExt,"other") or sameas(emiMktExt,"all"));
+  - ( pm_emiLULUCF_GrassiShift(ttot,regi) )$(sameas(emiMktExt,"other") or sameas(emiMktExt,"all"));
 
 *** net GHG per Mkt with Grassi LULUCF shift
 p47_emiTargetMkt(ttot,regi, emiMktExt,"netGHG_LULUCFGrassi") =
   p47_emiTargetMkt(ttot,regi, emiMktExt,"netGHG")
-  - ( p47_LULUCFEmi_GrassiShift(ttot,regi) )$(sameas(emiMktExt,"other") or sameas(emiMktExt,"all"));
+  - ( pm_emiLULUCF_GrassiShift(ttot,regi) )$(sameas(emiMktExt,"other") or sameas(emiMktExt,"all"));
 
 *** net GHG per Mkt without bunkers and with Grassi LULUCF shift
 p47_emiTargetMkt(ttot,regi, emiMktExt,"netGHG_LULUCFGrassi_noBunkers") =
   p47_emiTargetMkt(ttot,regi, emiMktExt,"netGHG_noBunkers")
-  - ( p47_LULUCFEmi_GrassiShift(ttot,regi) )$(sameas(emiMktExt,"other") or sameas(emiMktExt,"all"));
+  - ( pm_emiLULUCF_GrassiShift(ttot,regi) )$(sameas(emiMktExt,"other") or sameas(emiMktExt,"all"));
 
 *** net CO2 per Mkt without bunkers and with Grassi LULUCF shift
 p47_emiTargetMkt(ttot,regi, emiMktExt,"netCO2_LULUCFGrassi_intraRegBunker") =
   p47_emiTargetMkt(ttot,regi, emiMktExt,"netCO2_noBunkers")
-  - ( p47_LULUCFEmi_GrassiShift(ttot,regi) )$(sameas(emiMktExt,"other") or sameas(emiMktExt,"all"))
+  - ( pm_emiLULUCF_GrassiShift(ttot,regi) )$(sameas(emiMktExt,"other") or sameas(emiMktExt,"all"))
   + (
     sum(se2fe(enty,enty2,te),
       pm_emifac(ttot,regi,enty,enty2,te,"co2")
@@ -127,7 +127,7 @@ p47_emiTargetMkt(ttot,regi, emiMktExt,"netCO2_LULUCFGrassi_intraRegBunker") =
 *** net GHG per Mkt without bunkers and with Grassi LULUCF shift
 p47_emiTargetMkt(ttot,regi, emiMktExt,"netGHG_LULUCFGrassi_intraRegBunker") =
   p47_emiTargetMkt(ttot,regi, emiMktExt,"netGHG_noBunkers")
-  - ( p47_LULUCFEmi_GrassiShift(ttot,regi) )$(sameas(emiMktExt,"other") or sameas(emiMktExt,"all"))
+  - ( pm_emiLULUCF_GrassiShift(ttot,regi) )$(sameas(emiMktExt,"other") or sameas(emiMktExt,"all"))
   + (
     sum(se2fe(enty,enty2,te),
       pm_emifac(ttot,regi,enty,enty2,te,"co2")
@@ -494,6 +494,15 @@ p47_implicitQttyTargetTax0(t,regi) =
       ( sum(entySe$energyQttyTargetANDGroup2enty("FE",qttyTargetGroup,entySe), sum(se2fe(entySe,entyFe,te), sum((sector,emiMkt)$(entyFe2Sector(entyFe,sector) AND sector2emiMkt(sector,emiMkt)), vm_demFeSector.l(t,regi,entySe,entyFe,sector,emiMkt))))
       )$(sameas(qttyTarget,"FE") or sameas(qttyTarget,"FE_wo_b") or sameas(qttyTarget,"FE_wo_n_e") or sameas(qttyTarget,"FE_wo_b_wo_n_e"))
       +
+      ( sum(entyFe$energyQttyTargetANDGroup2enty("FE_indst",qttyTargetGroup,entyFe), sum(se2fe(entySe,entyFe,te), sum((emiMkt)$(entyFe2Sector(entyFe,"indst") AND sector2emiMkt("indst",emiMkt)), vm_demFeSector.l(t,regi,entySe,entyFe,"indst",emiMkt))))
+      )$(sameas(qttyTarget,"FE_indst") AND sameas(qttyTargetGroup,"all"))
+      +
+      ( sum(entyFe$energyQttyTargetANDGroup2enty("FE_build",qttyTargetGroup,entyFe), sum(se2fe(entySe,entyFe,te), sum((emiMkt)$(entyFe2Sector(entyFe,"build") AND sector2emiMkt("build",emiMkt)), vm_demFeSector.l(t,regi,entySe,entyFe,"build",emiMkt))))
+      )$(sameas(qttyTarget,"FE_build") AND sameas(qttyTargetGroup,"all"))
+      +
+      ( sum(entyFe$energyQttyTargetANDGroup2enty("FE_trans",qttyTargetGroup,entyFe), sum(se2fe(entySe,entyFe,te), sum((emiMkt)$(entyFe2Sector(entyFe,"trans") AND sector2emiMkt("trans",emiMkt)), vm_demFeSector.l(t,regi,entySe,entyFe,"trans",emiMkt))))
+      )$(sameas(qttyTarget,"FE_trans") AND sameas(qttyTargetGroup,"all"))
+      +
       ( sum(ccs2te(ccsCo2(enty),enty2,te), sum(teCCS2rlf(te,rlf),vm_co2CCS.l(t,regi,enty,enty2,te,rlf)))
       )$(sameas(qttyTarget,"CCS") AND sameas(qttyTargetGroup,"all"))
       +
@@ -525,6 +534,15 @@ loop((ttot,ext_regi,taxType,targetType,qttyTarget,qttyTargetGroup)$pm_implicitQt
         + ( - ( sum(regi$regi_groupExt(ext_regi,regi),  sum(entySe$energyQttyTargetANDGroup2enty("FE",qttyTargetGroup,entySe), sum(se2fe(entySe,entyFe,te), sum((sector,emiMkt)$(entyFe2Sector(entyFe,sector) AND sector2emiMkt(sector,emiMkt)), vm_demFeNonEnergySector.l(ttot,regi,entySe,entyFe,sector,emiMkt)))) ) ) !! removing non-energy from FE targets
         )$(sameas(qttyTarget,"FE_wo_n_e") or sameas(qttyTarget,"FE_wo_b_wo_n_e"))
       )$(sameas(qttyTarget,"FE") or sameas(qttyTarget,"FE_wo_b") or sameas(qttyTarget,"FE_wo_n_e") or sameas(qttyTarget,"FE_wo_b_wo_n_e"))
+      +
+      ( sum(regi$regi_groupExt(ext_regi,regi),  sum(entyFe$energyQttyTargetANDGroup2enty("FE_indst",qttyTargetGroup,entyFe), sum(se2fe(entySe,entyFe,te), sum((emiMkt)$(entyFe2Sector(entyFe,"indst") AND sector2emiMkt("indst",emiMkt)), vm_demFeSector.l(ttot,regi,entySe,entyFe,"indst",emiMkt)))) )
+      )$(sameas(qttyTarget,"FE_indst") AND sameas(qttyTargetGroup,"all"))
+      +
+      ( sum(regi$regi_groupExt(ext_regi,regi),  sum(entyFe$energyQttyTargetANDGroup2enty("FE_build",qttyTargetGroup,entyFe), sum(se2fe(entySe,entyFe,te), sum((emiMkt)$(entyFe2Sector(entyFe,"build") AND sector2emiMkt("build",emiMkt)), vm_demFeSector.l(ttot,regi,entySe,entyFe,"build",emiMkt)))) )
+      )$(sameas(qttyTarget,"FE_build") AND sameas(qttyTargetGroup,"all"))
+      +
+      ( sum(regi$regi_groupExt(ext_regi,regi),  sum(entyFe$energyQttyTargetANDGroup2enty("FE_trans",qttyTargetGroup,entyFe), sum(se2fe(entySe,entyFe,te), sum((emiMkt)$(entyFe2Sector(entyFe,"trans") AND sector2emiMkt("trans",emiMkt)), vm_demFeSector.l(ttot,regi,entySe,entyFe,"trans",emiMkt)))) )
+      )$(sameas(qttyTarget,"FE_trans") AND sameas(qttyTargetGroup,"all"))
       +
       ( sum(regi$regi_groupExt(ext_regi,regi), sum(ccs2te(ccsCo2(enty),enty2,te), sum(teCCS2rlf(te,rlf),vm_co2CCS.l(ttot,regi,enty,enty2,te,rlf))))
       )$(sameas(qttyTarget,"CCS") AND sameas(qttyTargetGroup,"all"))
@@ -569,6 +587,15 @@ loop((ttot,ext_regi,taxType,targetType,qttyTarget,qttyTargetGroup)$pm_implicitQt
         )$(sameas(qttyTarget,"FE_wo_n_e") or sameas(qttyTarget,"FE_wo_b_wo_n_e"))
         )  
       )$(sameas(qttyTarget,"FE") or sameas(qttyTarget,"FE_wo_b") or sameas(qttyTarget,"FE_wo_n_e") or sameas(qttyTarget,"FE_wo_b_wo_n_e"))
+      +
+      ( sum(regi$regi_groupExt(ext_regi,regi),  sum(entyFe$energyQttyTargetANDGroup2enty("FE_indst",qttyTargetGroup,entyFe), sum(se2fe(entySe,entyFe,te), sum((emiMkt)$(entyFe2Sector(entyFe,"indst") AND sector2emiMkt("indst",emiMkt)), vm_demFeSector.l(ttot,regi,entySe,entyFe,"indst",emiMkt)))) )
+      )$(sameas(qttyTarget,"FE_indst") AND sameas(qttyTargetGroup,"all"))
+      +
+      ( sum(regi$regi_groupExt(ext_regi,regi),  sum(entyFe$energyQttyTargetANDGroup2enty("FE_build",qttyTargetGroup,entyFe), sum(se2fe(entySe,entyFe,te), sum((emiMkt)$(entyFe2Sector(entyFe,"build") AND sector2emiMkt("build",emiMkt)), vm_demFeSector.l(ttot,regi,entySe,entyFe,"build",emiMkt)))) )
+      )$(sameas(qttyTarget,"FE_build") AND sameas(qttyTargetGroup,"all"))
+      +
+      ( sum(regi$regi_groupExt(ext_regi,regi),  sum(entyFe$energyQttyTargetANDGroup2enty("FE_trans",qttyTargetGroup,entyFe), sum(se2fe(entySe,entyFe,te), sum((emiMkt)$(entyFe2Sector(entyFe,"trans") AND sector2emiMkt("trans",emiMkt)), vm_demFeSector.l(ttot,regi,entySe,entyFe,"trans",emiMkt)))) )
+      )$(sameas(qttyTarget,"FE_trans") AND sameas(qttyTargetGroup,"all"))
     ;
   ); 
 );
@@ -938,5 +965,31 @@ loop((ttot,ext_regi)$p47_exoCo2tax(ext_regi,ttot),
 );
 display 'update of CO2 prices due to exogenously given CO2 prices in p47_exoCo2tax', pm_taxCO2eq;
 $endIf.regiExoPrice
+
+
+$ifThen.regiExoPrice_fromFile not "%cm_regiExoPrice_fromFile%" == "off"
+
+
+*** Removing the existent co2 tax parameters for regions with exogenous set prices
+  pm_taxCO2eqSum(ttot,regi)$(ttot.val ge cm_startyear) = 0;
+  pm_taxCO2eq(ttot,regi)$(ttot.val ge cm_startyear) = 0;
+  pm_taxCO2eqRegi(ttot,regi)$(ttot.val ge cm_startyear)= 0;
+  pm_taxCO2eqSCC(ttot,regi)$(ttot.val ge cm_startyear) = 0;
+
+  pm_taxrevGHG0(ttot,regi)$(ttot.val ge cm_startyear) = 0;
+  pm_taxrevCO2Sector0(ttot,regi,emi_sectors)$(ttot.val ge cm_startyear) = 0;
+  pm_taxrevCO2LUC0(ttot,regi)$(ttot.val ge cm_startyear) = 0;
+  pm_taxrevNetNegEmi0(ttot,regi)$(ttot.val ge cm_startyear) = 0;
+
+  pm_taxemiMkt(ttot,regi,emiMkt)$(ttot.val ge cm_startyear) = 0;
+
+
+*** setting exogenous CO2 prices from GDX file
+  pm_taxCO2eq(t,regi) = p47_exoCo2tax_fromFile(t,regi,"ETS");
+  pm_taxCO2eqSum(t,regi) = pm_taxCO2eq(t,regi);
+
+execute_unload "postsolve_pm_taxCO2eq_fromFile", pm_taxCO2eq;
+display pm_taxCO2eq;
+$endIf.regiExoPrice_fromFile
 
 *** EOF ./modules/47_regipol/regiCarbonPrice/postsolve.gms

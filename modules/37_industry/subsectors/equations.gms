@@ -124,7 +124,7 @@ q37_emiIndCCSmax(t,regi,emiInd37)$(
     + ( vm_emiIndBase(t,regi,"co2cement_process","cement")
       )$( sameas(emiInd37,"co2cement_process") )
     )
-    * pm_macSwitch(macInd37)              !! sub-sector CCS available or not
+    * pm_macSwitch(t,regi,macInd37)              !! sub-sector CCS available or not
     * pm_macAbatLev(t,regi,macInd37)   !! abatement level at current price
   )
 ;
@@ -156,7 +156,7 @@ q37_limit_IndCCS_growth(ttot,regi,emiInd37)$( ttot.val ge cm_startyear ) ..
 ***------------------------------------------------------
 *' Fix cement fuel and cement process emissions to the same abatement level.
 ***------------------------------------------------------
-q37_cementCCS(t,regi)$(    pm_macSwitch("co2cement")
+q37_cementCCS(t,regi)$(    pm_macSwitch(t,regi,"co2cement")
                        AND pm_macAbatLev(t,regi,"co2cement") ) ..
     vm_emiIndCCS(t,regi,"co2cement")
   * v37_emiIndCCSmax(t,regi,"co2cement_process")
@@ -173,7 +173,7 @@ q37_IndCCSCost(t,regi,emiInd37)$(
   vm_IndCCSCost(t,regi,emiInd37)
   =e=
     1e-3
-  * pm_macSwitch(emiInd37)
+  * pm_macSwitch(t,regi,emiInd37)
   * ( sum((entyFeCC37,secInd37_2_emiInd37(secInd37,emiInd37)),
         vm_emiIndBase(t,regi,entyFeCC37,secInd37)
       )$( NOT sameas(emiInd37,"co2cement_process") )
@@ -244,7 +244,7 @@ q37_feedstocksShares(t,regi,entySe,entyFe,emiMkt)$(
   * sum(se2fe(entySe2,entyFe,te),
       vm_demFeNonEnergySector(t,regi,entySe2,entyFe,"indst",emiMkt)
     )
-  =e=
+  =l=
     vm_demFeNonEnergySector(t,regi,entySe,entyFe,"indst",emiMkt)
   * sum(se2fe2(entySe2,entyFe,te),
       vm_demFeSector_afterTax(t,regi,entySe2,entyFe,"indst",emiMkt)
@@ -464,13 +464,31 @@ q37_mat2ue(t,regi,mat,in)$( ppfUePrc(in) ) ..
 ;
 
 ***------------------------------------------------------
-*' Definition of capacity constraints
+*' Definition of capacity constraints (historical and current)
 ***------------------------------------------------------
-q37_limitCapMat(t,regi,tePrc) ..
+*' historical capacity constraint allows for free adjustment of
+*' the capacity factor, as historical input data sometimes
+*' displays low capacity factors (below 0.8).
+q37_limitCapMatHist(t,regi,tePrc)$(t.val le 2020) ..
     sum(tePrc2opmoPrc(tePrc,opmoPrc),
       vm_outflowPrc(t,regi,tePrc,opmoPrc)
     )
     =l=
+    sum(teMat2rlf(tePrc,rlf),
+      vm_capFac(t,regi,tePrc)
+    * vm_cap(t,regi,tePrc,rlf)
+    )
+;
+
+*' from 2025 onwards, the constraint is binding,
+*' fixing the capacity factor to 0.8.
+*' this prevents the model from idling capacity at zero cost,
+*' which otherwise leads to unrealistically low utilizations
+q37_limitCapMat(t,regi,tePrc)$(t.val gt 2020) ..
+    sum(tePrc2opmoPrc(tePrc,opmoPrc),
+      vm_outflowPrc(t,regi,tePrc,opmoPrc)
+    )
+    =e=
     sum(teMat2rlf(tePrc,rlf),
       vm_capFac(t,regi,tePrc)
     * vm_cap(t,regi,tePrc,rlf)
@@ -527,6 +545,19 @@ q37_emiCCPrc(t,regi,emiInd37)$(
          tePrc2teCCPrc(tePrc,opmoPrc,teCCPrc,opmoCCPrc)),
       vm_outflowPrc(t,regi,teCCPrc,opmoCCPrc)
     )
+;
+
+***------------------------------------------------------
+*' Limit biosolids in industry (only for ETS - all sectors except otherInd)
+***------------------------------------------------------
+q37_limitBioSolidsIndst(t,regi,entyFe)$(sameas(entyFe,"fesos"))..
+  v37_shSolidsIndst(t,regi)
+  *
+  sum((entySe,te)$se2fe(entySe,entyFe,te),
+    vm_demFeSector_afterTax(t,regi,entySe,entyFe,"indst","ETS"))
+  =g=
+  sum((entySeBio,te)$se2fe(entySeBio,entyFe,te),
+    vm_demFeSector_afterTax(t,regi,entySeBio,entyFe,"indst","ETS"))
 ;
 
 *' @stop

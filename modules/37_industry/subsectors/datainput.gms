@@ -241,28 +241,28 @@ $endif.no_calibration
 
 *** CCS for industry is off by default
 emiMacSector(emiInd37_fuel) = NO;
-pm_macSwitch(emiInd37)      = NO;
+pm_macSwitch(ttot,regi,emiInd37)      = NO;
 
 *** turn on CCS for industry emissions
 if (cm_IndCCSscen eq 1,
   if (cm_CCS_cement eq 1,
     emiMacSector("co2cement") = YES;
-    pm_macSwitch("co2cement") = YES;
-    pm_macSwitch("co2cement_process") = YES;
+    pm_macSwitch(ttot,regi,"co2cement") = YES;
+    pm_macSwitch(ttot,regi,"co2cement_process") = YES;
     emiMac2mac("co2cement","co2cement") = YES;
     emiMac2mac("co2cement_process","co2cement") = YES;
   );
 
   if (cm_CCS_chemicals eq 1,
     emiMacSector("co2chemicals") = YES;
-    pm_macSwitch("co2chemicals") = YES;
+    pm_macSwitch(ttot,regi,"co2chemicals") = YES;
     emiMac2mac("co2chemicals","co2chemicals") = YES;
   );
 
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "ces"
   if (cm_CCS_steel eq 1,
     emiMacSector("co2steel") = YES;
-    pm_macSwitch("co2steel") = YES;
+    pm_macSwitch(ttot,regi,"co2steel") = YES;
     emiMac2mac("co2steel","co2steel") = YES;
   );
 $endif.cm_subsec_model_steel
@@ -270,13 +270,13 @@ $endif.cm_subsec_model_steel
 
 *** CCS for other industry is off in any case
 emiMacSector("co2otherInd") = NO;
-pm_macSwitch("co2otherInd") = NO;
+pm_macSwitch(ttot,regi,"co2otherInd") = NO;
 emiMac2mac("co2otherInd","co2otherInd") = NO;
 
 *** data on maximum secondary steel production
 *** The steel recycling rate limit is assumed to increase from 90 to 99 %.
   p37_cesIO_up_steel_secondary(tall,all_regi,all_GDPpopScen)
-  = pm_fedemand(tall,all_regi,"ue_steel_secondary")
+  = pm_fedemandInd(tall,all_regi,"ue_steel_secondary")
   / 0.9
   * 0.99;
 
@@ -503,15 +503,54 @@ $endif.cm_subsec_model_steel
 pm_tau_ces_tax(t,regi,"feh2_cement")    = 100 * sm_TWa_2_MWh * 1e-12;
 
 
-*' overwrite or extent CES markup cost if specified by switch
-$ifthen.CESMkup "%cm_CESMkup_ind%" == "manual"
-loop (ppfen_industry_dyn37(in)$( p37_CESMkup_input(in) ),
-  p37_CESMkup(ttot,regi,in)$( ppfen_MkupCost37(in) )
-  = p37_CESMkup_input(in);
 
-  pm_tau_ces_tax(ttot,regi,in)$( NOT ppfen_MkupCost37(in) )
-  = p37_CESMkup_input(in);
+$ifthen.CESMkup "%cm_CESMkup_ind%" == "Elec_Push"
+*' mark-up cost changes in runs with electrification push
+*' other industry sector has high electrification potential
+*' decrease electricity mark-up cost and increase mark-up cost of combustible fuels
+*' to enable deep electrification in this sector
+
+*' decrease feelhth_otherInd 100 $/MWh in long-term
+p37_CESMkup_input("feelhth_otherInd") = 100 * sm_TWa_2_MWh * 1e-12;
+*' increase feso_otherInd mark-up to 100 $/MWh in long-term
+p37_CESMkup_input("feso_otherInd")    = 100 * sm_TWa_2_MWh * 1e-12;
+*' increase feli_otherInd mark-up to 100 $/MWh in long-term
+p37_CESMkup_input("feli_otherInd")    = 100 * sm_TWa_2_MWh * 1e-12;
+*' increase fega_otherInd mark-up to 100 $/MWh in long-term
+p37_CESMkup_input("fega_otherInd")    = 100 * sm_TWa_2_MWh * 1e-12;
+*' increase feh2_otherInd mark-up to 100 $/MWh in long-term
+p37_CESMkup_input("feh2_otherInd")    = 100 * sm_TWa_2_MWh * 1e-12;
+$endif.CESMkup
+
+
+$ifthen.CESMkup NOT "%cm_CESMkup_ind%" == "standard"
+*' overwrite default CES markup cost if specified by switch apply mark-up cost change from 2050 on
+*' and linearly interpolate between cm_startyear and 2050 to have smooth phase-in
+
+*' overwrite if CES mark-up cost implemented as cost with budget effect
+p37_CESMkup(ttot,regi,in)$(ppfen_MkupCost37(in) AND ttot.val ge 2050) = p37_CESMkup_input(in);
+loop(ttot2$(ttot2.val eq 2050),
+  loop(ttot3$(ttot3.val eq cm_startyear),
+    p37_CESMkup(ttot,regi,in)$(ppfen_MkupCost37(in) AND ttot.val lt 2050 AND ttot.val ge cm_startyear) =
+      p37_CESMkup(ttot3,regi,in)
+      + ( p37_CESMkup(ttot2,regi,in) - p37_CESMkup(ttot3,regi,in) )
+        * (ttot.val - cm_startyear)
+        / (2050 - cm_startyear);
+  );
 );
+
+*' overwrite if CES mark-up cost implement as tax without budget effect
+pm_tau_ces_tax(ttot,regi,in)$(NOT ppfen_MkupCost37(in) AND ttot.val ge 2050) = p37_CESMkup_input(in);
+loop(ttot2$(ttot2.val eq 2050),
+  loop(ttot3$(ttot3.val eq cm_startyear),
+    pm_tau_ces_tax(ttot,regi,in)$(NOT ppfen_MkupCost37(in) AND ttot.val lt 2050 AND ttot.val ge cm_startyear) =
+      pm_tau_ces_tax(ttot3,regi,in)
+      + ( pm_tau_ces_tax(ttot2,regi,in) - pm_tau_ces_tax(ttot3,regi,in) )
+        * (ttot.val - cm_startyear)
+        / (2050 - cm_startyear);
+  );
+);
+
 $endif.CESMkup
 
 display p37_CESMkup;
@@ -607,15 +646,6 @@ $offdelim
   /
 ;
 
-*' load baseline industry ETS solids demand
-if (cm_startyear ne 2005,   !! not a BAU scenario
-execute_load "input_ref.gdx", vm_demFeSector_afterTax;
-  p37_BAU_industry_ETS_solids(t,regi)
-  = sum(se2fe(entySe,"fesos",te),
-      vm_demFeSector_afterTax.l(t,regi,entySe,"fesos","indst","ETS")
-    );
-);
-
 * Define carbon capture and storage share in waste incineration emissions
 * capture rate increases linearly from zero in 2025 to value the set in the switch for the defined year, and it is kept constant for years afterwards
 p37_regionalWasteIncinerationCCSMaxShare(ttot,all_regi) = 0;
@@ -636,7 +666,7 @@ $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
 p37_specMatDem("dripell","idr","ng")        = 1.44;                                           !! Source: POSTED / Average of Devlin2022, Otto2017, Volg2018, Rechberge2020
 p37_specMatDem("dripell","idr","h2")        = 1.44;                                           !! Source: POSTED / Copy from ng opMode
 
-p37_specMatDem("driron","eaf","pri")        = 1.065;                                          !! Source: POSTED / Average of Devlin et al 2022, Section 2.2.2 and Otto et al 2017, Figure 6
+p37_specMatDem("driron","eaf","prim")       = 1.065;                                          !! Source: POSTED / Average of Devlin et al 2022, Section 2.2.2 and Otto et al 2017, Figure 6
 p37_specMatDem("eafscrap","eaf","sec")      = 1.09;                                           !! Source: POSTED / Ecorys 2014, Table 3.1
 
 p37_specMatDem("ironore","bf","standard")   = 1.58;                                           !! Source: Sum of weighted average values for sinter, ore and pellets in JRC BAT, Table 6.1: 1.626 / tHM -> 1.58/tPI
@@ -666,7 +696,7 @@ p37_specFeDemTarget("feels","idr","ng")           = 0.08 / (sm_TWa_2_MWh/sm_giga
 !! Birat2010, p. 11: 0.97 MWh total, only 0.44 MWh of which is electrical
 !! EU JRC BAT says 0.404–0.748 (only EAF, elec) / Otto et al. say 0.92
 !! --> have declining curve?
-p37_specFeDemTarget("feels","eaf","pri")          = 0.67 / (sm_TWa_2_MWh/sm_giga_2_non);    !! Source: POSTED / Copy from secondary (Agora Energiewende, 2022 give similar values, between w and w/o reheating)
+p37_specFeDemTarget("feels","eaf","prim")         = 0.67 / (sm_TWa_2_MWh/sm_giga_2_non);    !! Source: POSTED / Copy from secondary (Agora Energiewende, 2022 give similar values, between w and w/o reheating)
 p37_specFeDemTarget("feels","eaf","sec")          = 0.67 / (sm_TWa_2_MWh/sm_giga_2_non);    !! Source: POSTED / Vogl et al 2018, Section 3.1
 
 !! Otto et al. Fig 3: 10.303 GJ coke (from 13.24 GJ coal, see Menendez2015 Fig 3) + 4.67 GJ coal dust -> 18 GJ
@@ -764,7 +794,7 @@ if (cm_startyear eq 2005,
 
     !! 2nd stage tech
     loop(mat2ue(mat,in),
-      p37_matFlowHist(ttot,regi,mat) = pm_fedemand(ttot,regi,in) / p37_mat2ue(mat,in) * p37_ue_share(mat,in);
+      p37_matFlowHist(ttot,regi,mat) = pm_fedemandInd(ttot,regi,in) / p37_mat2ue(mat,in) * p37_ue_share(mat,in);
       loop(tePrc2matOut(tePrc,opmoPrc,mat),
         pm_outflowPrcHist(ttot,regi,tePrc,opmoPrc) = p37_matFlowHist(ttot,regi,mat) * p37_teMatShareHist(tePrc,opmoPrc,mat);
       );
@@ -785,7 +815,7 @@ if (cm_startyear eq 2005,
 
     loop((entyFe,ppfUePrc),
       p37_demFeTarget(ttot,regi,entyFe,ppfUePrc) = sum(tePrc2ue(tePrc,opmoPrc,ppfUePrc), pm_outflowPrcHist(ttot,regi,tePrc,opmoPrc) * p37_specFeDemTarget(entyFe,tePrc,opmoPrc));
-      p37_demFeActual(ttot,regi,entyFe,ppfUePrc) = sum((fe2ppfen_no_ces_use(entyFe,all_in),ue2ppfenPrc(ppfUePrc,all_in)), pm_fedemand(ttot,regi,all_in) * sm_EJ_2_TWa);
+      p37_demFeActual(ttot,regi,entyFe,ppfUePrc) = sum((fe2ppfen_no_ces_use(entyFe,all_in),ue2ppfenPrc(ppfUePrc,all_in)), pm_fedemandInd(ttot,regi,all_in) * sm_EJ_2_TWa);
     );
 
     p37_demFeRatio(ttot,regi,ppfUePrc) = sum(entyFe,p37_demFeActual(ttot,regi,entyFe,ppfUePrc)) / sum(entyFe,p37_demFeTarget(ttot,regi,entyFe,ppfUePrc));
@@ -830,7 +860,7 @@ if (cm_startyear gt 2005,
 );
 
 if (cm_startyear gt 2005,
-  execute_load "input_ref.gdx" v37_plasticWaste.l = v37_plasticWaste.l;
+  Execute_Loadpoint "input_ref.gdx" v37_plasticWaste.l = v37_plasticWaste.l;
 );
 
 *** EOF ./modules/37_industry/subsectors/datainput.gms
