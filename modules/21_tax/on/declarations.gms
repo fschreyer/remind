@@ -45,6 +45,8 @@ p21_taxrevImport_iter(iteration,ttot,all_regi,all_enty)             "track refer
 p21_taxrevChProdStartYear_iter(iteration,ttot,all_regi)             "track reference level value of tax to limit changes compared to reference run in cm_startyear over iterations"
 p21_taxrevSE_iter(iteration,ttot,all_regi)                          "track reference level value of tax on SE electricity demand over iterations"
 p21_taxrevEI_iter(iteration,ttot,all_regi)                          "track reference level value of tax on environmental impacts"
+p21_taxrevEmiMkt_iter(iteration,ttot,all_regi,emiMkt)               "track reference level value of tax on emissions markets over iterations [trUSD2017]"
+p21_co2eqMkt_iter(iteration,ttot,all_regi,emiMkt)                   "track reference level value of vm_co2eqMkt emissions in markets over iterations [GtC]"
 
 p21_deltarev(iteration,all_regi)                                    "convergence criteria for iteration on tax revenue recycling"
 

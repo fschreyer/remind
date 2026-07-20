@@ -70,6 +70,8 @@ p21_taxrevEI0(t,regi) = sum(entyPe, pm_taxEI_PE(t,regi,entyPe) * vm_prodPe.l(t,r
 
 *** Save reference level of tax revenues for each iteration
 p21_taxrevGHG_iter(iteration+1,ttot,regi) = v21_taxrevGHG.l(ttot,regi);
+p21_taxrevEmiMkt_iter(iteration+1,ttot,regi,emiMkt) = v21_taxemiMkt.l(ttot,regi,emiMkt);
+p21_co2eqMkt_iter(iteration+1,ttot,regi,emiMkt) =  vm_co2eqMkt.l(ttot,regi,emiMkt);
 p21_taxrevCCS_iter(iteration+1,ttot,regi) = v21_taxrevCCS.l(ttot,regi); 
 p21_taxrevNetNegEmi_iter(iteration+1,ttot,regi) = v21_taxrevNetNegEmi.l(ttot,regi);
 p21_emiAllco2neg0(ttot,regi) = vm_emiAllco2neg.l(ttot,regi);
