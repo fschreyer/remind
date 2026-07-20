@@ -90,6 +90,7 @@ Positive Variables
   vm_emiIndCCS(ttot,all_regi,all_enty)                                      "industry CCS emissions [GtC/a]"
   vm_IndCCSCost(ttot,all_regi,all_enty)                                     "industry CCS cost"
   v37_emiIndCCSmax(ttot,all_regi,emiInd37)                                  "maximum abatable industry emissions"
+  v37_SEC(ttot,all_regi,all_in)                                              "Specific energy consumption per subsector [TWa/Mt, TWa/$]"  
 
   !! feedstocks
   v37_incinerationEmi(ttot,all_regi,all_enty,all_enty,all_emiMkt)           "Emissions from incineration of plastic waste, only carbon that is not captured [GtC]"
@@ -144,7 +145,9 @@ $endif.no_calibration
   q37_incineratedPlastics(ttot,all_regi,all_enty,all_enty,all_emiMkt)               "calculate carbon contained in plastics that are incinerated [GtC]"
   q37_feedstocksShares(ttot,all_regi,all_enty,all_enty,all_emiMkt)                  "identical fossil/biomass/synfuel shares for FE and feedstocks"
   q37_wasteIncinerationEmiBalance(tall,all_regi,all_enty,all_emiMkt)                "sum feedstocks incineration emissions up in order not to clutter the core"
-  q37_nonFosNonPlasticNonEmitted(ttot,all_regi)                                    "calculate non-fossil carbon in non-plastic materials that are landfilled [GtC]"
+  q37_nonFosNonPlasticNonEmitted(ttot,all_regi)                                     "calculate non-fossil carbon in non-plastic materials that are landfilled [GtC]"
+***  q37_SEC(ttot,all_regi,all_in)                                                     "calculate specific energy consumption per subsector [TWa/Mt, TWa/$]"
+***  q37_SECNonIncreasing(ttot,all_regi,all_in)                                        "limit specific energy consumption per subsector to be non-increasing over time [TWa/Mt, TWa/$]"
 
   q37_emiChemicalsProcess(ttot,all_regi,all_enty,all_emiMkt)                        "calculate chemicals process emissions"
   q37_emiNonFosNonIncineratedPlastics(ttot,all_regi,all_enty,all_emiMkt)            "calculate negative emissions from non-fossil non-incinerated plastics"

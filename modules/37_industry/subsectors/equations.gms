@@ -54,6 +54,39 @@ q37_energy_limits(t,regi,industry_ue_calibration_target_dyn37(out))$(
 $endif.no_calibration
 
 ***------------------------------------------------------
+*' Calculate specific energy demand per production for each subsector
+***------------------------------------------------------
+$ontext
+q37_SEC(t,regi,industry_ue_calibration_target_dyn37(out))$(
+                                        t.val gt 2020
+                                    AND NOT ppfUePrc(out)
+                                    AND p37_energy_limit_slope(t,regi,out) ) ..
+
+  v37_SEC(t,regi,out)
+  * vm_cesIO(t,regi,out) 
+  =e=
+  sum(ces_eff_target_dyn37(out,in), 
+    vm_cesIO(t,regi,in))
+;
+$ontext
+***------------------------------------------------------
+*' Specific energy consumption should not increase over time
+***------------------------------------------------------
+$ontext
+q37_SECNonIncreasing(ttot,regi,industry_ue_calibration_target_dyn37(out))$(
+                                        ttot.val gt 2020
+                                    AND NOT ppfUePrc(out)
+                                    AND p37_energy_limit_slope(ttot,regi,out) AND
+                                    1 ge 2) ..
+
+  v37_SEC(ttot,regi,out)
+  =l=
+  v37_SEC(ttot-1,regi,out)
+;
+$offtext
+
+
+***------------------------------------------------------
 *' Limit the share of secondary steel to historic values, fading to 90 % in 2050
 ***------------------------------------------------------
 q37_limit_secondary_steel_share(t,regi)$(
