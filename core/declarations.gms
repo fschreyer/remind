@@ -203,7 +203,7 @@ pm_cf(tall,all_regi,all_te)                          "read-in parameter for capa
 p_tkpremused(all_regi,all_te)                        "turn-key cost premium used in the model (with a discount rate of 3 + pure rate of time preference), measured as relative increase of overnight investment costs)"
 pm_inco0_t(ttot,all_regi,all_te)                     "investment cost parameter including exogenuous time-variance for non-learning technologies [T$/TW]"
 pm_omeg(all_regi,opTimeYr,all_te)                    "technical depreciation parameter, gives the share of a capacity that is still usable after technical life time. [none/share, value between 0 and 1]"
-p_lifetime_max(all_regi,all_te)                      "maximum lifetime of a technology (generisdata_tech gives the average lifetime) [years]"
+pm_lifetime_max(all_regi,all_te)                      "maximum lifetime of a technology (generisdata_tech gives the average lifetime) [years]"
 p_discountedLifetime(all_te)                         "Sum over the discounted (@6%) depreciation factor (omega) [unitless]"
 pm_teAnnuity(all_te)                                 "Annuity factor of a technology [unitless]"
 
@@ -331,28 +331,28 @@ $ifthen.scaleDemandIndTable not "%c_scaleDemandIndTable%" == "off"
 $endif.scaleDemandIndTable
 
 *** energy prices
-pm_FEPrice(ttot,all_regi,all_enty,sector,emiMkt)     "parameter to capture all FE prices across sectors and markets [tr$2005/TWa]"
-pm_FEPrice_iter(iteration,ttot,all_regi,all_enty,sector,emiMkt) "parameter to capture all FE prices across sectors and markets [tr$2005/TWa] across iterations"
-pm_SEPrice(ttot,all_regi,all_enty)                   "parameter to capture all SE prices [tr$2005/TWa]"
-pm_PEPrice(ttot,all_regi,all_enty)                   "parameter to capture all PE prices [tr$2005/TWa]"
+pm_FEPrice(ttot,all_regi,all_enty,sector,emiMkt)     "parameter to capture all FE prices across sectors and markets [tr$2017/TWa]"
+pm_FEPrice_iter(iteration,ttot,all_regi,all_enty,sector,emiMkt) "parameter to capture all FE prices across sectors and markets [tr$2017/TWa] across iterations"
+pm_SEPrice(ttot,all_regi,all_enty)                   "parameter to capture all SE prices [tr$2017/TWa]"
+pm_PEPrice(ttot,all_regi,all_enty)                   "parameter to capture all PE prices [tr$2017/TWa]"
 
-p_FEPrice_by_SE_Sector_EmiMkt(ttot,all_regi,entySe,all_enty,sector,emiMkt) "parameter to save FE price per SE, sector and emission market [tr$2005/TWa]"
-p_FEPrice_by_Sector_EmiMkt(ttot,all_regi,all_enty,sector,emiMkt) "parameter to save FE marginal price per sector and emission market [tr$2005/TWa]"
-pm_FEPrice_by_SE_Sector(ttot,all_regi,entySe,all_enty,sector) "parameter to save FE marginal price per SE and sector [tr$2005/TWa]"
-p_FEPrice_by_SE_EmiMkt(ttot,all_regi,entySe,all_enty,emiMkt) "parameter to save FE marginal price per SE and emission market [tr$2005/TWa]"
-p_FEPrice_by_SE(ttot,all_regi,entySe,all_enty)       "parameter to save FE marginal price per SE [tr$2005/TWa]"
-p_FEPrice_by_Sector(ttot,all_regi,all_enty,sector)   "parameter to save FE marginal price per sector [tr$2005/TWa]"
-p_FEPrice_by_EmiMkt(ttot,all_regi,all_enty,emiMkt)   "parameter to save FE marginal price per emission market [tr$2005/TWa]"
-p_FEPrice_by_FE(ttot,all_regi,all_enty)              "parameter to save FE marginal price [tr$2005/TWa]"
+p_FEPrice_by_SE_Sector_EmiMkt(ttot,all_regi,entySe,all_enty,sector,emiMkt) "parameter to save FE price per SE, sector and emission market [tr$2017/TWa]"
+p_FEPrice_by_Sector_EmiMkt(ttot,all_regi,all_enty,sector,emiMkt) "parameter to save FE marginal price per sector and emission market [tr$2017/TWa]"
+pm_FEPrice_by_SE_Sector(ttot,all_regi,entySe,all_enty,sector) "parameter to save FE marginal price per SE and sector [tr$2017/TWa]"
+p_FEPrice_by_SE_EmiMkt(ttot,all_regi,entySe,all_enty,emiMkt) "parameter to save FE marginal price per SE and emission market [tr$2017/TWa]"
+p_FEPrice_by_SE(ttot,all_regi,entySe,all_enty)       "parameter to save FE marginal price per SE [tr$2017/TWa]"
+p_FEPrice_by_Sector(ttot,all_regi,all_enty,sector)   "parameter to save FE marginal price per sector [tr$2017/TWa]"
+p_FEPrice_by_EmiMkt(ttot,all_regi,all_enty,emiMkt)   "parameter to save FE marginal price per emission market [tr$2017/TWa]"
+p_FEPrice_by_FE(ttot,all_regi,all_enty)              "parameter to save FE marginal price [tr$2017/TWa]"
 
-p_FEPrice_by_SE_Sector_EmiMkt_iter(iteration,ttot,all_regi,entySe,all_enty,sector,emiMkt) "parameter to save iteration FE marginal price per SE, sector and emission market [tr$2005/TWa]"
-p_FEPrice_by_Sector_EmiMkt_iter(iteration,ttot,all_regi,all_enty,sector,emiMkt) "parameter to save iteration FE marginal price per sector and emission market [tr$2005/TWa]"
-p_FEPrice_by_SE_Sector_iter(iteration,ttot,all_regi,entySe,all_enty,sector) "parameter to save iteration FE marginal price per SE and sector [tr$2005/TWa]"
-p_FEPrice_by_SE_EmiMkt_iter(iteration,ttot,all_regi,entySe,all_enty,emiMkt) "parameter to save iteration FE marginal price per SE and emission market [tr$2005/TWa]"
-p_FEPrice_by_SE_iter(iteration,ttot,all_regi,entySe,all_enty) "parameter to save iteration FE marginal price per SE [tr$2005/TWa]"
-p_FEPrice_by_Sector_iter(iteration,ttot,all_regi,all_enty,sector) "parameter to save iteration FE marginal price per sector [tr$2005/TWa]"
-p_FEPrice_by_EmiMkt_iter(iteration,ttot,all_regi,all_enty,emiMkt) "parameter to save iteration FE marginal price per emission market [tr$2005/TWa]"
-p_FEPrice_by_FE_iter(iteration,ttot,all_regi,all_enty) "parameter to save iteration FE marginal price [tr$2005/TWa]"
+p_FEPrice_by_SE_Sector_EmiMkt_iter(iteration,ttot,all_regi,entySe,all_enty,sector,emiMkt) "parameter to save iteration FE marginal price per SE, sector and emission market [tr$2017/TWa]"
+p_FEPrice_by_Sector_EmiMkt_iter(iteration,ttot,all_regi,all_enty,sector,emiMkt) "parameter to save iteration FE marginal price per sector and emission market [tr$2017/TWa]"
+p_FEPrice_by_SE_Sector_iter(iteration,ttot,all_regi,entySe,all_enty,sector) "parameter to save iteration FE marginal price per SE and sector [tr$2017/TWa]"
+p_FEPrice_by_SE_EmiMkt_iter(iteration,ttot,all_regi,entySe,all_enty,emiMkt) "parameter to save iteration FE marginal price per SE and emission market [tr$2017/TWa]"
+p_FEPrice_by_SE_iter(iteration,ttot,all_regi,entySe,all_enty) "parameter to save iteration FE marginal price per SE [tr$2017/TWa]"
+p_FEPrice_by_Sector_iter(iteration,ttot,all_regi,all_enty,sector) "parameter to save iteration FE marginal price per sector [tr$2017/TWa]"
+p_FEPrice_by_EmiMkt_iter(iteration,ttot,all_regi,all_enty,emiMkt) "parameter to save iteration FE marginal price per emission market [tr$2017/TWa]"
+p_FEPrice_by_FE_iter(iteration,ttot,all_regi,all_enty) "parameter to save iteration FE marginal price [tr$2017/TWa]"
 ;
 
 
@@ -529,6 +529,8 @@ q_PE_histCap(ttot,all_regi,all_enty,all_enty)        "require minimum of fossil 
 q_PE_histCap_NGCC_2020_up(ttot,all_regi,all_enty,all_enty) "require maximum of gas power capacity in 2020 based on 2015 historical data and growth rate assumptions"
 q_shbiofe_up(ttot,all_regi,all_enty,emi_sectors,all_emiMkt) "constrain share of biomass in hydrocarbons of sectoral final energy in historical years based on historical data (upper bound)"
 q_shbiofe_lo(ttot,all_regi,all_enty,emi_sectors,all_emiMkt) "constrain share of biomass in hydrocarbons of sectoral final energy in historical years based on historical data (lower bound)"
+q_shbiofe_indst_up(ttot,all_regi,all_enty,emi_sectors) "constrain share of biomass in solids of industry final energy in historical years based on historical data (upper bound)"
+q_shbiofe_indst_lo(ttot,all_regi,all_enty,emi_sectors) "constrain share of biomass in solids of industry final energy in historical years based on historical data (lower bound)"
 
 *** energy service layer equations (only relevant for transport)
 q_transFe2Es(ttot,all_regi,all_enty,all_esty,all_teEs) "conversion from final energy to energy services"
