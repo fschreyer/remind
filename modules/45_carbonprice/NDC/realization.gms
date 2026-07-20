@@ -20,6 +20,7 @@
 
 
 *####################### R SECTION START (PHASES) ##############################
+$Ifi "%phase%" == "sets" $include "./modules/45_carbonprice/NDC/sets.gms"
 $Ifi "%phase%" == "declarations" $include "./modules/45_carbonprice/NDC/declarations.gms"
 $Ifi "%phase%" == "datainput" $include "./modules/45_carbonprice/NDC/datainput.gms"
 $Ifi "%phase%" == "preloop" $include "./modules/45_carbonprice/NDC/preloop.gms"

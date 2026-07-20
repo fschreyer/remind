@@ -25,6 +25,13 @@ p45_CO2PriceLimitNDC(ttot,all_regi)                       "Upper limit of CO2 pr
 $endif
 ;
 
+
+$ifThen NOT "%cm_NDC_sensitivity_majorEmitter%" == "off"
+Parameter
+p45_EmiTargetAbs_Sensitivity(ttot,all_regi)               "Absolute NDC emissions target for major emitters from sensitivity analysis from manual file [Mt CO2eq/yr]" 
+;
+$ENDIF
+
 Scalar    p45_adjustExponent                             "exponent in tax adjustment process [1]";
 
 

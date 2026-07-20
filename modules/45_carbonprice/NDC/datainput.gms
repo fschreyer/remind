@@ -25,6 +25,23 @@ $onlisting
 Parameter p45_EmiTargetAbs(ttot,all_regi) "Absolute NDC emissions targets, emissions from countries without targets are not included [Mt CO2eq/yr]";
 p45_EmiTargetAbs(t,all_regi) = f45_EmiTargetAbs(t,all_regi,"%cm_NDC_version%","%cm_GDPpopScen%");
 
+
+$ifThen NOT "%cm_NDC_sensitivity_majorEmitter%" == "off"
+* If flat cm_NDC_sensitivity_majorEmitter activated (not "off"), overwrite China, EU, Japan, and India NDC emissions targets by targets from manual sensitivity analysis
+Table f45_EmiTargetAbs_sensitivity(tall,all_regi,NDC_sens_scen) "Absolute NDC emissions targets for major emitters for sensitivigy analysis in total GHG excl LULUCF [Mt CO2eq/yr]"
+$offlisting
+$ondelim
+$include "./modules/45_carbonprice/NDC/input/NDCTargetsforREMIND.csv"
+$offdelim
+$onlisting
+;
+
+
+p45_EmiTargetAbs_Sensitivity(t,all_regi) = f45_EmiTargetAbs_sensitivity(t,all_regi,"%cm_NDC_sensitivity_majorEmitter%");
+p45_EmiTargetAbs(t,all_regi) $ ( p45_EmiTargetAbs_Sensitivity(t,all_regi) ) = p45_EmiTargetAbs_Sensitivity(t,all_regi);
+$ENDIF
+
+
 $ifThen "%cm_targetDelay%" == "prisma"
 *** PRISMA Asymetric rollback: 
 **   the delay of NDC targets of "10, 20, or 30 years" per region would be assigned as:

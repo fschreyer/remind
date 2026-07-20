@@ -1442,7 +1442,12 @@ $setglobal cm_NDC_targetYear  2030, 2035    !! def = "2030, 2035"
 *'      *   30 years delay for "Fossil-dependant": REF, MEA
 *'      *   Exceptions apply for some regions: the delay might deviate by 5 years due to model 10-year timesteps after 2060
 $setglobal cm_targetDelay  off     !! def = "off"
-
+*' cm_NDC_sensitivity_majorEmitter            "activates NDC sensitivity scenarios for China, India, Japan and EU based on manual NDC target calculations"
+*' (off): no sensitivity scenario is applied
+*' (plausible): core NDC scenario
+*' (max_ambition): maximum ambition scenario, take lowest possible emissions target
+*' (min_ambition): minimum ambition scenario, take highest possible emissions target
+$setglobal cm_NDC_sensitivity_majorEmitter  off     !! def = "off"  !! regexp = off|plausible|max_ambition|min_ambition
 *' cm_NDC_CO2PriceLimit            "sets regional upper limit for CO2 prices in NDC realization" [requires 45_carbonprice = NDC]"
 *' This serves to not force regions to reach NDC emissions targets at extremly high CO2 prices in the near-term. 
 *' Instead, regions go "as close as still plausible" to their NDC targets. 
