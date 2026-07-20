@@ -329,7 +329,9 @@ loop(ext_regi$regiEmiMktTarget(ext_regi),
                     );
                   );
 ***               if we are still using the slope
-                  if(NOT(regiEmiMktRescaleType(iteration,ttot,ttot2,ext_regi,emiMktExt,"squareDev_noNonPositiveSlope")),
+                  if( ( NOT(regiEmiMktRescaleType(iteration,ttot,ttot2,ext_regi,emiMktExt,"squareDev_noNonPositiveSlope")) AND
+                      p47_factorRescaleSlope(ttot,ttot2,ext_regi,emiMktExt) AND
+                      pm_taxemiMkt_iteration(iteration,ttot2,regi,emiMkt) ),
 ***                 calculate the tax rescale factor using the above calculated slope
                     pm_factorRescaleemiMktCO2Tax(ttot,ttot2,ext_regi,emiMktExt) = 
                       (
