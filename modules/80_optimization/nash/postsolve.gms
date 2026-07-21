@@ -322,6 +322,7 @@ if( (iteration.val le 17),
 
 ***additional criterion: did taxes converge? (only checked if cm_TaxConvCheck is 1)
 p80_convNashTaxrev_iter(iteration,t,regi) = 0;
+p80_taxRevConvFailed(t,regi) = 0;
 loop(regi,
     loop(t,
          p80_convNashTaxrev_iter(iteration,t,regi) = vm_taxrev.l(t,regi) / vm_cesIO.l(t,regi,"inco");
