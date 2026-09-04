@@ -106,21 +106,14 @@ $ENDIF
 
 display p45_shareTarget;
 
-Parameter p45_BAU_reg_emi_wo_LU_wo_bunkers(ttot,all_regi) "regional GHG emissions (without LU and without bunkers) in BAU scenario [MtCO2eq/yr]"
-  /
-$ondelim
-$ifthen exist "./modules/45_carbonprice/NDC/input/pm_BAU_reg_emi_wo_LU_wo_bunkers.cs4r"
-$include "./modules/45_carbonprice/NDC/input/pm_BAU_reg_emi_wo_LU_wo_bunkers.cs4r"
-$endif
-$offdelim
-  /             ;
+Parameter p45_BAU_reg_emi_wo_LU_wo_bunkers(ttot,all_regi) "regional GHG emissions (without LU and without bunkers) in BAU scenario [MtCO2eq/yr]";
 
 *** --------------------------------------------------------------------------
 *** use new GAMS internal variables for total GHG excl LULUCF and excl bunkers
 
 *** overwrite BAU emissions with emissions in GAMS variable from reference GDX
 p45_BAU_reg_emi_wo_LU_wo_bunkers(ttot,regi) = 0;
-Execute_Loadpoint 'input_ref' p45_BAU_reg_emi_wo_LU_wo_bunkers = v_emiGHG_exclLULUCF_exclBunkers.l;
+Execute_Loadpoint 'input_ref' p45_BAU_reg_emi_wo_LU_wo_bunkers = vm_emiGHG_exclLULUCF_exclBunkers.l;
 *** convert from GtCeq/yr to MtCO2eq/yr
 p45_BAU_reg_emi_wo_LU_wo_bunkers(ttot,regi) = p45_BAU_reg_emi_wo_LU_wo_bunkers(ttot,regi) * sm_c_2_co2 * 1000;
 
@@ -157,6 +150,7 @@ if(p45_useSingleYearCloseTo > 0,
 *** first and last NDC year as a number
 Parameter p45_firstNDCyear(all_regi) "last year with NDC coverage within region [year]";
 p45_firstNDCyear(regi) = smin( p45_NDCyearSet(t, regi), t.val );
+p45_firstNDCyear(regi)$(p45_firstNDCyear(regi) = +INF) = 0;
 Parameter p45_lastNDCyear(all_regi)  "last year with NDC coverage within region [year]";
 p45_lastNDCyear(regi)  = smax( p45_NDCyearSet(t, regi), t.val );
 
