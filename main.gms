@@ -1480,7 +1480,7 @@ $setglobal cm_NDC_CO2PriceMinimum  NonDecreasing     !! def = "NonDecreasing"  !
 *' This setting determines whether compliance with NDC emissions targets should be a criterion for convergence of REMIND. 
 *' *  (on):                         runs only converges if all NDC emissions targets are met within the tolerance defined by cm_NDC_target_DevTol
 *' *  (off):                        runs can converge even if some NDC emissions targets are not met within the tolerance defined by cm_NDC_target_DevTol, e.g. because of very high CO2 prices needed to meet them in the near-term
-$setglobal cm_NDC_TargetCheckConv  on      !! def = "on"  !! regexp = on|off
+$setglobal cm_NDC_TargetCheckConv  off      !! def = "on"  !! regexp = on|off
 *' cm_NPi_version            "choose version year of NPi targets for min and max targets in the form of conditional vs. unconditional"
 *' *  (2024_cond):   minimum technology targets are included from NewClimate latest policy modeling protocol in 2025
 *' *  (2024_uncond): maximal technology targets are included from NewClimate latest policy modeling protocol in 2025
