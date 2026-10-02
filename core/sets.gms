@@ -23,6 +23,7 @@ cm_GDPpopScen    "cm_GDPpopScen as set for use in GDX"      /%cm_GDPpopScen%/
 cm_APssp         "cm_APssp as set for use in GDX"           /%cm_APssp%/
 cm_APscen        "cm_APscen as set for use in GDX"          /%cm_APscen%/
 cm_LU_emi_scen   "cm_LU_emi_scen as set for use in GDX"     /%cm_LU_emi_scen%/
+cm_fetaxscen     "cm_fetaxscen as set for use in GDX"       /%cm_fetaxscen%/
 cm_rcp_scen      "cm_rcp_scen as set for use in GDX"        /%cm_rcp_scen%/
 
 
@@ -192,7 +193,6 @@ all_te          "all energy technologies, including from modules"
     fnrs            "fast nuclear reactor (simple structure)"
     elh2            "hydrogen electrolysis, using grid electricity"
     h2turb          "hydrogen turbine for electricity production"
-    elh2VRE         "dummy technology: hydrogen electrolysis; to demonstrate the capacities and SE flows inside the storXXX technologies"
     h2turbVRE       "dummy technology: hydrogen turbine for electricity production; to demonstrate the capacities and SE flows inside the storXXX technologies"
     h2curt          "hydrogen production from curtailment"
     h22ch4          "production of synthetic methane from hydrogen and captured carbon via methanation"
@@ -836,11 +836,11 @@ $ELSE.RegScenNuc
   set regi_nucscen(all_regi) "regions which nucscen applies to" / %c_regi_nucscen% /;
 $ENDIF.RegScenNuc
 
-$IFTHEN.RegScenCapt "%c_regi_capturescen%" == "all"
-  set regi_capturescen(all_regi) "regions which capturescen applies to";
-  regi_capturescen(all_regi)=YES;
+$IFTHEN.RegScenCapt "%c_regi_co2captureEnergy%" == "all"
+  set regi_co2captureEnergy(all_regi) "regions which energy carbon capture scenario c_co2captureEnergy applies to";
+  regi_co2captureEnergy(all_regi)=YES;
 $ELSE.RegScenCapt
-  set regi_capturescen(all_regi) "regions which capturescen applies to" / %c_regi_capturescen% /;
+  set regi_co2captureEnergy(all_regi) "regions which energy carbon capture scenario c_co2captureEnergy applies to" / %c_regi_co2captureEnergy% /;
 $ENDIF.RegScenCapt
 
 *** definition of set of regions that use alternative FE emission factors from umweltbundesamt
@@ -1127,7 +1127,6 @@ te(all_te)              "energy technologies"
     fnrs            "fast nuclear reactor (simple structure)"
     elh2            "hydrogen electrolysis"
     h2turb          "hydrogen turbine for electricity production"
-    elh2VRE         "dummy technology: hydrogen electrolysis; to demonstrate the capacities and SE flows inside the storXXX technologies"
     h2turbVRE       "dummy technology: hydrogen turbine for electricity production; to demonstrate the capacities and SE flows inside the storXXX technologies"
     h2curt          "hydrogen production from curtailment"
     tdels           "transmission and distribution for electricity to stationary users"
@@ -2230,7 +2229,7 @@ char            "characteristics of technologies"
     min             "minimum"
     max             "maximum"
     usehr            "number of hours in a year when the technology is used"
-    elh2VREcapRatio    "ratio of elh2VRE capacity to storage technology capacity"
+    elh2capRatio    "ratio of elh2 capacity to storage technology capacity"
     h2turbVREcapRatio  "ratio of h2turbVRE capacity to storage technology capacity"
     batteryVREcapRatio  "ratio of battery capacity to storage technology capacity"
     priceLow        "biochar price path assumption"
@@ -2346,7 +2345,6 @@ alias(steps,steps2);
 alias(all_emiMkt,emiMkt,emiMkt2);
 alias(all_emiMktExt,emiMktExt);
 alias(emi_sectors,sector,sector2);
-alias(sector_types,type);
 alias(ext_regi,ext_regi2);
 alias(regi_group,regi_group2);
 
@@ -2491,7 +2489,6 @@ se2se(all_enty,all_enty,all_te)  "map secondary energy to secondary energy using
 /
     seel.seh2.elh2
     seh2.seel.h2turb
-    seel.seh2.elh2VRE
     seh2.seel.h2turbVRE
 /
 
@@ -2821,7 +2818,7 @@ teSe2rlf(all_te,rlf)        "mapping for techologies to grades. Currently, the i
     igcc,igccc,pc,coaltr,coalgas,coalh2,coalh2c,coalchp,coalhp,coalftrec,coalftcrec,
     biotr,biotrmod,biogas,biogasc,bioftrec,bioftcrec,bioh2,bioh2c,biohp,biochp,bioigcc,bioigccc,
     biopyronly,biopyrhe,biopyrchp,biopyrliq,
-    elh2,h2turb,elh2VRE,h2turbVRE,bioethl,bioeths,biodiesel,tnrs,fnrs
+    elh2,h2turb,h2turbVRE,bioethl,bioeths,biodiesel,tnrs,fnrs
     ) . 1
 /
 
