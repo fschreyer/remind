@@ -79,7 +79,7 @@ pm_co2eq0(tall,all_regi)                             "Total greenhouse gas emiss
 *** parameters used for MAC curves
 pm_macBaseMagpie(tall,all_regi,all_enty)             "baseline emissions from MAgPIE (type emiMacMagpie) [GtC, Mt CH4, Mt N]"
 f_macBaseMagpie_coupling(tall,all_regi,all_enty)     "baseline emissions from MAgPIE (type emiMacMagpie) read from magpie.gdx in coupling [GtC, Mt CH4, Mt N]"
-p_macBaseMagpieNegCo2(tall,all_regi)                 "net negative CO2 emissions from land-use change [GtC]"
+pm_macBaseMagpieNegCo2(tall,all_regi)                 "net negative CO2 emissions from land-use change [GtC]"
 p_macBaseExo(tall,all_regi,all_enty)                 "exogenous baseline emissions (type emiMacExo) [Mt CH4, Mt N]"
 p_co2lucSub(tall,all_regi,all_enty)                  "subtypes of CO2 land use change emissions, add up to total land use change emissions, coming from MAgPIE, passed through REMIND for reporting, not used anywhere, remain unchanged [GtC]"
 pm_macAbat(tall,all_regi,all_enty,steps)             "abatement levels based on data from van Vuuren [fraction]"
@@ -114,80 +114,12 @@ p_ef_dem(all_regi,all_enty)                          "read-in parameter for dema
 pm_emifacNonEnergy(ttot,all_regi,all_enty,all_enty,emi_sectors,all_enty) "emission factor for non-energy fedstocks, only for chemical industry [GtC/TWa]"
 pm_incinerationRate(ttot,all_regi)                   "share of plastic waste that gets incinerated [fraction]"
 pm_cintraw(all_enty)                                 "CO2 emissions factor of fossil fuels [GtC/TWa]"
-p_cint(all_regi,all_enty,all_enty,rlf)               "CO2 emissions factor of energy-related emissions from unconventional fossil fuel extraction [GtC/TWa]" 
-p_efFossilFuelExtr(all_regi,all_enty,all_enty)       "CH4 and N2O emission factor of PE production: fugitive CH4 from fossil fuel extraction and N2O from bioenergy [Mt CH4/TWA, Mt N/TWa]"
+pm_cint(all_regi,all_enty,all_enty,rlf)               "CO2 emissions factor of energy-related emissions from unconventional fossil fuel extraction [GtC/TWa]" 
+pm_efFossilFuelExtr(all_regi,all_enty,all_enty)       "CH4 and N2O emission factor of PE production: fugitive CH4 from fossil fuel extraction and N2O from bioenergy [Mt CH4/TWA, Mt N/TWa]"
 p_efFossilFuelExtrGlo(all_enty,all_enty)             "CH4 and N2O emission factor of PE production - global value: fugitive CH4 from fossil fuel extraction and N2O from bioenergy [Mt CH4/TWA, Mt N/TWa]"
 
 *** share of stored carbon in captured carbon
 pm_share_CCS_CCO2(ttot,all_regi)                     "share of stored CO2 from total captured CO2 from previous iteration [share]"
-;
-
-*** ------------- Emissions Variables ----------------------------------------
-variables
-
-*** total emissions
-vm_co2eqGlob(ttot)                                   "total global greenhouse gas emissions to be balanced by allowances [GtCeq]"
-vm_co2eq(ttot,all_regi)                              "total greenhouse gas emissions measured in co2 equivalents that are subject to carbon pricing, be aware that emissions coverage of this variable depends on switch cm_multigasscen [GtCeq]"
-vm_co2eqMkt(ttot,all_regi,all_emiMkt)                "total greenhouse gas emissions per market measured in co2 equivalents that are subject to carbon pricing, be aware that emissions coverage of this variable depends on switch cm_multigasscen [GtCeq]"
-vm_emiAll(ttot,all_regi,all_enty)                    "total emissions by species [GtC, Mt CH4, Mt N, Mt SO2, Mt BC, Mt OC]"
-v_co2eqCum(all_regi)                                 "cumulated vm_co2eq emissions for the first budget period [GtCeq]"
-vm_emiGHG_exclLULUCF_exclBunkers(ttot,all_regi)       "total GHG emissions excl LULUCF and excl bunkers, needed for NDC targets [GtCeq]"
-
-*** sectoral emissions
-vm_emiTeDetail(ttot,all_regi,all_enty,all_enty,all_te,all_enty)  "emissions from energy technologies on supply-side (pm_emifac * PE) and demand-side (pm_emifac * FE), note: not equivalent to Emi|CO2|Energy in reporting [GtC, Mt CH4, Mt N, Mt SO2, Mt BC, Mt OC]"
-v_emiEnFuelEx(ttot,all_regi,all_enty)                "energy-related CO2 emissions from fossil fuel extraction [GtC]"
-vm_emiTe(ttot,all_regi,all_enty)                     "proxy of total energy-related emissions, based on vm_emiTeDetail and taking into account industry CCS, CCU and feedstocks note: not equivalent to Emi|CO2|Energy in reporting [GtC, Mt CH4, Mt N, Mt SO2, Mt BC, Mt OC]"
-vm_emiCO2Sector(ttot,all_regi,emi_sectors)           "total CO2 emissions from individual sectors, so far only buildings and transport excl. bunkers [GtC]"
-v_macBase(ttot,all_regi,all_enty)                    "baseline emissions for all emissions subject to MACCs, emissions that are not energy-related [GtC, Mt CH4, Mt N]"
-vm_emiMacSector(ttot,all_regi,all_enty)              "total emissions subject to MACCs, emissions that are not energy-related [GtC, Mt CH4, Mt N]"
-
-vm_emiCdr(ttot,all_regi,all_enty)                    "total (negative) CO2 emissions from CDR technologies that are calculated in the CDR module. Note that it includes all atmospheric CO2 entering the CCUS chain (i.e. CO2 stored (CDR) AND used (not CDR)) [GtC]"
-vm_emiMac(ttot,all_regi,all_enty)                    "total non-energy-related emission of each region. [GtC, Mt CH4, Mt N]"
-vm_emiFgas(ttot,all_regi,all_enty)                   "F-gas emissions by single gases from IMAGE [emiFgasTotal in MtCO2eq, for other units see f_emiFgas.cs4r]"
-
-*** emissions per emissions market
-vm_emiTeDetailMkt(tall,all_regi,all_enty,all_enty,all_te,all_enty,all_emiMkt) "emissions from energy technologies on supply-side (pm_emifac * PE) and demand-side (pm_emifac * FE) per emissions market, note: not equivalent to Emi|CO2|Energy in reporting [GtC, Mt CH4, Mt N, Mt SO2, Mt BC, Mt OC]"
-vm_emiTeMkt(tall,all_regi,all_enty,all_emiMkt)       "proxy of total energy-related emissions per emissions market, based on vm_emiTeDetail and taking into account industry CCS, CCU and feedstocks note: not equivalent to Emi|CO2|Energy in reporting [GtC, Mt CH4, Mt N, Mt SO2, Mt BC, Mt OC]"
-vm_emiAllMkt(tall,all_regi,all_enty,all_emiMkt)      "total emissions per emissions market [GtC, Mt CH4, Mt N, Mt SO2, Mt BC, Mt OC]"
-;
-
-*** ------------- Emissions Positive Variables --------------------------------
-positive variables
-
-v_co2capture(ttot,all_regi)                                 "total captured CO2 [GtC/year]"
-vm_co2CCS(ttot,all_regi,all_enty,all_enty,all_te,rlf)       "total CO2 injected into geological storage [GtC/a]"
-v_co2capturevalve(ttot,all_regi)                            "total CO2 emitted right after capture [GtC/a], note: used in q_balCCUvsCCS to account for different lifetimes of capture and CCU/CCS te and capacities [GtC/year]"
-v_ccsShare(ttot,all_regi)                                    "fraction of captured CO2 that is stored geologically [share]"
-vm_emiCdrNovel(ttot,all_regi)                                 "all novel CDR emissions, gross removals for all options, excluding land-use change emissions and materials [GtC/year]"
-vm_emiCdrAll(ttot,all_regi)                                  "all CDR emissions, net negative emissions from land-use change, gross removals for all other options [GtC/year]"
-;
-
-
-*** ------------- Emissions Equations -----------------------------------------
-equations
-q_emiCO2Sector(ttot,all_regi,emi_sectors)            "CO2 emissions from different sectors"
-q_emiTeDetail(ttot,all_regi,all_enty,all_enty,all_te,all_enty) "determination of emissions"
-q_macBase(tall,all_regi,all_enty)                    "baseline emissions for all emissions subject to MACCs (type emiMacSector)"
-q_emiMacSector(ttot,all_regi,all_enty)               "total non-energy-related emission of each region"
-q_emiTe(ttot,all_regi,all_enty)                      "total energy-emissions per region"
-q_emiAll(ttot,all_regi,all_enty)                     "calculates all regional emissions as sum over energy and non-energy relates emissions"
-q_emiCap(ttot,all_regi)                              "emission cap"
-q_emiMac(ttot,all_regi,all_enty)                     "summing up all non-energy emissions"
-q_co2eq(ttot,all_regi)                               "regional emissions in co2 equivalents"
-q_co2eqMkt(ttot,all_regi,all_emiMkt)                 "regional emissions per market in co2 equivalents"
-q_co2eqGlob(ttot)                                    "global emissions in co2 equivalents"
-qm_co2eqCum(all_regi)                                "cumulate regional emissions over time"
-q_budgetCO2eqGlob                                    "global emission budget balance"
-q_emiTeDetailMkt(ttot,all_regi,all_enty,all_enty,all_te,all_enty,all_emiMkt) "detailed energy specific emissions per region and market"
-q_emiTeMkt(ttot,all_regi,all_enty,all_emiMkt)        "total energy-emissions per region and market"
-q_emiEnFuelEx(ttot,all_regi,all_enty)                "energy emissions from fuel extraction"
-q_emiAllMkt(ttot,all_regi,all_enty,all_emiMkt)       "total regional emissions for each emission market"
-q_emiCdrNovel(ttot,all_regi)                         "sum over all CDR emissions, except net negative land-use change emissions and materials"
-q_emiCdrAll(ttot,all_regi)                           "sum over all CDR emissions, incl. net negative land-use change emissions and materials"
-q_balcapture(ttot,all_regi)                          "balance equation for carbon capture"
-q_balCCUvsCCS(ttot,all_regi)                         "balance equation for captured carbon to CCU or CCS or valve"
-q_ccsShare(ttot,all_regi)                            "calculate the share of captured CO2 that is stored geologically"
-q_emiGHG_exclLULUCF_exclBunkers(ttot,all_regi)       "calculate total GHG emissions excl LULUCF and excl bunkers"
 ;
 
 *** ---------------------------------------------------------------------------
@@ -614,7 +546,7 @@ o_negitr_total_forc(iteration)                       "total forcing in 2100"
 o_pm_pebiolc_demandmag(iteration,ttot,all_regi)      "track pm_pebiolc_demandmag across Nash iterations"
 o_pm_macBaseMagpie(iteration,ttot,all_regi,all_enty) "track pm_macBaseMagpie across Nash iterations"
 o_pm_macSwitch(iteration,ttot,all_regi,all_enty)     "track pm_macSwitch across Nash iterations"
-o_p_efFossilFuelExtr_n2obio(iteration,all_regi)      "track p_efFossilFuelExtr for n2obio across Nash iterations"
+o_pm_efFossilFuelExtr_n2obio(iteration,all_regi)      "track pm_efFossilFuelExtr for n2obio across Nash iterations"
 o_vm_fuExtr_pebiolc_iter(iteration,ttot,all_regi)         "track vm_fuExtr for pebiolc across Nash iterations"
 o_vm_pebiolc_price_iter(iteration,ttot,all_regi)          "track vm_pebiolc_price across Nash iterations"
 o_PEDem_Bio_ECrops_iter(iteration,ttot,all_regi)          "track pebiolc demand across Nash iterations"
@@ -695,7 +627,7 @@ s_tau_cement                 "range of per capita investments for switching from
 s_c_so2                      "constant, see S. Smith, 2004, Future Sulfur Dioxide Emissions"    /4.39445/
 s_ccsinjecrate               "CCS injection rate factor. [1/a]"
 
-s_t_start                    "start year of emission budget"
+sm_t_start                    "start year of emission budget"
 cm_peakBudgYr                "date of net-zero CO2 emissions for peak budget runs without overshoot"
 
 sm_endBudgetCO2eq            "end time step of emission budget period 1"

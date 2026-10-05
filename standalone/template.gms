@@ -156,7 +156,7 @@ cm_rentconvgas        "[grades2poly] number of years required to converge to the
 cm_rentdisccoal       "[grades2poly] discount factor for the coal rent"
 cm_rentdisccoal2      "[grades2poly] discount factor for the coal rent achieved in 2100"
 cm_rentconvcoal       "[grades2poly] number of years required to converge to the 2100 coal rent"
-c_cint_scen           "additional GHG emissions from mining fossil fuels"
+cm_cint_scen           "additional GHG emissions from mining fossil fuels"
 cm_so2tax_scen         "level of SO2 tax"
 c_techAssumptScen     "scenario for assumptions of energy technologies based on SSP scenarios, 1: SSP2 (default), 2: SSP1, 3: SSP5"
 c_ccsinjecratescen    "CCS injection rate factor, 0.5% by default yielding a 60 Mt per year IR"
@@ -242,7 +242,7 @@ cm_rentdisccoal2    = 0.6;       !! def 0.6
 cm_rentconvcoal     = 50;        !! def 50
 
 cm_so2tax_scen        = 1;         !! def =
-c_cint_scen           = 1;         !! def = 1
+cm_cint_scen           = 1;         !! def = 1
 $setGlobal c_techAssumptScen     = SSP2;         !! def = SSP2
 c_ccsinjecratescen    = 1;         !! def = 1
 c_ccscapratescen      = 1;         !! def = 1

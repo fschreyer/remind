@@ -403,7 +403,7 @@ loop(regi,
 
 *' Limit REMINDs ability to vent captured CO2 to 1 MtCO2 per yr per region. This happens otherwise to a great extend in stringent climate 
 *' policy scenarios if CCS and CCU capacities are limited in early years, to lower overall adjustment costs of capture technologies.
-v_co2capturevalve.up(t,regi) = 1 * sm_MtCO2_2_GtC;
+vm_co2capturevalve.up(t,regi) = 1 * sm_MtCO2_2_GtC;
 
 *** ------------------------------------------------------------------
 *' ##### Assumptions on leakage in the CCUS chain:

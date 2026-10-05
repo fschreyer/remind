@@ -662,11 +662,11 @@ display pm_IO_trade;
 ***nicolasb*DOT* The parameter describes the extra CO2 emissions from fuel extraction on top of the PE combustion emissions
 ***nicolasb*DOT* the units are: GtC per TWa
 ***nicolasb*DOT* ATTENTION: the data given here must crrespond with the mapping emi2fuelMine(enty,enty2,rlf)
-p_cint(regi,"co2","peoil","4")=0.0475647000;
-p_cint(regi,"co2","peoil","5")=0.1078133200;
-p_cint(regi,"co2","peoil","6")=0.1775748800;
-p_cint(regi,"co2","peoil","7")=0.2283105600;
-p_cint(regi,"co2","peoil","8")=0.4153983800;
+pm_cint(regi,"co2","peoil","4")=0.0475647000;
+pm_cint(regi,"co2","peoil","5")=0.1078133200;
+pm_cint(regi,"co2","peoil","6")=0.1775748800;
+pm_cint(regi,"co2","peoil","7")=0.2283105600;
+pm_cint(regi,"co2","peoil","8")=0.4153983800;
 
 *** historical installed capacity
 $Offlisting
@@ -1008,14 +1008,14 @@ p_abatparam_N2O(tall,all_regi,all_enty,steps)$(ord(steps) gt 201) = p_abatparam_
 *** Read methane emissions from fossil fuel extraction for calculating emission factors. 
 *** The base year determines whether the data comes from CEDS or EDGAR
 $ifthen %cm_emifacs_baseyear% == "2005" 
-parameter p_emiFossilFuelExtr(all_regi,all_enty)          "methane emissions in 2005 [Mt CH4], needed for the calculation of p_efFossilFuelExtr"
+parameter p_emiFossilFuelExtr(all_regi,all_enty)          "methane emissions in 2005 [Mt CH4], needed for the calculation of pm_efFossilFuelExtr"
 /
 $ondelim
 $include "./core/input/p_emiFossilFuelExtr.cs4r"
 $offdelim
 /;
 $else
-parameter p_emiFossilFuelExtr(all_regi,all_enty)          "methane emissions in 2020 [Mt CH4], needed for the calculation of p_efFossilFuelExtr"
+parameter p_emiFossilFuelExtr(all_regi,all_enty)          "methane emissions in 2020 [Mt CH4], needed for the calculation of pm_efFossilFuelExtr"
 /
 $ondelim
 $include "./core/input/p_emiFossilFuelExtr2020.cs4r"
@@ -1024,12 +1024,12 @@ $offdelim
 $endif
 
 *** GA: These hardcoded values were probably assuming 2005 as base year, TODO: check and adjust for 2020 case
-$if %cm_LU_emi_scen% == "SSP1"   p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047/sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP2"   p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079/sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP2_lowEn"   p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079/sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP3"   p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079/sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP5"   p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0066/sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SDP"    p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047/sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP1"   pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047/sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP2"   pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079/sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP2_lowEn"   pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079/sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP3"   pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079/sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP5"   pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0066/sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SDP"    pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047/sm_EJ_2_TWa;
 
 *** In case REMIND is coupled to MAgPIE emissions are obtained from the MAgPIE reporting. 
 *** Thus, emission factors are set to zero in core/presolve.gms after MAgPIE has run at least one.
@@ -1381,7 +1381,7 @@ pm_data(regi,"ccap0",te) = 1/card(regi)*fm_dataglob("ccap0",te);
 *** -----------------------------------------------------------------------------
 
 *** definition of budgets on energy emissions in GtC and associated time period
-s_t_start        = 2005;
+sm_t_start        = 2005;
 sm_endBudgetCO2eq      = 2110;
 *cb single budget should cover the full modeling time, as otherwise CO2 prices show strange behaviour around 2100 (and rest of behaviour is also biased by foresight of cap-free post 2100)
 if (cm_emiscen eq 6,
@@ -1524,9 +1524,9 @@ if( (cm_startyear gt 2005),
 *** Gets updated for >= cm_startyear in core/presolve.gms when coupling to MAgPIE is active.
 p_co2lucSub(ttot,regi,emiMacMagpieCO2Sub(all_enty))$(ttot.val ge cm_startyear) = f_macBaseMagpie(ttot,regi,emiMacMagpieCO2Sub,"%cm_LU_emi_scen%","%cm_rcp_scen%");
 
-*** p_macPolCO2luc defines the lower limit for abatement of CO2 landuse change emissions in REMIND
+*** pm_macPolCO2luc defines the lower limit for abatement of CO2 landuse change emissions in REMIND
 *** The values are derived from MAgPIE runs with very strong mitigation
-parameter p_macPolCO2luc(tall,all_regi)                "co2 emissions from landuse change with strong mitigation in MAgPIE"
+parameter pm_macPolCO2luc(tall,all_regi)                "co2 emissions from landuse change with strong mitigation in MAgPIE"
 /
 $ondelim
 $include "./core/input/p_macPolCO2luc.cs4r"

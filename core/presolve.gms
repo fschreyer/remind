@@ -78,26 +78,26 @@ loop (emi2fuel(entyPe,enty),
   loop (regi,
     sm_tmp =  sum(rlf, vm_fuExtr.l("%cm_emifacs_baseyear%",regi,entyPe,rlf));
 
-    p_efFossilFuelExtr(regi,entyPe,enty)$( sm_tmp )
+    pm_efFossilFuelExtr(regi,entyPe,enty)$( sm_tmp )
       = p_emiFossilFuelExtr(regi,entyPe) / sm_tmp;
 
-    p_efFossilFuelExtr(regi,entyPe,enty)$( NOT sm_tmp )
+    pm_efFossilFuelExtr(regi,entyPe,enty)$( NOT sm_tmp )
       = p_efFossilFuelExtrGlo(entyPe,enty);
   );
 );
 
 loop(regi,
-   if ( p_efFossilFuelExtr(regi,"pecoal","ch4coal") ge 50,
-        p_efFossilFuelExtr(regi,"pecoal","ch4coal") = p_efFossilFuelExtrGlo("pecoal","ch4coal");
+   if ( pm_efFossilFuelExtr(regi,"pecoal","ch4coal") ge 50,
+        pm_efFossilFuelExtr(regi,"pecoal","ch4coal") = p_efFossilFuelExtrGlo("pecoal","ch4coal");
    );
-  if ( p_efFossilFuelExtr(regi,"pegas","ch4gas") ge 50,
-        p_efFossilFuelExtr(regi,"pegas","ch4gas") = p_efFossilFuelExtrGlo("pegas","ch4gas");
+  if ( pm_efFossilFuelExtr(regi,"pegas","ch4gas") ge 50,
+        pm_efFossilFuelExtr(regi,"pegas","ch4gas") = p_efFossilFuelExtrGlo("pegas","ch4gas");
    );
-   if ( p_efFossilFuelExtr(regi,"peoil","ch4oil") ge 25,
-        p_efFossilFuelExtr(regi,"peoil","ch4oil") = p_efFossilFuelExtrGlo("peoil","ch4oil");
+   if ( pm_efFossilFuelExtr(regi,"peoil","ch4oil") ge 25,
+        pm_efFossilFuelExtr(regi,"peoil","ch4oil") = p_efFossilFuelExtrGlo("peoil","ch4oil");
    );
 );
-display p_efFossilFuelExtr;
+display pm_efFossilFuelExtr;
 
 
 ***--------------------------------------
@@ -139,7 +139,7 @@ if (sm_magpieIter gt 0,
   pm_macBaseMagpie(ttot,regi,emiMacMagpie(enty))$(ttot.val ge 2005)  = f_macBaseMagpie_coupling(ttot,regi,emiMacMagpie);
   p_co2lucSub(ttot,regi,emiMacMagpieCO2Sub(all_enty))$(ttot.val ge cm_startyear) = f_macBaseMagpie_coupling(ttot,regi,emiMacMagpieCO2Sub);
 *** Biomass emission factor is set to zero after MAgPIE has run at least one, since biomass emissions are included in the emissions imported above. 
-  p_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0;
+  pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0;
 *** In coupling mode LU emissions are abated in MAgPIE (moved here from core/datainput.gms)
   pm_macSwitch(ttot,regi,enty)$emiMacMagpie(enty) = 0;
 else 
@@ -147,7 +147,7 @@ else
   pm_macBaseMagpie(ttot,regi,emiMacMagpie(enty))$(ttot.val ge 2005) = f_macBaseMagpie(ttot,regi,emiMacMagpie,"%cm_LU_emi_scen%","%cm_rcp_scen%");
 );
 
-display p_efFossilFuelExtr;
+display pm_efFossilFuelExtr;
 
 *** Moved here from core/datainput.gms, because pm_macSwitch is changed above after first MAgPIE iteration
 *** An alternative to the approach below could be to introduce a new value for c_macswitch that only deactivates the LU MACs
@@ -159,15 +159,15 @@ p_macCostSwitch(enty)=pm_macSwitch("2050","USA",enty);
 *** Code moved here from core/preloop.gms
 *** The N2O emissions generated during biomass production in agriculture (in MAgPIE)
 *** are represented in REMIND by applying the n2obio emission factor (zero in coupled runs)
-*** in q_macBase. In standaolne runs the resulting emissions need to be subtracted (see below)
+*** in q10_macBase. In standaolne runs the resulting emissions need to be subtracted (see below)
 *** from the exogenous emission baseline read from MAgPIE, since the baseline already implicitly 
-*** includes the N2O emissions from biomass. In q_macBase in core/equations.gms the N2O 
+*** includes the N2O emissions from biomass. In q10_macBase in core/equations.gms the N2O 
 *** emissions resulting from the actual biomass demand in REMIND are then added again. 
 *** In case some inconsistencies between pm_pebiolc_demandmag and pm_macBaseMagpie lead to
 *** negative values, set the value to 0 instead, since negative values may lead to 
 *** infeasibilities.
 display pm_macBaseMagpie;
-pm_macBaseMagpie(t,regi,"n2ofertin") = max(0, pm_macBaseMagpie(t,regi,"n2ofertin") - (p_efFossilFuelExtr(regi,"pebiolc","n2obio") * pm_pebiolc_demandmag(t,regi)));
+pm_macBaseMagpie(t,regi,"n2ofertin") = max(0, pm_macBaseMagpie(t,regi,"n2ofertin") - (pm_efFossilFuelExtr(regi,"pebiolc","n2obio") * pm_pebiolc_demandmag(t,regi)));
 display pm_macBaseMagpie;
 
 $IFTHEN.scaleEmiHist %c_scaleEmiHistorical% == "on"
@@ -210,7 +210,7 @@ display pm_macBaseMagpie;
 $ENDIF.scaleEmiHist
 
 !! all net negative co2luc
-p_macBaseMagpieNegCo2(t,regi) = pm_macBaseMagpie(t,regi,"co2luc")$(pm_macBaseMagpie(t,regi,"co2luc") < 0);
+pm_macBaseMagpieNegCo2(t,regi) = pm_macBaseMagpie(t,regi,"co2luc")$(pm_macBaseMagpie(t,regi,"co2luc") < 0);
 
 *** Rescale agricultural emissions baseline if c_agricult_base_shift switch is activated
 $IFTHEN.agricult_base_shift not "%c_agricult_base_shift%" == "off"
@@ -244,11 +244,11 @@ $ENDIF.agricult_base_shift
 *** Non-energy emissions reductions (MAC)
 ***--------------------------------------
 
-*** make sure that minimum CO2 luc emissions given in p_macPolCO2luc do not exceed the baseline
+*** make sure that minimum CO2 luc emissions given in pm_macPolCO2luc do not exceed the baseline
 loop(regi,
      loop(ttot,
-          if( (p_macPolCO2luc(ttot,regi) > pm_macBaseMagpie(ttot,regi,"co2luc")),
-                    p_macPolCO2luc(ttot,regi) = pm_macBaseMagpie(ttot,regi,"co2luc")
+          if( (pm_macPolCO2luc(ttot,regi) > pm_macBaseMagpie(ttot,regi,"co2luc")),
+                    pm_macPolCO2luc(ttot,regi) = pm_macBaseMagpie(ttot,regi,"co2luc")
              );
           );
     );
@@ -303,30 +303,30 @@ display p_priceCO2,p_priceCO2forMAC;
 ***--------------------------------------
 *** endogenous in equations.gms
 *** econometric
-v_macBase.fx(ttot,regi,"ch4wsts")$(ttot.val ge 2005) = p_emineg_econometric(regi,"ch4wsts","p1") * pm_pop(ttot,regi) * (1000*pm_gdp(ttot,regi) / (pm_pop(ttot,regi)*pm_shPPPMER(regi)))**p_emineg_econometric(regi,"ch4wsts","p2");
-v_macBase.fx(ttot,regi,"ch4wstl")$(ttot.val ge 2005) = p_emineg_econometric(regi,"ch4wstl","p1") * pm_pop(ttot,regi) * (1000*pm_gdp(ttot,regi) / (pm_pop(ttot,regi)*pm_shPPPMER(regi)))**p_emineg_econometric(regi,"ch4wstl","p2");
-v_macBase.fx(ttot,regi,"n2owaste")$(ttot.val ge 2005) = p_emineg_econometric(regi,"n2owaste","p1") * pm_pop(ttot,regi) * (1000*pm_gdp(ttot,regi) / (pm_pop(ttot,regi)*pm_shPPPMER(regi)))**p_emineg_econometric(regi,"n2owaste","p2");
+vm_macBase.fx(ttot,regi,"ch4wsts")$(ttot.val ge 2005) = p_emineg_econometric(regi,"ch4wsts","p1") * pm_pop(ttot,regi) * (1000*pm_gdp(ttot,regi) / (pm_pop(ttot,regi)*pm_shPPPMER(regi)))**p_emineg_econometric(regi,"ch4wsts","p2");
+vm_macBase.fx(ttot,regi,"ch4wstl")$(ttot.val ge 2005) = p_emineg_econometric(regi,"ch4wstl","p1") * pm_pop(ttot,regi) * (1000*pm_gdp(ttot,regi) / (pm_pop(ttot,regi)*pm_shPPPMER(regi)))**p_emineg_econometric(regi,"ch4wstl","p2");
+vm_macBase.fx(ttot,regi,"n2owaste")$(ttot.val ge 2005) = p_emineg_econometric(regi,"n2owaste","p1") * pm_pop(ttot,regi) * (1000*pm_gdp(ttot,regi) / (pm_pop(ttot,regi)*pm_shPPPMER(regi)))**p_emineg_econometric(regi,"n2owaste","p2");
 
-v_macBase.lo(ttot,regi,"co2cement_process")$( ttot.val ge 2005 ) = 0;
+vm_macBase.lo(ttot,regi,"co2cement_process")$( ttot.val ge 2005 ) = 0;
 
 *** exogenous
-v_macBase.fx(ttot,regi,enty)$emiMacMagpie(enty) = pm_macBaseMagpie(ttot,regi,enty);
-v_macBase.fx(ttot,regi,enty)$emiMacExo(enty) = p_macBaseExo(ttot,regi,enty);
-v_macBase.fx(ttot,regi,"co2luc") = pm_macBaseMagpie(ttot,regi,"co2luc")-p_macPolCO2luc(ttot,regi);
-v_macBase.up(ttot,regi,"n2ofertin") = Inf;
+vm_macBase.fx(ttot,regi,enty)$emiMacMagpie(enty) = pm_macBaseMagpie(ttot,regi,enty);
+vm_macBase.fx(ttot,regi,enty)$emiMacExo(enty) = p_macBaseExo(ttot,regi,enty);
+vm_macBase.fx(ttot,regi,"co2luc") = pm_macBaseMagpie(ttot,regi,"co2luc")-pm_macPolCO2luc(ttot,regi);
+vm_macBase.up(ttot,regi,"n2ofertin") = Inf;
 ***scale exogenous baselines from van Vuuren to EDGAR v4.2 2005 data or CEDS2024 2020 data
 ***Since they are exogenous anyway, it's OK to scale to after cm_startyear, but something to watch out for
 $ifthen %cm_emifacs_baseyear% == "2005" 
-v_macBase.fx(ttot,regi,"n2otrans")$p_macBaseIMAGE("2005",regi,"n2otrans") = p_macBaseIMAGE(ttot,regi,"n2otrans") * (p_macBase2005(regi,"n2otrans") / p_macBaseIMAGE("2005",regi,"n2otrans"));
-v_macBase.fx(ttot,regi,"n2oadac")$p_macBaseIMAGE("2005",regi,"n2oadac")  = p_macBaseIMAGE(ttot,regi,"n2oadac")  * (p_macBase2005(regi,"n2oacid")  / (p_macBaseIMAGE("2005",regi,"n2oadac") + p_macBaseIMAGE("2005",regi,"n2onitac")));
-v_macBase.fx(ttot,regi,"n2onitac")$(p_macBaseIMAGE("2005",regi,"n2oadac") OR p_macBaseIMAGE("2005",regi,"n2onitac")) = p_macBaseIMAGE(ttot,regi,"n2onitac") * (p_macBase2005(regi,"n2oacid")  / (p_macBaseIMAGE("2005",regi,"n2oadac") + p_macBaseIMAGE("2005",regi,"n2onitac")));
+vm_macBase.fx(ttot,regi,"n2otrans")$p_macBaseIMAGE("2005",regi,"n2otrans") = p_macBaseIMAGE(ttot,regi,"n2otrans") * (p_macBase2005(regi,"n2otrans") / p_macBaseIMAGE("2005",regi,"n2otrans"));
+vm_macBase.fx(ttot,regi,"n2oadac")$p_macBaseIMAGE("2005",regi,"n2oadac")  = p_macBaseIMAGE(ttot,regi,"n2oadac")  * (p_macBase2005(regi,"n2oacid")  / (p_macBaseIMAGE("2005",regi,"n2oadac") + p_macBaseIMAGE("2005",regi,"n2onitac")));
+vm_macBase.fx(ttot,regi,"n2onitac")$(p_macBaseIMAGE("2005",regi,"n2oadac") OR p_macBaseIMAGE("2005",regi,"n2onitac")) = p_macBaseIMAGE(ttot,regi,"n2onitac") * (p_macBase2005(regi,"n2oacid")  / (p_macBaseIMAGE("2005",regi,"n2oadac") + p_macBaseIMAGE("2005",regi,"n2onitac")));
 $else
-v_macBase.fx(ttot,regi,"n2otrans")$p_macBaseIMAGE("2020",regi,"n2otrans") = p_macBaseIMAGE(ttot,regi,"n2otrans") * (p_macBaseCEDS2020(regi,"n2otrans") / p_macBaseIMAGE("2020",regi,"n2otrans"));
-v_macBase.fx(ttot,regi,"n2oadac")$p_macBaseIMAGE("2020",regi,"n2oadac")  = p_macBaseIMAGE(ttot,regi,"n2oadac")  * (p_macBaseCEDS2020(regi,"n2oacid")  / (p_macBaseIMAGE("2020",regi,"n2oadac") + p_macBaseIMAGE("2020",regi,"n2onitac")));
-v_macBase.fx(ttot,regi,"n2onitac")$(p_macBaseIMAGE("2020",regi,"n2oadac") OR p_macBaseIMAGE("2020",regi,"n2onitac")) = p_macBaseIMAGE(ttot,regi,"n2onitac") * (p_macBaseCEDS2020(regi,"n2oacid")  / (p_macBaseIMAGE("2020",regi,"n2oadac") + p_macBaseIMAGE("2020",regi,"n2onitac")));
+vm_macBase.fx(ttot,regi,"n2otrans")$p_macBaseIMAGE("2020",regi,"n2otrans") = p_macBaseIMAGE(ttot,regi,"n2otrans") * (p_macBaseCEDS2020(regi,"n2otrans") / p_macBaseIMAGE("2020",regi,"n2otrans"));
+vm_macBase.fx(ttot,regi,"n2oadac")$p_macBaseIMAGE("2020",regi,"n2oadac")  = p_macBaseIMAGE(ttot,regi,"n2oadac")  * (p_macBaseCEDS2020(regi,"n2oacid")  / (p_macBaseIMAGE("2020",regi,"n2oadac") + p_macBaseIMAGE("2020",regi,"n2onitac")));
+vm_macBase.fx(ttot,regi,"n2onitac")$(p_macBaseIMAGE("2020",regi,"n2oadac") OR p_macBaseIMAGE("2020",regi,"n2onitac")) = p_macBaseIMAGE(ttot,regi,"n2onitac") * (p_macBaseCEDS2020(regi,"n2oacid")  / (p_macBaseIMAGE("2020",regi,"n2oadac") + p_macBaseIMAGE("2020",regi,"n2onitac")));
 $endif
 *** baseline continuation after 2100
-v_macBase.fx(ttot,regi,enty)$((ttot.val gt 2100)$((NOT emiMacMagpie(enty)) AND (NOT emiFuEx(enty)) AND (NOT sameas(enty,"n2ofertin")) ))=v_macBase.l("2100",regi,enty);
+vm_macBase.fx(ttot,regi,enty)$((ttot.val gt 2100)$((NOT emiMacMagpie(enty)) AND (NOT emiFuEx(enty)) AND (NOT sameas(enty,"n2ofertin")) ))=vm_macBase.l("2100",regi,enty);
 *DK: baseline continuation not necessary for magpie-emissions as the exogenous data reaches until 2150
 * JeS: exclude endgenous baseline calculation, i.e. emiFuEx and n2ofertin
 
@@ -381,8 +381,8 @@ loop ((ttot,regi,MacSector(enty))$(NOT sameas(enty,"co2luc")),
 *** in 1990. These levels of abatement are enforced as a minimum in all
 *** scenarios including BAU.
 p_macUse2005(regi,enty) = 0.0;
-p_macUse2005(regi,"ch4wstl")$(pm_gdp_gdx("2005",regi)/pm_pop("2005",regi) ge 10) = 1 - p_macBase2005(regi,"ch4wstl")/v_macBase.l("2005",regi,"ch4wstl");
-p_macUse2005(regi,"ch4wsts")$(pm_gdp_gdx("2005",regi)/pm_pop("2005",regi) ge 10) = 1 - p_macBase2005(regi,"ch4wsts")/v_macBase.l("2005",regi,"ch4wsts");
+p_macUse2005(regi,"ch4wstl")$(pm_gdp_gdx("2005",regi)/pm_pop("2005",regi) ge 10) = 1 - p_macBase2005(regi,"ch4wstl")/vm_macBase.l("2005",regi,"ch4wstl");
+p_macUse2005(regi,"ch4wsts")$(pm_gdp_gdx("2005",regi)/pm_pop("2005",regi) ge 10) = 1 - p_macBase2005(regi,"ch4wsts")/vm_macBase.l("2005",regi,"ch4wsts");
 
 *** Set first grade of abatement options (it represents low- or no-cost abatement potentials) for land use
 *** emissions to zero, because they are alredy included in the emissions baselines we get from MAgPIE.
@@ -413,8 +413,8 @@ p_macLevFree(ttot,regi,enty)$((ttot.val ge 2015) AND p_histEmiSector("2005",regi
 p_macLevFree("2010",regi,enty)$(p_histEmiSector("2005",regi,"ch4","agriculture","process") AND (sameas(enty,"n2ofertin") OR sameas(enty,"n2ofertcr") OR sameas(enty,"n2oanwstc") OR sameas(enty,"n2oanwstm") OR sameas(enty,"n2oanwstp"))) = max( 0, 1 - (p_histEmiSector("2010",regi,"n2o","agriculture","process")+p_histEmiSector("2010",regi,"n2o","lulucf","process"))/(p_histEmiSector("2005",regi,"n2o","agriculture","process")+p_histEmiSector("2005",regi,"n2o","lulucf","process")) );
 p_macLevFree(ttot,regi,emiMacMagpie(enty))$((ttot.val ge 2015) AND p_histEmiSector("2005",regi,"n2o","agriculture","process") AND (sameas(enty,"n2ofertin") OR sameas(enty,"n2ofertcr") OR sameas(enty,"n2oanwstc") OR sameas(enty,"n2oanwstm") OR sameas(enty,"n2oanwstp"))) = max( 0, 1 - (p_histEmiSector("2015",regi,"n2o","agriculture","process")+p_histEmiSector("2015",regi,"n2o","lulucf","process"))/(p_histEmiSector("2005",regi,"n2o","agriculture","process")+p_histEmiSector("2005",regi,"n2o","lulucf","process")) );
 
-p_macLevFree("2010",regi,enty)$((p_histEmiMac("2010",regi,enty)) AND (sameas(enty,"ch4wstl") OR sameas(enty,"ch4wsts"))) = max( 0, 1 - (p_histEmiMac("2010",regi,enty)) /v_macBase.l("2010",regi,enty) );
-p_macLevFree(ttot,regi,enty)$((ttot.val ge 2015) AND (p_histEmiMac("2015",regi,enty)) AND (sameas(enty,"ch4wstl") OR sameas(enty,"ch4wsts"))) = max( 0, 1 - (p_histEmiMac("2015",regi,enty))/v_macBase.l("2015",regi,enty) );
+p_macLevFree("2010",regi,enty)$((p_histEmiMac("2010",regi,enty)) AND (sameas(enty,"ch4wstl") OR sameas(enty,"ch4wsts"))) = max( 0, 1 - (p_histEmiMac("2010",regi,enty)) /vm_macBase.l("2010",regi,enty) );
+p_macLevFree(ttot,regi,enty)$((ttot.val ge 2015) AND (p_histEmiMac("2015",regi,enty)) AND (sameas(enty,"ch4wstl") OR sameas(enty,"ch4wsts"))) = max( 0, 1 - (p_histEmiMac("2015",regi,enty))/vm_macBase.l("2015",regi,enty) );
 
 $ELSE.scaleEmiHist
 
@@ -466,7 +466,7 @@ pm_macCost(t,regi,emiMacSector(enty))
   = 1e-3
   * p_macCostSwitch(enty)
   * p_emi_quan_conv_ar4(enty)
-  * v_macBase.l(t,regi,enty)
+  * vm_macBase.l(t,regi,enty)
   * sm_dmac
   * ( ( sum(emiMac2mac(enty,enty2),
           pm_macStep(t,regi,enty2)
@@ -486,7 +486,7 @@ pm_macCost(t,regi,emiMacSector(enty))
 *** These losses are not accounted for, so neither are the avoided losses.
 *** conversion factor MtCH4 --> TWa: 1 MtCH4 = 1.23 * 10^6 toe * 42 GJ/toe * 10^-9 EJ/GJ * 1 TWa/31.536 EJ = 0.001638 (BP statistical review)
 p_macPE(ttot,regi,enty) = 0.0;
-p_macPE(ttot,regi,"pegas")$(ttot.val gt 2005) = s_MtCH4_2_TWa * 0.5 * (v_macBase.l(ttot,regi,"ch4coal")-vm_emiMacSector.l(ttot,regi,"ch4coal"));
+p_macPE(ttot,regi,"pegas")$(ttot.val gt 2005) = s_MtCH4_2_TWa * 0.5 * (vm_macBase.l(ttot,regi,"ch4coal")-vm_emiMacSector.l(ttot,regi,"ch4coal"));
 
 *** ACM initialise se-fe shares in CDR sector (from CDR module: dac, OAE, EW) from other sector se-fe shares
 *** This is necessary as hydrocarbon FE demand for CDR sector may be zero or small and then leads to solver issues
@@ -497,6 +497,6 @@ v_shSeFeSector.l(ttot,regi,entySe,"fegas","CDR","ETS") =  v_shSeFeSector.l(ttot,
 o_pm_pebiolc_demandmag(iteration,ttot,regi)  = pm_pebiolc_demandmag(ttot,regi);
 o_pm_macBaseMagpie(iteration,ttot,regi,enty) = pm_macBaseMagpie(ttot,regi,enty);
 o_pm_macSwitch(iteration,ttot,regi,enty)     = pm_macSwitch(ttot,regi,enty);
-o_p_efFossilFuelExtr_n2obio(iteration,regi)  = p_efFossilFuelExtr(regi,"pebiolc","n2obio");
+o_pm_efFossilFuelExtr_n2obio(iteration,regi)  = pm_efFossilFuelExtr(regi,"pebiolc","n2obio");
 
 *** EOF ./core/presolve.gms

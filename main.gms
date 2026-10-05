@@ -258,6 +258,10 @@ $setGlobal PE_FE_parameters  iea2014  !! def = iea2014
 *'
 *' * (on):      load existing CES parameters matching model configuration
 $setGlobal initialCap  on             !! def = on
+*'---------------------    10_emissions    ------------------------------------
+*'
+*' * (SectorAggregates): traditional structure of emissions calculation that was used in REMIND core
+$setGlobal emissions  SectorAggregates  !! def = SectorAggregates
 *'---------------------    11_aerosols    --------------------------------------
 *'
 *' * (exoGAINS2025):  new realization with base year 2020 based on cleaned GAINS2025 data that enables to choose between CEDS and GAINS as source for baseyear emissions
@@ -909,9 +913,9 @@ parameter
   cm_rentconvcoal     = 50;        !! def = 50
 *'
 parameter
-  c_cint_scen               "additional GHG emissions from mining fossil fuels"
+  cm_cint_scen               "additional GHG emissions from mining fossil fuels"
 ;
-  c_cint_scen           = 1;         !! def = 1  !! regexp = 0|1
+  cm_cint_scen           = 1;         !! def = 1  !! regexp = 0|1
 *' *  (0): switch is off (emissions are not accounted)
 *' *  (1): switch is on (emissions are accounted)
 *'

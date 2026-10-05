@@ -1,4 +1,3 @@
-
 *** |  (C) 2006-2024 Potsdam Institute for Climate Impact Research (PIK)
 *** |  authors, and contributors see CITATION.cff file. This file is part
 *** |  of REMIND and licensed under AGPL-3.0-or-later. Under Section 7 of
@@ -39,5 +38,4 @@ $Ifi "%phase%" == "solve" $include "./modules/10_emissions/SectorAggregates/solv
 $Ifi "%phase%" == "postsolve" $include "./modules/10_emissions/SectorAggregates/postsolve.gms"
 $Ifi "%phase%" == "output" $include "./modules/10_emissions/SectorAggregates/output.gms"
 *######################## R SECTION END (PHASES) ###############################
-
 *** EOF ./modules/10_emissions/SectorAggregates/realization.gms
