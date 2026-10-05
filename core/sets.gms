@@ -876,6 +876,7 @@ sets
        welfare
        PE_FE_parameters
        initialCap
+       emissions
        aerosols
        climate
        downscaleTemperature
@@ -908,11 +909,12 @@ sets
        codePerformance
        /
 
-module2realisation(modules,*) "mapping of modules and active realisations" /
+      module2realisation(modules,*) "mapping of modules and active realisations" /
        macro . %macro%
        welfare . %welfare%
        PE_FE_parameters . %PE_FE_parameters%
        initialCap . %initialCap%
+       emissions . %emissions%
        aerosols . %aerosols%
        climate . %climate%
        downscaleTemperature . %downscaleTemperature%
