@@ -8,6 +8,32 @@
 
 vm_emiIndBase.l(ttot,regi,entyFe,secInd37) = 0;
 
+*** Read non-energy emissions factors for the chemical industry.
+*** These factors are based on IEA feedstock flows and UNFCCC process
+*** emissions data and are converted from GtC/ZJ to GtC/TWa.
+parameter f37_nechem_emissionFactors(ttot,all_regi,*) "non-energy emission factors [GtC per ZJ]"
+/
+$ondelim
+$include "./modules/37_industry/subsectors/input/f_nechem_emissionFactors.cs4r"
+$offdelim
+/;
+
+p37_emifacNonEnergy(ttot,regi,"sesofos","fesos","indst","co2")
+  = f37_nechem_emissionFactors(ttot,regi,"solids") / sm_ZJ_2_TWa;
+p37_emifacNonEnergy(ttot,regi,"seliqfos","fehos","indst","co2")
+  = f37_nechem_emissionFactors(ttot,regi,"liquids") / sm_ZJ_2_TWa;
+p37_emifacNonEnergy(ttot,regi,"segafos","fegas","indst","co2")
+  = f37_nechem_emissionFactors(ttot,regi,"gases") / sm_ZJ_2_TWa;
+
+*** Read projections for the share of plastic waste that is incinerated.
+parameter f37_incinerationShares(ttot,all_regi) "incineration rate of plastic waste"
+/
+$ondelim
+$include "./modules/37_industry/subsectors/input/f_incinerationShares.cs4r"
+$offdelim
+/;
+p37_incinerationRate(ttot,all_regi) = f37_incinerationShares(ttot,all_regi);
+
 Parameters
 
 *** ---------------------------------------------------------------------------

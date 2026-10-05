@@ -577,19 +577,6 @@ loop(tradePe,
 );
 display pm_IO_trade;
 
-***nicolasb*DOT* FILE produced from D:\projekte\rose\resources\fossilGrades_nico.m; 2011,12,16;12:14:44
-***nicolasb*DOT* original data from literature (Brandt 2009, Charpentier 2009)
-***nicolasb*DOT* data files are available at RD3 drive roseBob_finSSP.xls
-***nicolasb*DOT* tbd the script is available in the common script folder
-***nicolasb*DOT* The parameter describes the extra CO2 emissions from fuel extraction on top of the PE combustion emissions
-***nicolasb*DOT* the units are: GtC per TWa
-***nicolasb*DOT* ATTENTION: the data given here must crrespond with the mapping emi2fuelMine(enty,enty2,rlf)
-pm_cint(regi,"co2","peoil","4")=0.0475647000;
-pm_cint(regi,"co2","peoil","5")=0.1078133200;
-pm_cint(regi,"co2","peoil","6")=0.1775748800;
-pm_cint(regi,"co2","peoil","7")=0.2283105600;
-pm_cint(regi,"co2","peoil","8")=0.4153983800;
-
 *** historical installed capacity
 $Offlisting
 table   pm_histCap(tall,all_regi,all_te) "historical installed capacity (TW)"
@@ -926,32 +913,6 @@ $offdelim
 /;
 p_abatparam_CH4(tall,all_regi,all_enty,steps)$(ord(steps) gt 201) = p_abatparam_CH4(tall,all_regi,all_enty,"201");
 p_abatparam_N2O(tall,all_regi,all_enty,steps)$(ord(steps) gt 201) = p_abatparam_N2O(tall,all_regi,all_enty,"201");
-
-*** Read methane emissions from fossil fuel extraction for calculating emission factors. 
-*** The base year determines whether the data comes from CEDS or EDGAR
-$ifthen %cm_emifacs_baseyear% == "2005" 
-parameter p_emiFossilFuelExtr(all_regi,all_enty)          "methane emissions in 2005 [Mt CH4], needed for the calculation of pm_efFossilFuelExtr"
-/
-$ondelim
-$include "./core/input/p_emiFossilFuelExtr.cs4r"
-$offdelim
-/;
-$else
-parameter p_emiFossilFuelExtr(all_regi,all_enty)          "methane emissions in 2020 [Mt CH4], needed for the calculation of pm_efFossilFuelExtr"
-/
-$ondelim
-$include "./core/input/p_emiFossilFuelExtr2020.cs4r"
-$offdelim
-/;
-$endif
-
-*** GA: These hardcoded values were probably assuming 2005 as base year, TODO: check and adjust for 2020 case
-$if %cm_LU_emi_scen% == "SSP1"   pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047/sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP2"   pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079/sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP2_lowEn"   pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079/sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP3"   pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079/sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP5"   pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0066/sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SDP"    pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047/sm_EJ_2_TWa;
 
 *** In case REMIND is coupled to MAgPIE emissions are obtained from the MAgPIE reporting. 
 *** Thus, emission factors are set to zero in core/presolve.gms after MAgPIE has run at least one.
@@ -1454,30 +1415,6 @@ $ondelim
 $include "./core/input/p_macPolCO2luc.cs4r"
 $offdelim
 /;
-
-***------ Read in emission factors for process emissions in chemicals sector---
-*** calculated using IEA data on feedstocks flows and UNFCCC data on chem sector process emissions
-*** these emission factors are for the chemical industry only
-parameter f_nechem_emissionFactors(ttot,all_regi,*)  "non-energy emission factors [GtC per ZJ]"
-/
-$ondelim
-$include "./core/input/f_nechem_emissionFactors.cs4r"
-$offdelim
-/;
-
-pm_emifacNonEnergy(ttot,regi,"sesofos", "fesos","indst","co2") = f_nechem_emissionFactors(ttot,regi,"solids") / sm_ZJ_2_TWa;
-pm_emifacNonEnergy(ttot,regi,"seliqfos","fehos","indst","co2") = f_nechem_emissionFactors(ttot,regi,"liquids") / sm_ZJ_2_TWa;
-pm_emifacNonEnergy(ttot,regi,"segafos", "fegas","indst","co2") = f_nechem_emissionFactors(ttot,regi,"gases") / sm_ZJ_2_TWa;
-
-***------ Read in projections for incineration rates of plastic waste---
-*** "incineration rates [fraction]"
-parameter f_incinerationShares(ttot,all_regi)         "incineration rate of plastic waste"
-/
-$ondelim
-$include "./core/input/f_incinerationShares.cs4r"
-$offdelim
-/;
-pm_incinerationRate(ttot,all_regi)=f_incinerationShares(ttot,all_regi);
 
 *** some balances are not matching by small amounts;
 *** the differences are cancelled out here!!!

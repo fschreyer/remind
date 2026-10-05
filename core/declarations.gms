@@ -108,15 +108,6 @@ $ENDIF.agricult_base_shift
 p_aux_scaleEmiHistorical_n2o(all_regi)               "auxiliary parameter to rescale MAgPIE n2o emissions to historical values [Mt N]"
 p_aux_scaleEmiHistorical_ch4(all_regi)               "auxiliary parameter to rescale MAgPIE ch4 emissions to historical values [Mt CH4]"
 
-*** emissions factors and incineration rates
-pm_emifacNonEnergy(ttot,all_regi,all_enty,all_enty,emi_sectors,all_enty) "emission factor for non-energy fedstocks, only for chemical industry [GtC/TWa]"
-pm_incinerationRate(ttot,all_regi)                   "share of plastic waste that gets incinerated [fraction]"
-pm_cint(all_regi,all_enty,all_enty,rlf)               "CO2 emissions factor of energy-related emissions from unconventional fossil fuel extraction [GtC/TWa]" 
-pm_efFossilFuelExtr(all_regi,all_enty,all_enty)       "CH4 and N2O emission factor of PE production: fugitive CH4 from fossil fuel extraction and N2O from bioenergy [Mt CH4/TWA, Mt N/TWa]"
-p_efFossilFuelExtrGlo(all_enty,all_enty)             "CH4 and N2O emission factor of PE production - global value: fugitive CH4 from fossil fuel extraction and N2O from bioenergy [Mt CH4/TWA, Mt N/TWa]"
-
-*** share of stored carbon in captured carbon
-pm_share_CCS_CCO2(ttot,all_regi)                     "share of stored CO2 from total captured CO2 from previous iteration [share]"
 ;
 
 *** ---------------------------------------------------------------------------

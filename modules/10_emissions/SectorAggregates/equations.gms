@@ -67,7 +67,7 @@ q10_emiEnFuelEx(t,regi,emiTe(enty))..
   =e=
 ***   emissions from non-conventional fuel extraction
 	sum(emi2fuelMine(enty,enty2,rlf),
-		  pm_cint(regi,enty,enty2,rlf)
+		  p10_cint(regi,enty,enty2,rlf)
 		* vm_fuExtr(t,regi,enty2,rlf)
 		)$( cm_cint_scen eq 1 )
 ***   emissions from conventional fuel extraction

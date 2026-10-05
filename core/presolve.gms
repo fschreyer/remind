@@ -71,30 +71,30 @@ pm_demFeTotal0(ttot, regi)
 ***--------------------------------------
 *** calculate global emission factor (excluding pebiolc)
 loop (emi2fuel(entyPe,enty),
-  p_efFossilFuelExtrGlo(entyPe,enty)
-  = sum(regi, p_emiFossilFuelExtr(regi,entyPe))
+  pm_efFossilFuelExtrGlo(entyPe,enty)
+  = sum(regi, pm_emiFossilFuelExtr(regi,entyPe))
   / sum((rlf,regi), vm_fuExtr.l("%cm_emifacs_baseyear%",regi,entyPe,rlf));
 
   loop (regi,
     sm_tmp =  sum(rlf, vm_fuExtr.l("%cm_emifacs_baseyear%",regi,entyPe,rlf));
 
     pm_efFossilFuelExtr(regi,entyPe,enty)$( sm_tmp )
-      = p_emiFossilFuelExtr(regi,entyPe) / sm_tmp;
+      = pm_emiFossilFuelExtr(regi,entyPe) / sm_tmp;
 
     pm_efFossilFuelExtr(regi,entyPe,enty)$( NOT sm_tmp )
-      = p_efFossilFuelExtrGlo(entyPe,enty);
+      = pm_efFossilFuelExtrGlo(entyPe,enty);
   );
 );
 
 loop(regi,
    if ( pm_efFossilFuelExtr(regi,"pecoal","ch4coal") ge 50,
-        pm_efFossilFuelExtr(regi,"pecoal","ch4coal") = p_efFossilFuelExtrGlo("pecoal","ch4coal");
+        pm_efFossilFuelExtr(regi,"pecoal","ch4coal") = pm_efFossilFuelExtrGlo("pecoal","ch4coal");
    );
   if ( pm_efFossilFuelExtr(regi,"pegas","ch4gas") ge 50,
-        pm_efFossilFuelExtr(regi,"pegas","ch4gas") = p_efFossilFuelExtrGlo("pegas","ch4gas");
+        pm_efFossilFuelExtr(regi,"pegas","ch4gas") = pm_efFossilFuelExtrGlo("pegas","ch4gas");
    );
    if ( pm_efFossilFuelExtr(regi,"peoil","ch4oil") ge 25,
-        pm_efFossilFuelExtr(regi,"peoil","ch4oil") = p_efFossilFuelExtrGlo("peoil","ch4oil");
+        pm_efFossilFuelExtr(regi,"peoil","ch4oil") = pm_efFossilFuelExtrGlo("peoil","ch4oil");
    );
 );
 display pm_efFossilFuelExtr;

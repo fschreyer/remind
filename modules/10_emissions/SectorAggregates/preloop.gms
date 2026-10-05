@@ -14,6 +14,8 @@
 ***   2. Adapt Pe2Se emissions factors using conversion efficiencies.
 ***   3. In policy runs, restore pm_emifac from the reference run 
 
+pm_share_CCS_CCO2(t,regi) = 0;
+
 
 *** ==================================================================
 *' #### 1. Restore emissions-equivalent marginal values
