@@ -410,7 +410,7 @@ vm_co2capturevalve.up(t,regi) = 1 * sm_MtCO2_2_GtC;
 *** ------------------------------------------------------------------
 *' 1. Leakage from CO2 capture and transportation:
 *' 1 percent of captured CO2 leaks back to the atmosphere and is directly deduced from each technology's capture rate 
-*' See s_co2pipe_leakage in datainput.
+*' See p10_co2pipe_leakage in the emissions module data input.
 *' 2. Leakage from the geological reservoir:
 *' NOT considered in REMIND. 
 *' Justification: effect is too small

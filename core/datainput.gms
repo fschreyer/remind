@@ -520,10 +520,6 @@ loop((ext_regi)$p_extRegiccsinjecrateRegi(ext_regi),
 ;
 $endif.c_ccsinjecrateRegi
 
-table f_dataemiglob(all_enty,all_enty,all_te,all_enty)  "read-in of emissions factors co2,cco2"
-$include "./core/input/generisdata_emi.prn"
-;
-
 parameter pm_share_ind_fesos(tall,all_regi)              "Share of coal solids (coaltr) used in the industry (rest is residential)"
 /
 $ondelim
@@ -538,52 +534,6 @@ $include "./core/input/p_share_ind_fesos_bio.cs4r"
 $offdelim
 /;
 
-
-*** carbon intensities of coal, oil, and gas
-*** emissions factor of primary energy fossil fuels
-pm_cintraw("pecoal") = 26.1 / s_ZJ_2_TWa;
-pm_cintraw("peoil")  = 20.0 / s_ZJ_2_TWa;
-pm_cintraw("pegas")  = 15.0 / s_ZJ_2_TWa;
-
-$ifthen.tech_CO2capturerate not "%c_tech_CO2capturerate%" == "off"
-p_PECarriers_CarbonContent(peFos)=pm_cintraw(peFos);
-*** From conversation: 25 GtC/ZJ is the assumed carbon content of PE biomass (makes default bioh2c capture rate 90%)
-*** Convert to GtC/TWa
-p_PECarriers_CarbonContent("pebiolc")=25 / s_ZJ_2_TWa;
-loop(pe2se(entyPe,entySe,te)$(p_tech_co2capturerate(te)),
-  if(p_tech_co2capturerate(te) gt 0,
-    if(p_tech_co2capturerate(te) ge 1,
-		  abort "Error: Inconsistent switch usage. A CO2 capture rate is greater than 1. Check c_tech_CO2capturerate.";
-	  );
-*** Alter CO2 capture rate in f_dataemiglob
-*** f_dataemiglob is given in GtC/ZJ
-    f_dataemiglob(entyPe,entySe,te,"cco2") = p_tech_co2capturerate(te) * p_PECarriers_CarbonContent(entyPe) * s_ZJ_2_TWa;
-    if(sameAs(entyPe,"pebiolc"),
-      f_dataemiglob(entyPe,entySe,te,"co2") = -f_dataemiglob(entyPe,entySe,te,"cco2") ;
-    else
-      f_dataemiglob(entyPe,entySe,te,"co2") = p_PECarriers_CarbonContent(entyPe) - f_dataemiglob(entyPe,entySe,te,"cco2") ;
-	);
-  );
-);
-display f_dataemiglob;
-$endif.tech_CO2capturerate
-
-*** CO2 capture rate of CCS technologies (new SSP5 assumptions)
-if (c_ccscapratescen eq 2,
-  f_dataemiglob("pecoal","seel","igccc","co2")    = 0.2;
-  f_dataemiglob("pecoal","seel","igccc","cco2")   = 25.9;
-  f_dataemiglob("pecoal","seh2","coalh2c","co2")  = 0.2;
-  f_dataemiglob("pecoal","seh2","coalh2c","cco2") = 25.9;
-$ifthen "%c_SSP_forcing_adjust%" == "forcing_SSP5"
-  f_dataemiglob("pegas","seel","ngccc","co2")  = 0.1;
-  f_dataemiglob("pegas","seel","ngccc","cco2") = 15.2;
-  f_dataemiglob("pegas","seh2","gash2c","co2")  = 0.1;
-  f_dataemiglob("pegas","seh2","gash2c","cco2") = 15.2;
-$endif
-);
-*nb* specific emissions of transformation technologies (co2 in gtc/zj -> conv. gtc/twyr):
-f_dataemiglob(enty,enty2,te,"co2")$pe2se(enty,enty2,te)       = 1/s_ZJ_2_TWa * f_dataemiglob(enty,enty2,te,"co2");
-f_dataemiglob(enty,enty2,te,"cco2")                           = 1/s_ZJ_2_TWa * f_dataemiglob(enty,enty2,te,"cco2");
 
 table f_dataetaglob(tall,all_te)                      "global eta data"
 $include "./core/input/generisdata_varying_eta.prn"
@@ -607,34 +557,6 @@ $offdelim
 ***---------------------------------------------------------------------------
 *** Import and set regional data
 ***---------------------------------------------------------------------------
-
-*** CO2-technologies don't have own emissions, but the pipeline leakage rate (s_co2pipe_leakage) is multiplied on the individual pe2se
-s_co2pipe_leakage = 0.01;
-
-loop(emi2te(enty,enty2,te,enty3)$teCCS(te),
-    f_dataemiglob(enty,enty2,te,"co2")  = f_dataemiglob(enty,enty2,te,"co2") + f_dataemiglob(enty,enty2,te,"cco2") * s_co2pipe_leakage ;
-    f_dataemiglob(enty,enty2,te,"cco2") = f_dataemiglob(enty,enty2,te,"cco2") * (1 - s_co2pipe_leakage );
-);
-
-*** Allocate emission factors to pm_emifac
-option pm_emifac:3:3:1;
-pm_emifac(ttot,regi,enty,enty2,te,"co2")$emi2te(enty,enty2,te,"co2")   = f_dataemiglob(enty,enty2,te,"co2");
-pm_emifac(ttot,regi,enty,enty2,te,"cco2")$emi2te(enty,enty2,te,"cco2") = f_dataemiglob(enty,enty2,te,"cco2");
-*GA  scale N2O energy emissions to match CEDS2025 in 2020 with a simple global factor
-pm_emifac(ttot,regi,enty,enty2,te,"n2o")$emi2te(enty,enty2,te,"n2o") = 1.288 * f_dataemiglob(enty,enty2,te,"n2o");
-
-***JeS from IPCC http://www.ipcc-nggip.iges.or.jp/public/gp/bgp/2_2_Non-CO2_Stationary_Combustion.pdf:
-***JeS CH4: 300 kg/TJ = 0.3 Mt/EJ * 31.536 EJ/TWa = 9.46 Mt /TWa
-***JeS N2O: 1 kg/TJ = 0.001 Mt/EJ * 31.536 EJ/TWa = 0.031536 Mt / TWa
-*** coal 1.4 kg/TJ = 0.04415 Mt/TWa
-*** gas 0.1 kg/TJ = 0.00315 Mt/TWa
-*** oil 0.6 kg/TJ = 0.01892 Mt/TWa
-*** biomass 4 kg/TJ = 0.12614 Mt/TWa;
-*** EF for N2O are in generisdata_emi.prn
-pm_emifac(t,regi,"pecoal","sesofos","coaltr","ch4") = 9.46 * (1-pm_share_ind_fesos("2005",regi));
-pm_emifac(t,regi,"pebiolc","sesobio","biotr","ch4") = 9.46 * (1-pm_share_ind_fesos_bio("2005",regi));
-
-display pm_emifac;
 
 *NB* include data and parameters for upper bounds on fossil fuel transport
 parameter f_IO_trade(tall,all_regi,all_enty,char)        "Energy trade bounds based on IEA data"
@@ -1533,50 +1455,6 @@ $include "./core/input/p_macPolCO2luc.cs4r"
 $offdelim
 /;
 
-*** ----- Emission factor of final energy carriers -----------------------------------
-*** demand side emission factor of final energy carriers in MtCO2/EJ
-*** www.eia.gov/oiaf/1605/excel/Fuel%20EFs_2.xls
-p_ef_dem(regi,entyFe) = 0;
-p_ef_dem(regi,"fedie") = 69.3;
-p_ef_dem(regi,"fehos") = 69.3;
-p_ef_dem(regi,"fepet") = 68.5;
-p_ef_dem(regi,"fegas") = 50.3;
-p_ef_dem(regi,"fegat") = 50.3;
-p_ef_dem(regi,"fesos") = 90.5;
-
-$ifthen.altFeEmiFac not "%cm_altFeEmiFac%" == "off"
-*** demand side emission factor of final energy carriers in MtCO2/EJ
-*** https://www.umweltbundesamt.de/sites/default/files/medien/1968/publikationen/co2_emission_factors_for_fossil_fuels_correction.pdf
-  loop(ext_regi$altFeEmiFac_regi(ext_regi),
-    p_ef_dem(regi,entyFe)$(regi_group(ext_regi,regi)) = 0;
-    p_ef_dem(regi,"fedie")$(regi_group(ext_regi,regi)) = 74;
-    p_ef_dem(regi,"fehos")$(regi_group(ext_regi,regi)) = 73;
-    p_ef_dem(regi,"fepet")$(regi_group(ext_regi,regi)) = 73;
-    p_ef_dem(regi,"fegas")$(regi_group(ext_regi,regi)) = 55;
-    p_ef_dem(regi,"fesos")$(regi_group(ext_regi,regi)) = 96;
-  );
-
-$endif.altFeEmiFac
-
-pm_emifac(ttot,regi,"segafos","fegas","tdfosgas","co2") = p_ef_dem(regi,"fegas") / (sm_c_2_co2*1000*sm_EJ_2_TWa); !! GtC/TWa
-pm_emifac(ttot,regi,"sesofos","fesos","tdfossos","co2") = p_ef_dem(regi,"fesos") / (sm_c_2_co2*1000*sm_EJ_2_TWa); !! GtC/TWa
-pm_emifac(ttot,regi,"seliqfos","fehos","tdfoshos","co2") = p_ef_dem(regi,"fehos") / (sm_c_2_co2*1000*sm_EJ_2_TWa); !! GtC/TWa
-pm_emifac(ttot,regi,"seliqfos","fepet","tdfospet","co2") = p_ef_dem(regi,"fepet") / (sm_c_2_co2*1000*sm_EJ_2_TWa); !! GtC/TWa
-pm_emifac(ttot,regi,"seliqfos","fedie","tdfosdie","co2") = p_ef_dem(regi,"fedie") / (sm_c_2_co2*1000*sm_EJ_2_TWa); !! GtC/TWa
-pm_emifac(ttot,regi,"segafos","fegat","tdfosgat","co2") = p_ef_dem(regi,"fegas") / (sm_c_2_co2*1000*sm_EJ_2_TWa); !! GtC/TWa
-
-$ifthen.altFeEmiFac not "%cm_altFeEmiFac%" == "off"
-*** Changing refineries emission factors in regions that belong to cm_altFeEmiFac to avoid negative emissions on pe2se 
-*** (changing from 18.4 to 20 zeta joule = 20/31.7098 = 0.630719841 Twa = 0.630719841 * 3.66666666666666 * 1000 * 0.03171  GtC/TWa = 73.33 GtC/TWa)
-loop(ext_regi$altFeEmiFac_regi(ext_regi),
-  pm_emifac(ttot,regi,"peoil","seliqfos","refliq","co2")$(regi_group(ext_regi,regi)) = 0.630719841;
-);
-*** Changing Germany and UKI solids emissions factors to be in line with CRF numbers
-*** (changing from 26.1 to 29.27 zeta joule = 0.922937989 TWa = 107.31 GtC/TWa)
-pm_emifac(ttot,regi,"pecoal","sesofos","coaltr","co2")$(sameas(regi,"DEU") OR sameas(regi,"UKI")) = 0.922937989;
-$endif.altFeEmiFac
-
-
 ***------ Read in emission factors for process emissions in chemicals sector---
 *** calculated using IEA data on feedstocks flows and UNFCCC data on chem sector process emissions
 *** these emission factors are for the chemical industry only
@@ -1587,9 +1465,9 @@ $include "./core/input/f_nechem_emissionFactors.cs4r"
 $offdelim
 /;
 
-pm_emifacNonEnergy(ttot,regi,"sesofos", "fesos","indst","co2") = f_nechem_emissionFactors(ttot,regi,"solids")  / s_ZJ_2_TWa;
-pm_emifacNonEnergy(ttot,regi,"seliqfos","fehos","indst","co2") = f_nechem_emissionFactors(ttot,regi,"liquids") / s_ZJ_2_TWa;
-pm_emifacNonEnergy(ttot,regi,"segafos", "fegas","indst","co2") = f_nechem_emissionFactors(ttot,regi,"gases")   / s_ZJ_2_TWa;
+pm_emifacNonEnergy(ttot,regi,"sesofos", "fesos","indst","co2") = f_nechem_emissionFactors(ttot,regi,"solids") / sm_ZJ_2_TWa;
+pm_emifacNonEnergy(ttot,regi,"seliqfos","fehos","indst","co2") = f_nechem_emissionFactors(ttot,regi,"liquids") / sm_ZJ_2_TWa;
+pm_emifacNonEnergy(ttot,regi,"segafos", "fegas","indst","co2") = f_nechem_emissionFactors(ttot,regi,"gases") / sm_ZJ_2_TWa;
 
 ***------ Read in projections for incineration rates of plastic waste---
 *** "incineration rates [fraction]"

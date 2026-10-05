@@ -6,6 +6,24 @@
 *** |  Contact: remind@pik-potsdam.de
 *** SOF ./modules/10_emissions/SectorAggregates/declarations.gms
 
+
+*** ------------- Parameters -----------------------------------------
+parameters
+
+*** emissions-factor input and derived parameters
+pm_emifac(tall,all_regi,all_enty,all_enty,all_te,all_enty) "emission factor by technology for all types of energy-related emissions [GtC/TWa, Mt CH4/TWa, Mt N, Mt SO2/TWa, Mt BC/TWa, Mt OC]"
+p10_ef_dem(all_regi,all_enty)                        "read-in parameter for demand side emission factors of final energy carriers [MtCO2/EJ]"
+pm_cintraw(all_enty)                                 "CO2 emissions factor of fossil fuels [GtC/TWa]"
+p10_co2pipe_leakage                                  "Leakage rate of CO2 pipelines [0..1]"
+
+$ifthen.tech_CO2capturerate not "%c_tech_CO2capturerate%" == "off"
+p10_tech_CO2capturerate(all_te)                      "Technology specific CO2 capture rate, fraction of carbon from input fuel that is captured [share]" / %c_tech_CO2capturerate% /
+p10_PECarriers_CarbonContent(all_enty)               "Carbon content of PE carriers [GtC/TWa]"
+$endif.tech_CO2capturerate
+;
+
+
+
 *** ------------- Variables ----------------------------------------
 variables
 
@@ -45,6 +63,7 @@ v10_ccsShare(ttot,all_regi)                                    "fraction of capt
 vm_emiCdrNovel(ttot,all_regi)                                 "all novel CDR emissions, gross removals for all options, excluding land-use change emissions and materials [GtC/year]"
 vm_emiCdrAll(ttot,all_regi)                                  "all CDR emissions, net negative emissions from land-use change, gross removals for all other options [GtC/year]"
 ;
+
 
 
 *** ------------- Equations -----------------------------------------

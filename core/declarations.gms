@@ -109,11 +109,8 @@ p_aux_scaleEmiHistorical_n2o(all_regi)               "auxiliary parameter to res
 p_aux_scaleEmiHistorical_ch4(all_regi)               "auxiliary parameter to rescale MAgPIE ch4 emissions to historical values [Mt CH4]"
 
 *** emissions factors and incineration rates
-pm_emifac(tall,all_regi,all_enty,all_enty,all_te,all_enty) "emission factor by technology for all types of energy-related emissions [GtC/TWa, Mt CH4/TWa, Mt N/TWa, Mt SO2/TWa, Mt BC/TWa, Mt OC/TWa]"
-p_ef_dem(all_regi,all_enty)                          "read-in parameter for demand side emission factors of final energy carriers [MtCO2/EJ]"
 pm_emifacNonEnergy(ttot,all_regi,all_enty,all_enty,emi_sectors,all_enty) "emission factor for non-energy fedstocks, only for chemical industry [GtC/TWa]"
 pm_incinerationRate(ttot,all_regi)                   "share of plastic waste that gets incinerated [fraction]"
-pm_cintraw(all_enty)                                 "CO2 emissions factor of fossil fuels [GtC/TWa]"
 pm_cint(all_regi,all_enty,all_enty,rlf)               "CO2 emissions factor of energy-related emissions from unconventional fossil fuel extraction [GtC/TWa]" 
 pm_efFossilFuelExtr(all_regi,all_enty,all_enty)       "CH4 and N2O emission factor of PE production: fugitive CH4 from fossil fuel extraction and N2O from bioenergy [Mt CH4/TWA, Mt N/TWa]"
 p_efFossilFuelExtrGlo(all_enty,all_enty)             "CH4 and N2O emission factor of PE production - global value: fugitive CH4 from fossil fuel extraction and N2O from bioenergy [Mt CH4/TWA, Mt N/TWa]"
@@ -484,10 +481,6 @@ $endif.minMaxSeFeSectorShareDev
 
 Parameters
 
-$ifthen.tech_CO2capturerate not "%c_tech_CO2capturerate%" == "off"
-p_tech_co2capturerate(all_te)                        "Technology specific CO2 capture rate, fraction of carbon from input fuel that is captured [share]" / %c_tech_CO2capturerate% /
-p_PECarriers_CarbonContent(all_enty)                 "Carbon content of PE carriers [GtC/TWa]"
-$endif.tech_CO2capturerate
 pm_dataccs(all_regi,char,all_te)                     "maximum CO2 storage capacity using CCS technology. [GtC]"
 pm_ccsinjecrate(all_regi)                            "Regional CCS injection rate factor. [1/year]."
 p_extRegiccsinjecrateRegi(ext_regi)                  "Regional CCS injection rate factor. [1/year]. (extended regions)"
@@ -581,7 +574,7 @@ sm_giga_2_non                "giga to non"                             /1e+9/,
 sm_trillion_2_non            "trillion to non"                         /1e+12/,
 
 *** energy units
-s_ZJ_2_TWa                   "convert from Zeta Joule to Tera Watt annum"   /31.71/,
+sm_ZJ_2_TWa                  "convert from Zeta Joule to Tera Watt annum" /31.71/,
 sm_EJ_2_TWa                  "convert from Exa Joule to Tera Watt annum"    /31.71e-03/,
 sm_GJ_2_TWa                  "convert from Giga Joule to Tera Watt annum"   /31.71e-12/,
 sm_TWa_2_EJ                  "convert from Tera Watt annum to Exa Joule"    /31.54/,
@@ -623,7 +616,6 @@ o_modelstat                  "critical solver status for solution"
 sm_dmac                      "step in MAC functions [US$]"                                                                   
 sm_macChange                 "maximum yearly increase of relative abatement in percentage points of maximum abatement. [0..1]"      /0.05/
 
-s_co2pipe_leakage            "Leakage rate of CO2 pipelines. [0..1]"
 s_tau_cement                 "range of per capita investments for switching from short-term to long-term behavior in CO2 cement emissions"                / 12000 /
 s_c_so2                      "constant, see S. Smith, 2004, Future Sulfur Dioxide Emissions"    /4.39445/
 s_ccsinjecrate               "CCS injection rate factor. [1/a]"
