@@ -168,7 +168,7 @@ q10_emiCO2Sector(t,regi,sector) $ (   sameAs(sector, "build")
 *' by econometric estimate, and exogenous. Emissions are calculated as
 *' baseline emissions times (1 - relative emission reduction).
 *' If coupled to MAgPIE pm_macBaseMagpie contains all N2O landuse emissions including n2o from biomass production
-*' and pm_efFossilFuelExtr(regi,"pebiolc","n2obio") is zero then. If running standalone
+*' and pm_PeProdEmifac(regi,"pebiolc","n2obio") is zero then. If running standalone
 *' pm_macBaseMagpie does not include n2o from biomass but it is added here.
 *' In case of CO2 from landuse (co2luc), emissions can be negative.
 *' To treat these emissions in the same framework, we subtract the minimal emission level from
@@ -179,11 +179,11 @@ q10_macBase(t,regi,enty)$( emiFuEx(enty) OR sameas(enty,"n2ofertin") ) ..
   vm_macBase(t,regi,enty)
   =e=
     sum(emi2fuel(enty2,enty),
-      pm_efFossilFuelExtr(regi,enty2,enty)
+      pm_PeProdEmifac(regi,enty2,enty)
     * sum(pe2rlf(enty2,rlf), vm_fuExtr(t,regi,enty2,rlf))
     )$( emiFuEx(enty) )
   + ( pm_macBaseMagpie(t,regi,enty)
-    + pm_efFossilFuelExtr(regi,"pebiolc","n2obio")
+    + pm_PeProdEmifac(regi,"pebiolc","n2obio")
     * vm_fuExtr(t,regi,"pebiolc","1")
     )$( sameas(enty,"n2ofertin") )
 ;

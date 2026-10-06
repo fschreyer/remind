@@ -71,33 +71,33 @@ pm_demFeTotal0(ttot, regi)
 ***--------------------------------------
 *** calculate global emission factor (excluding pebiolc)
 loop (emi2fuel(entyPe,enty),
-  pm_efFossilFuelExtrGlo(entyPe,enty)
+  pm_PeProdEmifacGlo(entyPe,enty)
   = sum(regi, pm_emiFossilFuelExtr(regi,entyPe))
   / sum((rlf,regi), vm_fuExtr.l("%cm_emifacs_baseyear%",regi,entyPe,rlf));
 
   loop (regi,
     sm_tmp =  sum(rlf, vm_fuExtr.l("%cm_emifacs_baseyear%",regi,entyPe,rlf));
 
-    pm_efFossilFuelExtr(regi,entyPe,enty)$( sm_tmp )
+    pm_PeProdEmifac(regi,entyPe,enty)$( sm_tmp )
       = pm_emiFossilFuelExtr(regi,entyPe) / sm_tmp;
 
-    pm_efFossilFuelExtr(regi,entyPe,enty)$( NOT sm_tmp )
-      = pm_efFossilFuelExtrGlo(entyPe,enty);
+    pm_PeProdEmifac(regi,entyPe,enty)$( NOT sm_tmp )
+      = pm_PeProdEmifacGlo(entyPe,enty);
   );
 );
 
 loop(regi,
-   if ( pm_efFossilFuelExtr(regi,"pecoal","ch4coal") ge 50,
-        pm_efFossilFuelExtr(regi,"pecoal","ch4coal") = pm_efFossilFuelExtrGlo("pecoal","ch4coal");
+   if ( pm_PeProdEmifac(regi,"pecoal","ch4coal") ge 50,
+        pm_PeProdEmifac(regi,"pecoal","ch4coal") = pm_PeProdEmifacGlo("pecoal","ch4coal");
    );
-  if ( pm_efFossilFuelExtr(regi,"pegas","ch4gas") ge 50,
-        pm_efFossilFuelExtr(regi,"pegas","ch4gas") = pm_efFossilFuelExtrGlo("pegas","ch4gas");
+  if ( pm_PeProdEmifac(regi,"pegas","ch4gas") ge 50,
+        pm_PeProdEmifac(regi,"pegas","ch4gas") = pm_PeProdEmifacGlo("pegas","ch4gas");
    );
-   if ( pm_efFossilFuelExtr(regi,"peoil","ch4oil") ge 25,
-        pm_efFossilFuelExtr(regi,"peoil","ch4oil") = pm_efFossilFuelExtrGlo("peoil","ch4oil");
+   if ( pm_PeProdEmifac(regi,"peoil","ch4oil") ge 25,
+        pm_PeProdEmifac(regi,"peoil","ch4oil") = pm_PeProdEmifacGlo("peoil","ch4oil");
    );
 );
-display pm_efFossilFuelExtr;
+display pm_PeProdEmifac;
 
 
 ***--------------------------------------
@@ -139,7 +139,7 @@ if (sm_magpieIter gt 0,
   pm_macBaseMagpie(ttot,regi,emiMacMagpie(enty))$(ttot.val ge 2005)  = f_macBaseMagpie_coupling(ttot,regi,emiMacMagpie);
   p_co2lucSub(ttot,regi,emiMacMagpieCO2Sub(all_enty))$(ttot.val ge cm_startyear) = f_macBaseMagpie_coupling(ttot,regi,emiMacMagpieCO2Sub);
 *** Biomass emission factor is set to zero after MAgPIE has run at least one, since biomass emissions are included in the emissions imported above. 
-  pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0;
+  pm_PeProdEmifac(regi,"pebiolc","n2obio") = 0.0;
 *** In coupling mode LU emissions are abated in MAgPIE (moved here from core/datainput.gms)
   pm_macSwitch(ttot,regi,enty)$emiMacMagpie(enty) = 0;
 else 
@@ -147,7 +147,7 @@ else
   pm_macBaseMagpie(ttot,regi,emiMacMagpie(enty))$(ttot.val ge 2005) = f_macBaseMagpie(ttot,regi,emiMacMagpie,"%cm_LU_emi_scen%","%cm_rcp_scen%");
 );
 
-display pm_efFossilFuelExtr;
+display pm_PeProdEmifac;
 
 *** Moved here from core/datainput.gms, because pm_macSwitch is changed above after first MAgPIE iteration
 *** An alternative to the approach below could be to introduce a new value for c_macswitch that only deactivates the LU MACs
@@ -167,7 +167,7 @@ p_macCostSwitch(enty)=pm_macSwitch("2050","USA",enty);
 *** negative values, set the value to 0 instead, since negative values may lead to 
 *** infeasibilities.
 display pm_macBaseMagpie;
-pm_macBaseMagpie(t,regi,"n2ofertin") = max(0, pm_macBaseMagpie(t,regi,"n2ofertin") - (pm_efFossilFuelExtr(regi,"pebiolc","n2obio") * pm_pebiolc_demandmag(t,regi)));
+pm_macBaseMagpie(t,regi,"n2ofertin") = max(0, pm_macBaseMagpie(t,regi,"n2ofertin") - (pm_PeProdEmifac(regi,"pebiolc","n2obio") * pm_pebiolc_demandmag(t,regi)));
 display pm_macBaseMagpie;
 
 $IFTHEN.scaleEmiHist %c_scaleEmiHistorical% == "on"
@@ -497,6 +497,6 @@ v_shSeFeSector.l(ttot,regi,entySe,"fegas","CDR","ETS") =  v_shSeFeSector.l(ttot,
 o_pm_pebiolc_demandmag(iteration,ttot,regi)  = pm_pebiolc_demandmag(ttot,regi);
 o_pm_macBaseMagpie(iteration,ttot,regi,enty) = pm_macBaseMagpie(ttot,regi,enty);
 o_pm_macSwitch(iteration,ttot,regi,enty)     = pm_macSwitch(ttot,regi,enty);
-o_pm_efFossilFuelExtr_n2obio(iteration,regi)  = pm_efFossilFuelExtr(regi,"pebiolc","n2obio");
+o_pm_PeProdEmifac_n2obio(iteration,regi)  = pm_PeProdEmifac(regi,"pebiolc","n2obio");
 
 *** EOF ./core/presolve.gms

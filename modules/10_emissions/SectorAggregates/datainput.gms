@@ -171,14 +171,14 @@ p10_cint(regi,"co2","peoil","8") = 0.4153983800;
 *** Used for calculating CH4 emissions factor of fossil fuel extraction.
 *** The base year determines whether the data comes from CEDS or EDGAR.
 $ifthen %cm_emifacs_baseyear% == "2005"
-parameter pm_emiFossilFuelExtr(all_regi,all_enty) "methane emissions in 2005 [Mt CH4], needed for pm_efFossilFuelExtr"
+parameter pm_emiFossilFuelExtr(all_regi,all_enty) "methane emissions in 2005 [Mt CH4], needed for pm_PeProdEmifac"
 /
 $ondelim
 $include "./modules/10_emissions/SectorAggregates/input/p_emiFossilFuelExtr.cs4r"
 $offdelim
 /;
 $else
-parameter pm_emiFossilFuelExtr(all_regi,all_enty) "methane emissions in 2020 [Mt CH4], needed for pm_efFossilFuelExtr"
+parameter pm_emiFossilFuelExtr(all_regi,all_enty) "methane emissions in 2020 [Mt CH4], needed for pm_PeProdEmifac"
 /
 $ondelim
 $include "./modules/10_emissions/SectorAggregates/input/p_emiFossilFuelExtr2020.cs4r"
@@ -187,11 +187,11 @@ $offdelim
 $endif
 
 *' Hard-coded values for bioenergy N2O emissions factors differentiated across SSPs
-$if %cm_LU_emi_scen% == "SSP1"       pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047 / sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP2"       pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079 / sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP2_lowEn" pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079 / sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP3"       pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079 / sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP5"       pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0066 / sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SDP"        pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047 / sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP1"       pm_PeProdEmifac(regi,"pebiolc","n2obio") = 0.0047 / sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP2"       pm_PeProdEmifac(regi,"pebiolc","n2obio") = 0.0079 / sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP2_lowEn" pm_PeProdEmifac(regi,"pebiolc","n2obio") = 0.0079 / sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP3"       pm_PeProdEmifac(regi,"pebiolc","n2obio") = 0.0079 / sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP5"       pm_PeProdEmifac(regi,"pebiolc","n2obio") = 0.0066 / sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SDP"        pm_PeProdEmifac(regi,"pebiolc","n2obio") = 0.0047 / sm_EJ_2_TWa;
 
 *** EOF ./modules/10_emissions/SectorAggregates/datainput.gms
