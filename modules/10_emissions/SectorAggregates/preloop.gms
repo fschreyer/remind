@@ -14,8 +14,6 @@
 ***   2. Adapt Pe2Se emissions factors using conversion efficiencies.
 ***   3. In policy runs, restore pm_emifac from the reference run 
 
-pm_share_CCS_CCO2(t,regi) = 0;
-
 
 *** ==================================================================
 *' #### 1. Restore emissions-equivalent marginal values
@@ -52,5 +50,10 @@ loop(entySe$(sameas(entySe,"segafos") OR sameas(entySe,"seliqfos") OR sameas(ent
 if (cm_startyear gt 2005,
   Execute_Loadpoint 'input_ref' pm_emifac = pm_emifac;
 );
+
+
+*** initialize pm_share_CCS_CCO2
+pm_share_CCS_CCO2(t,regi) = 0;
+
 
 *** EOF ./modules/10_emissions/SectorAggregates/preloop.gms

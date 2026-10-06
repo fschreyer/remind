@@ -8,51 +8,17 @@
 
 
 *' ### Read-in and preparation of energy-related emissions factors
-*'
-*** The emissions-factor pipeline follows this order:
+
 ***   1. Read PE-to-SE emissions factors from generisdata_emi.prn.
 ***      Initialize raw-fuel carbon contents consistently with this input.
 ***   2. Apply scenario-specific technology and CCS capture-rate assumptions.
 ***      Convert the resulting factors to REMIND units.
 ***   3. Adjust captured CO2 for transport-pipeline leakage.
-***   4. Allocate PE/SE, N2O, and CH4 factors to pm_emifac.
+***   4. Allocate PE emissions factors to pm_emifac.
 ***   5. Set FE demand-side factors and apply their regional adjustments.
+***   6. Set emissions factors for PE production, including fossil-fuel
+***      extraction-related CO2, CH4, and bioenergy N2O factors.
 
-*** Read CO2 emissions from unconventional fossil-fuel extraction.
-*** These factors are used by the core MAC adjustment code later in the run.
-*** The values are mapped to the fuel-extraction grades in emi2fuelMine.
-p10_cint(regi,"co2","peoil","4") = 0.0475647000;
-p10_cint(regi,"co2","peoil","5") = 0.1078133200;
-p10_cint(regi,"co2","peoil","6") = 0.1775748800;
-p10_cint(regi,"co2","peoil","7") = 0.2283105600;
-p10_cint(regi,"co2","peoil","8") = 0.4153983800;
-
-*** Read methane emissions from fossil-fuel extraction for calculating
-*** emission factors. The base year determines whether the data comes
-*** from CEDS or EDGAR.
-$ifthen %cm_emifacs_baseyear% == "2005"
-parameter pm_emiFossilFuelExtr(all_regi,all_enty) "methane emissions in 2005 [Mt CH4], needed for pm_efFossilFuelExtr"
-/
-$ondelim
-$include "./modules/10_emissions/SectorAggregates/input/p_emiFossilFuelExtr.cs4r"
-$offdelim
-/;
-$else
-parameter pm_emiFossilFuelExtr(all_regi,all_enty) "methane emissions in 2020 [Mt CH4], needed for pm_efFossilFuelExtr"
-/
-$ondelim
-$include "./modules/10_emissions/SectorAggregates/input/p_emiFossilFuelExtr2020.cs4r"
-$offdelim
-/;
-$endif
-
-*** These hard-coded values provide the bioenergy N2O extraction factors.
-$if %cm_LU_emi_scen% == "SSP1"       pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047 / sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP2"       pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079 / sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP2_lowEn" pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079 / sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP3"       pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079 / sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SSP5"       pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0066 / sm_EJ_2_TWa;
-$if %cm_LU_emi_scen% == "SDP"        pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047 / sm_EJ_2_TWa;
 
 *** ==================================================================
 *' #### 1. Read PE emissions factors and CO2 capture rates of technologies from generisdata_emi.prn
@@ -182,5 +148,50 @@ pm_emifac(ttot,regi,"seliqfos","fehos","tdfoshos","co2") = p10_ef_dem(regi,"feho
 pm_emifac(ttot,regi,"seliqfos","fepet","tdfospet","co2") = p10_ef_dem(regi,"fepet") / (sm_c_2_co2*1000*sm_EJ_2_TWa);
 pm_emifac(ttot,regi,"seliqfos","fedie","tdfosdie","co2") = p10_ef_dem(regi,"fedie") / (sm_c_2_co2*1000*sm_EJ_2_TWa);
 pm_emifac(ttot,regi,"segafos","fegat","tdfosgat","co2") = p10_ef_dem(regi,"fegas") / (sm_c_2_co2*1000*sm_EJ_2_TWa);
+
+
+*** ==================================================================
+*' #### 6. Emissions Factors for PE Production
+*** ==================================================================
+
+*' Extraction-related CO2 emissions from unconventional fossil-fuel extraction.
+*** These factors are used by the MAC curve implementation to calculate the CO2 emissions from unconventional fossil-fuel extraction.
+*** Numbers are in GtC per TWa and based on:
+*** Charpentier et al. (2009), 10.1088/1748-9326/4/1/014005
+*** Brandt (2011), "Upstream greenhouse gas (GHG) emissions from Canadian oil sands as a feedstock for European refineries"
+p10_cint(regi,"co2","peoil","4") = 0.0475647000;
+p10_cint(regi,"co2","peoil","5") = 0.1078133200;
+p10_cint(regi,"co2","peoil","6") = 0.1775748800;
+p10_cint(regi,"co2","peoil","7") = 0.2283105600;
+p10_cint(regi,"co2","peoil","8") = 0.4153983800;
+
+
+
+*' Read methane emissions from fossil-fuel extraction
+*** Used for calculating CH4 emissions factor of fossil fuel extraction.
+*** The base year determines whether the data comes from CEDS or EDGAR.
+$ifthen %cm_emifacs_baseyear% == "2005"
+parameter pm_emiFossilFuelExtr(all_regi,all_enty) "methane emissions in 2005 [Mt CH4], needed for pm_efFossilFuelExtr"
+/
+$ondelim
+$include "./modules/10_emissions/SectorAggregates/input/p_emiFossilFuelExtr.cs4r"
+$offdelim
+/;
+$else
+parameter pm_emiFossilFuelExtr(all_regi,all_enty) "methane emissions in 2020 [Mt CH4], needed for pm_efFossilFuelExtr"
+/
+$ondelim
+$include "./modules/10_emissions/SectorAggregates/input/p_emiFossilFuelExtr2020.cs4r"
+$offdelim
+/;
+$endif
+
+*' Hard-coded values for bioenergy N2O emissions factors differentiated across SSPs
+$if %cm_LU_emi_scen% == "SSP1"       pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047 / sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP2"       pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079 / sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP2_lowEn" pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079 / sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP3"       pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0079 / sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SSP5"       pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0066 / sm_EJ_2_TWa;
+$if %cm_LU_emi_scen% == "SDP"        pm_efFossilFuelExtr(regi,"pebiolc","n2obio") = 0.0047 / sm_EJ_2_TWa;
 
 *** EOF ./modules/10_emissions/SectorAggregates/datainput.gms
