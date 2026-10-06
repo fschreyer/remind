@@ -168,7 +168,7 @@ cm_cint_scen           "additional GHG emissions from mining fossil fuels"
 cm_so2tax_scen         "level of SO2 tax"
 c_techAssumptScen     "scenario for assumptions of energy technologies based on SSP scenarios, 1: SSP2 (default), 2: SSP1, 3: SSP5"
 c_ccsinjecratescen    "CCS injection rate factor, 0.5% by default yielding a 60 Mt per year IR"
-c_ccscapratescen      "CCS capture rate"
+cm_ccscapratescen      "CCS capture rate"
 c_export_tax_scen    "choose which oil export tax is used in the model. 0 = none, 1 = fix"
 cm_iterative_target_adj "whether or not a tax or a budget target should be iteratively adjusted depending on actual emission or forcing level"
 cm_gdximport_target   "whether or not the starting value for iteratively adjusted budgets, tax scenarios, or forcing targets (emiscen 5,6,8,9) should be read in from the input.gdx"
@@ -296,7 +296,7 @@ cm_so2tax_scen        = 1;         !! def =
 cm_cint_scen           = 1;         !! def = 1
 $setGlobal c_techAssumptScen     = SSP2;         !! def = SSP2
 c_ccsinjecratescen    = 1;         !! def = 1
-c_ccscapratescen      = 1;         !! def = 1
+cm_ccscapratescen      = 1;         !! def = 1
 c_export_tax_scen     = 0;         !! def = 0
 cm_iterative_target_adj  = 0;      !! def = 0
 cm_gdximport_target      = 0;      !! def = 0

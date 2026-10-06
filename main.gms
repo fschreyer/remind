@@ -944,10 +944,10 @@ parameter
 *' *   (6) intermediate estimate: 0.0022; max 8.6 GtCO2/yr globally
 *'
 parameter
-  c_ccscapratescen          "CCS capture rate"
+  cm_ccscapratescen          "CCS capture rate"
 ;
-  c_ccscapratescen      = 1;         !! def = 1  !! regexp = 1|2
-*' This flag determines the CO2 capture rate of selected CCS technologies
+  cm_ccscapratescen      = 1;         !! def = 1  !! regexp = 1|2
+*' This flag determines the CO2 capture rate of selected carbon capture technologies
 *' *   (1) reference (90%)
 *' *   (2) increased capture rate (99%)
 *'

@@ -65,7 +65,7 @@ loop(pe2se(entyPe,entySe,te)$(p10_tech_CO2capturerate(te)),
 $endif.tech_CO2capturerate
 
 *' Apply alternative CCS capture assumptions used for SSP5.
-if (c_ccscapratescen eq 2,
+if (cm_ccscapratescen eq 2,
   f10_dataemiglob("pecoal","seel","igccc","co2")    = 0.2;
   f10_dataemiglob("pecoal","seel","igccc","cco2")   = 25.9;
   f10_dataemiglob("pecoal","seh2","coalh2c","co2")  = 0.2;
