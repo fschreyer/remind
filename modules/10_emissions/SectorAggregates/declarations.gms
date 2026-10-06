@@ -11,14 +11,14 @@
 parameters
 
 *** emissions-factor input and derived parameters
-pm_emifac(tall,all_regi,all_enty,all_enty,all_te,all_enty) "emission factor by technology for all types of energy-related emissions [GtC/TWa, Mt CH4/TWa, Mt N, Mt SO2/TWa, Mt BC/TWa, Mt OC]"
-p10_ef_dem(all_regi,all_enty)                        "read-in parameter for demand side emission factors of final energy carriers [MtCO2/EJ]"
-pm_cintraw(all_enty)                                 "CO2 emissions factor of fossil fuels [GtC/TWa]"
-p10_cint(all_regi,all_enty,all_enty,rlf)               "CO2 emissions factor of energy-related emissions from unconventional fossil fuel extraction [GtC/TWa]"
-pm_efFossilFuelExtr(all_regi,all_enty,all_enty)       "CH4 and N2O emission factor of PE production: fugitive CH4 from fossil fuel extraction and N2O from bioenergy [Mt CH4/TWA, Mt N/TWa]"
-pm_efFossilFuelExtrGlo(all_enty,all_enty)             "CH4 and N2O emission factor of PE production - global value: fugitive CH4 from fossil fuel extraction and N2O from bioenergy [Mt CH4/TWA, Mt N/TWa]"
-pm_share_CCS_CCO2(ttot,all_regi)                      "share of stored CO2 from total captured CO2 from previous iteration [share]"
-p10_co2pipe_leakage                                  "Leakage rate of CO2 pipelines [0..1]"
+pm_emifac(tall,all_regi,all_enty,all_enty,all_te,all_enty)      "emission factor by technology for all types of energy-related emissions [GtC/TWa, Mt CH4/TWa, Mt N, Mt SO2/TWa, Mt BC/TWa, Mt OC]"
+p10_ef_dem(all_regi,all_enty)                                   "read-in parameter for demand side emission factors of final energy carriers [MtCO2/EJ]"
+pm_cintraw(all_enty)                                            "CO2 emissions factor of fossil fuels [GtC/TWa]"
+p10_cint(all_regi,all_enty,all_enty,rlf)                        "CO2 emissions factor of energy-related emissions from unconventional fossil fuel extraction [GtC/TWa]"
+pm_efFossilFuelExtr(all_regi,all_enty,all_enty)                 "CH4 and N2O emission factor of PE production: fugitive CH4 from fossil fuel extraction and N2O from bioenergy [Mt CH4/TWA, Mt N/TWa]"
+pm_efFossilFuelExtrGlo(all_enty,all_enty)                       "CH4 and N2O emission factor of PE production - global value: fugitive CH4 from fossil fuel extraction and N2O from bioenergy [Mt CH4/TWA, Mt N/TWa]"
+pm_share_CCS_CCO2(ttot,all_regi)                                "share of stored CO2 from total captured CO2 from previous iteration [share]"
+p10_co2pipe_leakage                                             "leakage rate of CO2 pipelines [0..1]"
 
 $ifthen.tech_CO2capturerate not "%c_tech_CO2capturerate%" == "off"
 p10_tech_CO2capturerate(all_te)                      "Technology specific CO2 capture rate, fraction of carbon from input fuel that is captured [share]" / %c_tech_CO2capturerate% /
